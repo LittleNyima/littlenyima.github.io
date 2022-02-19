@@ -1,0 +1,12 @@
+- class_name: 友情鏈接
+  class_desc: 膜大佬
+  link_list:
+    - name: JimZhang
+      link: http://jimzhang.me
+      avatar: https://z3.ax1x.com/2021/05/20/gTZtq1.jpg
+      descr: 大计基助教头子
+    
+    - name: wzk
+      link: https://www.wzk.plus
+      avatar: https://s3.bmp.ovh/imgs/2022/02/f623b8961cbfb25d.jpg
+      descr: kk

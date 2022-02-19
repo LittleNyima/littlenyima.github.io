@@ -1,0 +1,18 @@
+# MacOS files
+.DS_Store
+Thumbs.db
+
+# Hexo generated files
+db.json
+public/
+.deploy*/
+
+# Loggings
+*.log
+
+# Node.js
+node_modules/
+
+# Ignore git directories of theme
+themes/butterfly/.git/
+themes/butterfly/.github/

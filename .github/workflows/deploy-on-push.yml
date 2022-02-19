@@ -1,0 +1,89 @@
+# This is a basic workflow to help you get started with Actions
+
+name: deploy-on-push
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+  push:
+    branches: [ master ]
+  # pull_request:
+    # branches: [ master ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Environment variables
+env:
+  GIT_USER: LittleNyima
+  GIT_EMAIL: littlenyima@163.com
+  # THEME_REPO: jerryc127/hexo-theme-butterfly
+  # THEME_BRANCH: master
+  DEPLOY_REPO: LittleNyima/littlenyima.github.io
+  DEPLOY_BRANCH: deploy
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    name: Build on node ${{ matrix.node_version }} and ${{ matrix.os }}
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node_version: [12.x]
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout
+        uses: actions/checkout@v2
+      
+      # - name: Checkout theme repository
+      #   uses: actions/checkout@v2
+      #   with:
+      #     repository: ${{ env.THEME_REPO }}
+      #     ref: ${{ env.THEME_BRANCH }}
+      #     path: themes/butterfly
+      
+      - name: Checkout deploy repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.DEPLOY_REPO }}
+          ref: ${{ env.DEPLOY_BRANCH }}
+          path: .deploy_git
+      
+      - name: Use node.js ${{ matrix.node_version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node_version }}
+          
+      - name: Configure environment
+        env:
+          DEPLOY_SECRET: ${{ secrets.GH_PAGES_DEPLOY_SECRET }}
+        run: |
+          sudo timedatectl set-timezone "Asia/Shanghai"
+          mkdir -p ~/.ssh/
+          echo "$DEPLOY_SECRET" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          git config --global user.name $GIT_USER
+          git config --global user.email $GIT_EMAIL
+          # cp _config.theme.yml themes/butterfly/_config.yml
+      
+      - name: Install dependencies
+        run: npm install
+
+      - name: Deploy pages
+        run: npm run deploy
+      
+      # Runs a single command using the runners shell
+      # - name: Run a one-line script
+      #   run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      # - name: Run a multi-line script
+      #   run: |
+      #     echo Add other actions to build,
+      #     echo test, and deploy your project.
