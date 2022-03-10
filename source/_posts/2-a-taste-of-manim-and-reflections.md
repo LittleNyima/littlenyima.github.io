@@ -2,8 +2,11 @@
 title: 技术相关 | Python 动画引擎 manim 浅度体验与思考
 date: 2022-03-01 16:36:18
 cover: false
-tags:
+categories:
  - Techniques
+tags:
+ - Manimgl
+ - Animation engine
 ---
 
 前段时间在写 [Wordle Solver](https://github.com/LittleNyima/wordle-solver)，查阅资料的时候发现了 [3Blue1Brown 的 Youtube 频道](https://www.youtube.com/c/3blue1brown)，在看视频的时候发现频道中的视频基本上都是用一个叫做 [manim](https://github.com/3b1b/manim) 的动画引擎做的。我感觉蛮有意思，就安装下来简单体验了一下。

@@ -2,8 +2,10 @@
 title: 教程 | Github Pages + hexo 搭建个人博客
 date: 2020-10-18 16:41:55
 cover: false
-tags: 
+categories:
  - Tutorials
+tags:
+ - Hexo
 ---
 > 注意：这是一篇教程性质的文章，但为了说明的简洁性并不会讲解所有细节。我默认这篇文章的读者具有一定的信息检索能力，并具备各方面的基本知识。
 

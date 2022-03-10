@@ -2,8 +2,10 @@
 title: 教程 | 利用 Github Actions 实现代码推送后自动部署
 date: 2022-02-18 20:09:21
 cover: false
-tags:
+categories:
  - Tutorials
+tags:
+ - Github Actions
 ---
 
 博客自从搭建以来已经搁置一段时间了，最近想在友链里多加上几个好友的链接，但在我将最新的页面代码推送到远程仓库后，Github Pages 的部署流程并没有被成功触发。因此，我决定研究一下 Github Actions 的用法，并在此记录一下。

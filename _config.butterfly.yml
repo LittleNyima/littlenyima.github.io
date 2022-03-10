@@ -15,7 +15,7 @@ menu:
   首頁: / || fas fa-home
   歸檔: /archives/ || fas fa-archive
   標籤: /tags/ || fas fa-tags
-  # 分類: /categories/ || fas fa-folder-open
+  分類: /categories/ || fas fa-folder-open
   友鏈: /link/ || fas fa-link
 
 # Code Blocks (代碼相關)
