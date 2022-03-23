@@ -72,6 +72,12 @@ jobs:
           git config --global user.email $GIT_EMAIL
           # cp _config.theme.yml themes/butterfly/_config.yml
       
+      - name: Configure secrets
+        env:
+          DISQUS_PUBLIC: ${{ secrets.DISQUS_APIKEY_PUBLIC }}
+        run: |
+          sed -i s/__DISQUS_APIKEY_PUBLIC__/$DISQUS_PUBLIC/g _config.butterfly.yml
+
       - name: Install dependencies
         run: npm install
 
