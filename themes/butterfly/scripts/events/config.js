@@ -97,7 +97,10 @@ hexo.extend.filter.register('before_generate', () => {
     // Prism.js
     prismjs_js: 'https://cdn.jsdelivr.net/npm/prismjs/prism.min.js',
     prismjs_lineNumber_js: 'https://cdn.jsdelivr.net/npm/prismjs/plugins/line-numbers/prism-line-numbers.min.js',
-    prismjs_autoloader: 'https://cdn.jsdelivr.net/npm/prismjs/plugins/autoloader/prism-autoloader.min.js'
+    prismjs_autoloader: 'https://cdn.jsdelivr.net/npm/prismjs/plugins/autoloader/prism-autoloader.min.js',
+
+    // abcjs
+    abcjs_basic_js: 'https://cdn.jsdelivr.net/npm/abcjs@6.1.3/dist/abcjs-basic-min.js',
   }
 
   // delete null value

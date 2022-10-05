@@ -804,6 +804,9 @@ lazyload:
   placeholder:
   blur: false
 
+abcjs:
+  enable: true
+
 # PWA
 # See https://github.com/JLHwung/hexo-offline
 # ---------------
