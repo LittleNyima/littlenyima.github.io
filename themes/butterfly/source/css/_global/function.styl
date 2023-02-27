@@ -36,11 +36,11 @@
 
 .postImgHover
   &:hover
-    img
+    .cover
       opacity: .8
       transform: scale(1.1)
 
-  img
+  .cover
     position: absolute
     width: 100%
     height: 100%
@@ -131,7 +131,7 @@ if hexo-config('enter_transitions')
     &.open
       for i in 1 2 3 4
         > :nth-child({i})
-          animation: sidebarItem (i / 5) s
+          animation: sidebarItem (i / 5)s
 
 .scroll-down-effects
   animation: scroll-down-effect 1.5s infinite

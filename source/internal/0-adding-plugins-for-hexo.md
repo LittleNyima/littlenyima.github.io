@@ -23,7 +23,7 @@ Changes not staged for commit:
   (use "git restore <file>..." to discard changes in working directory)
 	modified:   _config.butterfly.yml
 	modified:   themes/butterfly/layout/includes/additional-js.pug
-	modified:   themes/butterfly/scripts/events/config.js
+	modified:   themes/butterfly/plugins.yml
 
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
@@ -44,15 +44,18 @@ abcjs:
 
 ```stylus
 if theme.abcjs.enable
-  script(src=url_for(theme.CDN.abcjs_basic_js))
+  script(src=url_for(theme.asset.abcjs_basic_js))
   include ./third-party/abcjs.pug
 ```
 
-3. `config.js`：配置 cdn 地址。
+3. `plugins.yml`：配置 cdn 地址。
 
-```javascript
-// abcjs
-abcjs_basic_js: 'https://cdn.jsdelivr.net/npm/abcjs@6.1.3/dist/abcjs-basic-min.js',
+```yaml
+abcjs_basic_js:
+  name: abcjs
+  other_name: abcjs-basic
+  file: dist/abcjs-basic-min.js
+  version: 6.1.9
 ```
 
 4. `abcjs.pug`：乐谱渲染 trigger 脚本。
@@ -68,7 +71,7 @@ script.
         if (typeof ABCJS === 'object') {
             abcjsFn()
         } else {
-            getScript('!{url_for(theme.CDN.abcjs_basic_js)}')
+            getScript('!{url_for(theme.asset.abcjs_basic_js)}')
                 .then(() => {
                     abcjsFn()
                 })
@@ -142,5 +145,7 @@ w:Rock-y did-nt like that
 {% endscore %}
 
 # Change Log
+
+2023-02-27：适配到 butterfly-4.7.0 版本，更新了 CDN 配置方法。
 
 2022-10-05：初始版本，实现乐谱渲染基础功能。

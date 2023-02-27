@@ -1,7 +1,7 @@
 #algolia-search
   .search-dialog
     nav.search-nav
-      span.search-dialog-title= 'Algolia'
+      span.search-dialog-title= _p('search.title')
       button.search-close-button
         i.fas.fa-times
 
@@ -11,6 +11,12 @@
       #algolia-search-results
         #algolia-hits
         #algolia-pagination
-        #algolia-stats
+        #algolia-info
+          .algolia-stats
+          .algolia-poweredBy
   
   #search-mask
+
+  script(src=url_for(theme.asset.algolia_search_v4))
+  script(src=url_for(theme.asset.instantsearch_v4))
+  script(src=url_for(theme.asset.algolia_js))

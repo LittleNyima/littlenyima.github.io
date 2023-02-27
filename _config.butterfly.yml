@@ -759,6 +759,9 @@ note:
   # Offset also applied to label tag variables. This option can work with disabled note tag.
   light_bg_offset: 0
 
+abcjs:
+  enable: true
+
 # other
 # --------------------------------------
 
@@ -803,9 +806,6 @@ lazyload:
   field: site # site/post
   placeholder:
   blur: false
-
-abcjs:
-  enable: true
 
 # PWA
 # See https://github.com/JLHwung/hexo-offline

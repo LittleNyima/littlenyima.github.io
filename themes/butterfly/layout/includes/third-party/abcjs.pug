@@ -8,7 +8,7 @@ script.
         if (typeof ABCJS === 'object') {
             abcjsFn()
         } else {
-            getScript('!{url_for(theme.CDN.abcjs_basic_js)}')
+            getScript('!{url_for(theme.asset.abcjs_basic_js)}')
                 .then(() => {
                     abcjsFn()
                 })

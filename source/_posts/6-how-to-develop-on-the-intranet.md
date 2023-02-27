@@ -52,7 +52,7 @@ export http_proxy=http://192.168.10.1:12345
 export https_proxy=http://192.168.10.1:12345
 ```
 
-值得一提的是，在 pc 上使用 shadowsocks、clash 等代理客户端时，也可以用这种方式控制命令行使用的代理地址。（不过这种情况下，会多一条类似 `export all_proxy=socks5://192.168.10.1:!2345` 的命令，在服务器上不用加这一条是因为 `tinyproxy` 只支持 HTTP/HTTPS 代理。）
+值得一提的是，在 pc 上使用 shadowsocks、clash 等代理客户端时，也可以用这种方式控制命令行使用的代理地址。（不过这种情况下，会多一条类似 `export all_proxy=socks5://192.168.10.1:12345` 的命令，在服务器上不用加这一条是因为 `tinyproxy` 只支持 HTTP/HTTPS 代理。）
 
 至此代理服务器就配置完毕了，可以使用 `wget www.baidu.com` 测试网络连通性，如果能够正确下载 `index.html` 文件，就表示网络已经连通。如果无法连通，应当检查代理服务器是否能联网，以及上述步骤是否全部配置正确。
 
