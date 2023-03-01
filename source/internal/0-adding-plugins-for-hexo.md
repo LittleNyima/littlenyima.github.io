@@ -4,6 +4,7 @@ date: 2022-10-05 10:14:23
 cover: false
 categories:
  - Develop
+abcjs: true
 ---
 
 {% note flat %}
@@ -33,19 +34,25 @@ Untracked files:
 no changes added to commit (use "git add" and/or "git commit -a")
 ```
 
-1. `_config.butterfly.yml`：在主题配置文件中加入 `abcjs` 功能开关。（TODO：实际上并非每个页面都需要开启该功能，后续需加入 `per_page` 相关配置）
+1. `_config.butterfly.yml`：在主题配置文件中加入 `abcjs` 功能开关。
 
 ```yaml
 abcjs:
   enable: true
+  per_page: false
 ```
 
 2. `additional-js.pug`：在页面中加入相关 js 脚本。
 
 ```stylus
-if theme.abcjs.enable
-  script(src=url_for(theme.asset.abcjs_basic_js))
-  include ./third-party/abcjs.pug
+  if theme.abcjs.enable
+    if theme.abcjs.per_page
+      if is_post() || is_page()
+        script(src=url_for(theme.asset.abcjs_basic_js))
+        include ./third-party/abcjs.pug
+    else if page.abcjs
+        script(src=url_for(theme.asset.abcjs_basic_js))
+        include ./third-party/abcjs.pug
 ```
 
 3. `plugins.yml`：配置 cdn 地址。
@@ -65,20 +72,20 @@ script.
     function abcjsInit() {
         function abcjsFn() {
             for (let abcContainer of document.getElementsByClassName("abc-music-sheet")) {
-                ABCJS.renderAbc(abcContainer, abcContainer.innerHTML, {responsive: 'resize'})
+                ABCJS.renderAbc(abcContainer, abcContainer.innerHTML, {responsive: 'resize'});
             }
         }
         if (typeof ABCJS === 'object') {
-            abcjsFn()
+            abcjsFn();
         } else {
             getScript('!{url_for(theme.asset.abcjs_basic_js)}')
                 .then(() => {
-                    abcjsFn()
-                })
+                    abcjsFn();
+                });
         }
     }
 
-    document.addEventListener('DOMContentLoaded', abcjsInit)
+    document.addEventListener('DOMContentLoaded', abcjsInit);
 ```
 
 5. `score.js`：hexo 渲染 tag 过程控制脚本。
@@ -107,6 +114,8 @@ function score(args, content) {
 
 hexo.extend.tag.register('score', score, {ends: true});
 ```
+
+在启用 `abcjs` 且 `per_page` 选项设置为 `false` 时，若需要在页面中嵌入乐谱，需要在页面的 meta-data 中加入 `abcjs: true`。
 
 # Testcase
 
@@ -145,6 +154,8 @@ w:Rock-y did-nt like that
 {% endscore %}
 
 # Change Log
+
+2023-03-01：支持 `per_page` 配置选项。
 
 2023-02-27：适配到 butterfly-4.7.0 版本，更新了 CDN 配置方法。
 

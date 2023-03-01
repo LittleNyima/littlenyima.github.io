@@ -61,5 +61,10 @@ div
     script(async data-pjax src= theme.asset.busuanzi || '//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js')
 
   if theme.abcjs.enable
-    script(src=url_for(theme.asset.abcjs_basic_js))
-    include ./third-party/abcjs.pug
+    if theme.abcjs.per_page
+      if is_post() || is_page()
+        script(src=url_for(theme.asset.abcjs_basic_js))
+        include ./third-party/abcjs.pug
+    else if page.abcjs
+        script(src=url_for(theme.asset.abcjs_basic_js))
+        include ./third-party/abcjs.pug
