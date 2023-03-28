@@ -8,6 +8,8 @@ tags:
  - Pytorch
 ---
 
+> 2023-3-28 更新：这一文章中修改 pytorch 源代码的解决方式在 pytorch 最新的发行版（预计为 2.1.0 版本）中将过时。大约一周之前 pytorch 的主分支合并了 [一个 pull request](https://github.com/pytorch/pytorch/pull/96987)，其对通过修改环境变量来指定 nvcc 提供了支持，现在只需将 nvcc 路径赋值给 `$PYTORCH_NVCC` 即可。
+
 今天解决了一个有点复杂的环境问题，记录一下解决的过程。
 
 在复现 [ReferFormer](https://github.com/wjn922/ReferFormer) 时，需要编译一个 Deformable Attention 算子。在编译的过程中，`nvcc` 使用了一个叫做 `--generate-dependencies-with-compile` 的 flag。非常不幸的是，我现有开发环境中的 `nvcc` 并不支持这一个 flag，导致我无法编译这个算子。为了解决这个问题，我首先确定了现有的 `nvcc` 版本：
