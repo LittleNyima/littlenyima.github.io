@@ -7,6 +7,12 @@ categories:
 abcjs: true
 ---
 
+{% note warning %}
+
+本修改已合并入 butterfly-dev 分支，未来本功能将在主题中集成，不再需要手动修改。
+
+{% endnote %}
+
 {% note flat %}
 
 这是一篇内部开发记录，用于记录为 butterfly 主题添加乐谱渲染支持的开发流程。当后续进行主题版本同步时，可根据此文章快速恢复配置。
@@ -48,10 +54,8 @@ abcjs:
   if theme.abcjs.enable
     if theme.abcjs.per_page
       if is_post() || is_page()
-        script(src=url_for(theme.asset.abcjs_basic_js))
         include ./third-party/abcjs.pug
     else if page.abcjs
-        script(src=url_for(theme.asset.abcjs_basic_js))
         include ./third-party/abcjs.pug
 ```
 
@@ -60,7 +64,6 @@ abcjs:
 ```yaml
 abcjs_basic_js:
   name: abcjs
-  other_name: abcjs-basic
   file: dist/abcjs-basic-min.js
   version: 6.1.9
 ```
@@ -154,6 +157,8 @@ w:Rock-y did-nt like that
 {% endscore %}
 
 # Change Log
+
+2023-04-03：根据 butterfly 作者的建议进行修改。
 
 2023-03-01：支持 `per_page` 配置选项。
 
