@@ -7,6 +7,12 @@ categories:
 abcjs: true
 ---
 
+{% note danger %}
+
+本修改已集成在 butterfly-4.8.0 中，本文已过时，将不再进行后续更新。如需使用本功能，请升级到新版主题。
+
+{% endnote %}
+
 {% note warning %}
 
 本修改已合并入 butterfly-dev 分支，未来本功能将在主题中集成，不再需要手动修改。
