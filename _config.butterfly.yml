@@ -141,7 +141,7 @@ anchor:
   auto_update: false # when you scroll in post, the URL will update according to header id.
 
 # figcaption (圖片描述文字)
-photofigcaption: false
+photofigcaption: true
 
 # copy settings
 # copyright: Add the copyright information after copied content (複製的內容後面加上版權信息)

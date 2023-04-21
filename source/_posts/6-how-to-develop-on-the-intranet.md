@@ -54,11 +54,39 @@ export https_proxy=http://192.168.10.1:12345
 
 值得一提的是，在 pc 上使用 shadowsocks、clash 等代理客户端时，也可以用这种方式控制命令行使用的代理地址。（不过这种情况下，会多一条类似 `export all_proxy=socks5://192.168.10.1:12345` 的命令，在服务器上不用加这一条是因为 `tinyproxy` 只支持 HTTP/HTTPS 代理。）
 
-至此代理服务器就配置完毕了，可以使用 `wget www.baidu.com` 测试网络连通性，如果能够正确下载 `index.html` 文件，就表示网络已经连通。如果无法连通，应当检查代理服务器是否能联网，以及上述步骤是否全部配置正确。
+至此代理服务器就配置完毕了，可以使用 `wget www.baidu.com` （由于 `ping` 使用的是 ICMP 协议，所以在这种场景下 `ping` 依然无法联通 ）测试网络连通性，如果能够正确下载 `index.html` 文件，就表示网络已经连通。如果无法连通，应当检查代理服务器是否能联网，以及上述步骤是否全部配置正确。
 
 {% note warning flat %}
 
-作为一种折中的方法，这种方法也存在一些缺陷。因为只对 HTTP/HTTPS 进行了代理，使用其他传输协议的功能（例如 `curl` 的某些功能）可能无法正常运行。但对于日常开发的需要来说，这就已经足够使用了。
+在校园网环境下，能成功下载 `index.html` 并不意味着成功联通，因为连接可能被校园网网关重定向到登陆认证界面。因此在下载结束后还需要 `cat index.html` 来观察是否下载的是百度的页面，如果发生重定向，需要先将代理服务器连接外网。
+
+{% endnote %}
+
+除了最基础的配置之外，还有一些常用的配置可供参考，例如可以在 `rc` 文件中加入如下的 alias，让 `curl` 命令默认使用代理：
+
+```shell
+alias curl="curl -x http://192.168.10.1:12345"
+```
+
+以及在 `~/.ssh/config` 中加入如下配置，使 GitHub/Gitee 可以通过 ssh 联通：
+
+```
+Host Jump
+  HostName 192.168.10.1
+  User $username
+
+Host github.com
+  User git
+  ProxyCommand ssh -W %h:%p Jump
+
+Host giee.com
+  User git
+  ProxyCommand ssh -W %h:%p Jump
+```
+
+{% note warning flat %}
+
+作为一种折中的方法，这种方法也存在一些缺陷。因为只对 HTTP/HTTPS 进行了代理，使用其他传输协议的功能（例如 `ping` 的某些功能）可能无法正常运行。但对于日常开发的需要来说，这就已经足够使用了。
 
 {% endnote %}
 
@@ -68,7 +96,7 @@ export https_proxy=http://192.168.10.1:12345
 
 在本地的 `~/.ssh/` 目录下找到 `config` 文件（如果没有就创建一个），然后写入以下内容：
 
-```yaml
+```
 Host Jump
   HostName 192.168.10.1
   User $username
