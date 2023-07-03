@@ -66,3 +66,57 @@ _dispatch[list.__repr__] = _pprint_list
 ```
 
 这一模块目前还在开发和测试阶段，预计会在测试稳定后整合进我的 pypi package 中发布，如果想使用预览版，可以参考[这一链接](https://github.com/LittleNyima/python-toolkit/blob/master/pytk/misc/pprint.py)。
+
+2023-07-03 更新：前段时间发现了一种更好的实现方式，即基于 `prettyprinter` 实现：
+
+```python
+import prettyprinter
+import torch
+import numpy as np
+
+@prettyprinter.register_pretty(torch.Tensor)
+def pretty_torchtensor(tensor: torch.Tensor, ctx):
+    return prettyprinter.pretty_call(ctx,
+                                     torch.Tensor,
+                                     shape=tensor.shape,
+                                     dtype=tensor.dtype,
+                                     device=tensor.device)
+
+@prettyprinter.register_pretty(np.ndarray)
+def pretty_npndarray(ndarray: np.ndarray, ctx):
+    return prettyprinter.pretty_call(ctx,
+                                     np.ndarray,
+                                     shape=ndarray.shape,
+                                     dtype=ndarray.dtype)
+
+
+pprint = prettyprinter.pprint
+```
+
+`prettyprinter` 的输出示例：
+
+```python
+{
+    'numpyArray': numpy.ndarray(
+        shape=(224, 224, 3),
+        dtype=dtype('float64')
+    ),
+    'torchTensor': torch.Tensor(
+        shape=torch.Size((64, 3, 224, 224)),
+        dtype=torch.float32,
+        device=device(type='cpu')
+    ),
+    'nestedDict': {
+        'nestedArray': numpy.ndarray(
+            shape=(224, 224, 3),
+            dtype=dtype('float64')
+        ),
+        'nestedTensor': torch.Tensor(
+            shape=torch.Size((64, 3, 224, 224)),
+            dtype=torch.float32,
+            device=device(type='cpu')
+        )
+    }
+}
+```
+
