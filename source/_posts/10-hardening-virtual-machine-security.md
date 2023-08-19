@@ -4,7 +4,7 @@ date: 2023-07-12 01:01:42
 cover: false
 categories:
  - Techniques
-Tags:
+tags:
  - Linux
  - Security
 ---
@@ -59,6 +59,8 @@ Host RemoteVM
   User littlenyima
   Port 27001
 ```
+
+> 更新：经过测试发现经过这一设置后，仍然可以用密码登录服务器，具体原因有待排查
 
 经过上述一系列操作，ssh 被攻破的概率基本上是很小的了，除非攻击者直接拿到了我的本地设备（都线下了，直接真人快打可能效率更高一点x），否则基本上无法登录到我的虚拟机上。
 
