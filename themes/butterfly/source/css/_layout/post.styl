@@ -65,10 +65,14 @@ beautify()
 
   ul > li
     list-style-type: circle
+  
+  hr
+    @extend .custom-hr
 
 #article-container
   word-wrap: break-word
   overflow-wrap: break-word
+  text-align: justify
 
   a
     color: $theme-link-color
@@ -156,14 +160,6 @@ beautify()
     else if hexo-config('beautify.field') == 'post'
       &.post-content
         beautify()
-  else
-    hr
-      margin: 20px 0
-      border: 1px inset
-      width 100%
-
-      &:before
-        content: none
 
 #post
   .tag_share
@@ -230,6 +226,9 @@ beautify()
       &-meta
         color: $light-blue
         font-weight: bold
+
+        i
+          margin-right: 3px
 
       &-info
         padding-left: 6px

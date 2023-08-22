@@ -1,7 +1,5 @@
 <div align="right">
-  語言:
-  中文
-  <a title="English" href="/README.md">英文</a>
+  <a title="English" href="/README.md">English</a>
 </div>
 
 # hexo-theme-butterfly
@@ -14,7 +12,7 @@
 
 ![](https://cdn.jsdelivr.net/gh/jerryc127/CDN@m2/img/theme-butterfly-readme.png)
 
-預覽: 👍 [Butterfly](https://butterfly.js.org/)  ||  🤞 [CrazyWong](https://crazywong.com/)
+預覽: 👍 [Butterfly](https://butterfly.js.org/)  ||  🤞 [CrazyWong](https://blog.crazywong.com/)
 
 文檔: 📖 [Butterfly Docs](https://butterfly.js.org/posts/21cfbf15/)
 
@@ -72,13 +70,13 @@ theme: butterfly
 - [X] 內置多種代碼配色（darker/pale night/light/ocean/mac/mac light），可自定義代碼配色
 - [X] 代碼塊顯示代碼語言/關閉或展開代碼塊/代碼複製/代碼自動換行
 - [X] 可關閉文字複製/可開啟內容複製增加版權信息）
-- [X] 兩種搜索（Algolia搜索和本地搜索）
+- [X] 兩種搜索（ Algolia 搜索和本地搜索）
 - [x] Mathjax 和 Katex
 - [x] 內置404頁面
 - [x] 顯示字數統計
 - [x] 顯示相關文章
 - [x] 過期文章提醒
-- [x] 多種分享系統（AddThis/Sharejs/Addtoany）
+- [x] 多種分享系統（Sharejs/Addtoany）
 - [X] 多種評論系統（Disqus/Disqusjs/Livere/Gitalk/Valine/Waline/Utterances/Facebook Comments/Twikoo/Giscus/Remark42/artalk）
 - [x] 支持雙評論部署
 - [x] 多種在線聊天（Chatra/Tidio/Daovoice/Crisp/messenger）
