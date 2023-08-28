@@ -4426,7 +4426,7 @@ h1.page-title + .tag-cloud-list {
   -ms-flex-align: start;
   -webkit-align-items: flex-start;
   align-items: flex-start;
-  background: #fff;
+  background: var(--card-bg);
   -webkit-box-shadow: 0 8px 16px -4px rgba(44,45,48,0.047);
   box-shadow: 0 8px 16px -4px rgba(44,45,48,0.047);
 }
@@ -4445,14 +4445,21 @@ h1.page-title + .tag-cloud-list {
 }
 .snippet-card > hr {
   width: 100%;
-  border: 1px dashed rgba(66,89,239,0.137);
+  border: 1px dashed var(--hr-border);
   list-style: none;
   line-height: 2;
+}
+.snippet-card:hover {
+  border: 1px solid #24a7ff !important;
 }
 .snippet-card img {
   max-width: 100%;
 }
 .snippet-content > p {
+  margin: 0;
+  margin-bottom: 0.5rem;
+}
+.snippet-content > table {
   margin: 0;
   margin-bottom: 0.5rem;
 }
@@ -4521,8 +4528,8 @@ h1.page-title + .tag-cloud-list {
   margin-right: 0.3rem;
 }
 .snippet-info-link {
-  color: #f56c6c !important;
-  background-color: rgba(245,108,108,0.13) !important;
+  color: #0398fc !important;
+  background-color: rgba(73,177,245,0.1) !important;
   cursor: pointer !important;
 }
 #vcomment {
