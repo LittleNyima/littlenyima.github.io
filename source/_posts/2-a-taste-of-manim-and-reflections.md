@@ -13,6 +13,8 @@ tags:
 
 manim 最初是由一位个人开发者开发的，由于其不承诺长期提供支持，后来又出现了 3b1b 维护的 manimgl 版和 manimCE 社区版。这三种的特性与具体用法都存在一定的差异，考虑到 manimgl 版本可以使用 OpenGL 进行渲染，并且已经出现了一些基于它制作的比较高质量的成品视频，我在体验时选择了 manimgl 版。
 
+> 2023-12-30 更新：近期，一位国内的开发者发布了 manim 的另一种实现 [manim3](https://github.com/YishiMichael/manim3)，great work！
+
 # manim 浅度体验
 
 manimgl 使用 pip 即可安装：

@@ -68,7 +68,7 @@ export https_proxy=http://192.168.10.1:12345
 alias curl="curl -x http://192.168.10.1:12345"
 ```
 
-以及在 `~/.ssh/config` 中加入如下配置，使 GitHub/Gitee 可以通过 ssh 联通：
+以及在 `~/.ssh/config` 中加入如下配置，使 GitHub/Gitee 可以通过 ssh 联通（或者参考 [Using SSH over the HTTPS port](https://docs.github.com/en/authentication/troubleshooting-ssh/using-ssh-over-the-https-port) 通过已经代理的 HTTPS 协议连接 GitHub）：
 
 ```
 Host Jump
