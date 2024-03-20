@@ -81,6 +81,7 @@ train_dataloader = DataLoader(train_dataset, sampler=sampler)
 
 ```python
 from torch.nn.parallel import DistributedDataParallel
+
 model = DistributedDataParallel(model, device_ids=[args.local_rank])
 ```
 
@@ -113,7 +114,7 @@ torchrun \
 torchrun \
     --nproc-per-node=8 \
     --nnodes=2 \
-    --node-rank=0 \
+    --node-rank=1 \
     --master-addr='115.116.117.118' \
     --master-port=29500 \
     train.py

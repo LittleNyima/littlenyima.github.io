@@ -41,9 +41,10 @@ code_word_wrap: true
 social:
   # fab fa-github: https://github.com/xxxxx || Github || '#24292e'
   # fas fa-envelope: mailto:xxxxxx@gmail.com || Email || '#4a7dbe'
-  fab fa-github: https://github.com/LittleNyima || Github
-  fab fa-zhihu: https://www.zhihu.com/people/littlenyima/ || Zhihu
-  fas fa-blog: https://www.cnblogs.com/littlenyima/ || Cnblogs
+  # fab fa-github: https://github.com/LittleNyima || Github
+  fab fa-zhihu: https://www.zhihu.com/people/littlenyima/ || 知乎
+  fas fa-blog: https://www.cnblogs.com/littlenyima/ || 博客园
+  fas fa-rss: /atom.xml || RSS
 
 # Image (圖片設置)
 # --------------------------------------
@@ -217,7 +218,7 @@ footer:
   owner:
     enable: true
     since: 2020
-  custom_text:
+  custom_text: 网站封面图作者<a href="https://www.pixiv.net/artworks/41045442">よこ。</a>
   copyright: true # Copyright of theme and framework
 
 # aside (側邊欄)

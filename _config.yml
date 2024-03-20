@@ -109,7 +109,22 @@ deploy:
   branch: deploy
 
 # Music Player Settings
+## Docs: https://github.com/MoePlayer/hexo-tag-aplayer
 aplayer:
   script_dir: js
   style_dir: css
   meting: true
+
+# RSS Feed
+## Docs: https://github.com/hexojs/hexo-generator-feed
+feed:
+  enable: true
+  type: atom
+  path: atom.xml
+  limit: 20
+  content: false
+  content_limit: 140
+  content_limit_delim: '。'
+  order_by: -date
+  icon: /img/favicon64x64.png
+  autodiscovery: true
