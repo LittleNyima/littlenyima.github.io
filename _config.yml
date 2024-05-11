@@ -128,3 +128,8 @@ feed:
   order_by: -date
   icon: /img/favicon64x64.png
   autodiscovery: true
+
+# hexo-renderer-pandoc
+pandoc:
+  extensions:
+    - '-implicit_figures' # disable figcaption generation
