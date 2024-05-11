@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>極東晝寢愛好家</title>
+  <icon>https://littlenyima.github.io/img/favicon64x64.png</icon>
+  <subtitle>晝寢日和(@w@)zzz</subtitle>
+  <link href="https://littlenyima.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://littlenyima.github.io/"/>
+  <updated>2024-05-11T10:54:43.825Z</updated>
+  <id>https://littlenyima.github.io/</id>
+  
+  <author>
+    <name>LittleNyima</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>笔记｜Normalizing Flow 理论与实现（一）：基础理论</title>
+    <link href="https://littlenyima.github.io/posts/12-basic-concepts-of-normalizing-flow/"/>
+    <id>https://littlenyima.github.io/posts/12-basic-concepts-of-normalizing-flow/</id>
+    <published>2024-05-11T02:52:41.000Z</published>
+    <updated>2024-05-11T10:54:43.825Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
+    
+    
+    <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
+    
+    <category term="Normalizing flow" scheme="https://littlenyima.github.io/tags/Normalizing-flow/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>技术相关｜使用 Pytorch 进行分布式训练</title>
+    <link href="https://littlenyima.github.io/posts/11-distributed-training-with-pytorch/"/>
+    <id>https://littlenyima.github.io/posts/11-distributed-training-with-pytorch/</id>
+    <published>2024-03-15T08:54:21.000Z</published>
+    <updated>2024-03-18T16:00:33.456Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Techniques" scheme="https://littlenyima.github.io/categories/Techniques/"/>
+    
+    
+    <category term="Pytorch" scheme="https://littlenyima.github.io/tags/Pytorch/"/>
+    
+    <category term="Distributed Computing" scheme="https://littlenyima.github.io/tags/Distributed-Computing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>技术相关｜Linux 虚拟机的安全加固</title>
+    <link href="https://littlenyima.github.io/posts/10-hardening-virtual-machine-security/"/>
+    <id>https://littlenyima.github.io/posts/10-hardening-virtual-machine-security/</id>
+    <published>2023-07-11T17:01:42.000Z</published>
+    <updated>2023-08-19T09:45:09.022Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Techniques" scheme="https://littlenyima.github.io/categories/Techniques/"/>
+    
+    
+    <category term="Linux" scheme="https://littlenyima.github.io/tags/Linux/"/>
+    
+    <category term="Security" scheme="https://littlenyima.github.io/tags/Security/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>技术相关｜对 Python built-in pprint 进行拓展</title>
+    <link href="https://littlenyima.github.io/posts/9-extending-pprint-for-python/"/>
+    <id>https://littlenyima.github.io/posts/9-extending-pprint-for-python/</id>
+    <published>2023-03-10T08:48:09.000Z</published>
+    <updated>2023-07-03T03:36:02.268Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Techniques" scheme="https://littlenyima.github.io/categories/Techniques/"/>
+    
+    
+    <category term="Python" scheme="https://littlenyima.github.io/tags/Python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>杂谈｜还能不能完整听首歌了</title>
+    <link href="https://littlenyima.github.io/posts/8-tiktok-is-ruining-pop-music/"/>
+    <id>https://littlenyima.github.io/posts/8-tiktok-is-ruining-pop-music/</id>
+    <published>2023-02-02T08:34:00.000Z</published>
+    <updated>2023-12-30T08:32:29.225Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Jottings" scheme="https://littlenyima.github.io/categories/Jottings/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>杂谈｜《波西米亚狂想曲》与流浪者</title>
+    <link href="https://littlenyima.github.io/posts/7-bohemian-rhapsody-and-wanderer/"/>
+    <id>https://littlenyima.github.io/posts/7-bohemian-rhapsody-and-wanderer/</id>
+    <published>2022-11-01T10:22:00.000Z</published>
+    <updated>2023-12-30T08:31:13.252Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Jottings" scheme="https://littlenyima.github.io/categories/Jottings/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>技术相关｜在内网搭建开发环境</title>
+    <link href="https://littlenyima.github.io/posts/6-how-to-develop-on-the-intranet/"/>
+    <id>https://littlenyima.github.io/posts/6-how-to-develop-on-the-intranet/</id>
+    <published>2022-09-09T15:12:41.000Z</published>
+    <updated>2023-12-18T13:31:49.340Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Techniques" scheme="https://littlenyima.github.io/categories/Techniques/"/>
+    
+    
+    <category term="Linux" scheme="https://littlenyima.github.io/tags/Linux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>技术相关 | 编译 Pytorch 扩展时替换 nvcc 版本</title>
+    <link href="https://littlenyima.github.io/posts/5-replace-nvcc-while-building-extension/"/>
+    <id>https://littlenyima.github.io/posts/5-replace-nvcc-while-building-extension/</id>
+    <published>2022-08-27T15:16:29.000Z</published>
+    <updated>2023-04-19T14:09:19.415Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Techniques" scheme="https://littlenyima.github.io/categories/Techniques/"/>
+    
+    
+    <category term="Pytorch" scheme="https://littlenyima.github.io/tags/Pytorch/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>杂谈 | 我为什么要写作</title>
+    <link href="https://littlenyima.github.io/posts/4-the-reason-that-i-would-write/"/>
+    <id>https://littlenyima.github.io/posts/4-the-reason-that-i-would-write/</id>
+    <published>2022-04-18T08:40:05.000Z</published>
+    <updated>2023-04-19T14:09:19.415Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Jottings" scheme="https://littlenyima.github.io/categories/Jottings/"/>
+    
+    
+    <category term="Writing" scheme="https://littlenyima.github.io/tags/Writing/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>笔记 | 一些乐理笔记汇总：基本概念</title>
+    <link href="https://littlenyima.github.io/posts/3-basic-concepts-in-music-theory/"/>
+    <id>https://littlenyima.github.io/posts/3-basic-concepts-in-music-theory/</id>
+    <published>2022-03-10T08:59:51.000Z</published>
+    <updated>2023-04-19T14:09:19.415Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
+    
+    
+    <category term="Music theory" scheme="https://littlenyima.github.io/tags/Music-theory/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>技术相关 | Python 动画引擎 manim 浅度体验与思考</title>
+    <link href="https://littlenyima.github.io/posts/2-a-taste-of-manim-and-reflections/"/>
+    <id>https://littlenyima.github.io/posts/2-a-taste-of-manim-and-reflections/</id>
+    <published>2022-03-01T08:36:18.000Z</published>
+    <updated>2024-03-29T02:10:28.805Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Techniques" scheme="https://littlenyima.github.io/categories/Techniques/"/>
+    
+    
+    <category term="Manimgl" scheme="https://littlenyima.github.io/tags/Manimgl/"/>
+    
+    <category term="Animation engine" scheme="https://littlenyima.github.io/tags/Animation-engine/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>教程 | 利用 Github Actions 实现代码推送后自动部署</title>
+    <link href="https://littlenyima.github.io/posts/1-auto-deployment-using-github-actions/"/>
+    <id>https://littlenyima.github.io/posts/1-auto-deployment-using-github-actions/</id>
+    <published>2022-02-18T12:09:21.000Z</published>
+    <updated>2024-03-29T02:10:28.804Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Tutorials" scheme="https://littlenyima.github.io/categories/Tutorials/"/>
+    
+    
+    <category term="Github Actions" scheme="https://littlenyima.github.io/tags/Github-Actions/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>教程 | Github Pages + hexo 搭建个人博客</title>
+    <link href="https://littlenyima.github.io/posts/0-deploy-personal-blog-with-hexo/"/>
+    <id>https://littlenyima.github.io/posts/0-deploy-personal-blog-with-hexo/</id>
+    <published>2020-10-18T08:41:55.000Z</published>
+    <updated>2024-03-29T02:10:28.804Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Tutorials" scheme="https://littlenyima.github.io/categories/Tutorials/"/>
+    
+    
+    <category term="Hexo" scheme="https://littlenyima.github.io/tags/Hexo/"/>
+    
+  </entry>
+  
+</feed>

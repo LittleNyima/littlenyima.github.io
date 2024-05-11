@@ -1,0 +1,295 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>技术相关｜对 Python built-in pprint 进行拓展 | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="把上一个阶段的工作收尾之后，终于有时间实现一些平时想实现但比较麻烦就一直懒得弄的功能。事情的起因是这样的：刚刚我正在研究 Human3.6M 数据集的标注，这个数据集的标注是一个类似 JSON 的格式。并且除了一般的 JSON 文件结构外，其中还有一些字段的值是高维 numpy 数组。我试着将其中的两项打印出来，命令行瞬间被一大堆各种各样的数值填满了。尽管 IPython Terminal 的输出">
+<meta property="og:type" content="article">
+<meta property="og:title" content="技术相关｜对 Python built-in pprint 进行拓展">
+<meta property="og:url" content="https://littlenyima.github.io/posts/9-extending-pprint-for-python/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="把上一个阶段的工作收尾之后，终于有时间实现一些平时想实现但比较麻烦就一直懒得弄的功能。事情的起因是这样的：刚刚我正在研究 Human3.6M 数据集的标注，这个数据集的标注是一个类似 JSON 的格式。并且除了一般的 JSON 文件结构外，其中还有一些字段的值是高维 numpy 数组。我试着将其中的两项打印出来，命令行瞬间被一大堆各种各样的数值填满了。尽管 IPython Terminal 的输出">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2023-03-10T08:48:09.000Z">
+<meta property="article:modified_time" content="2023-07-03T03:36:02.268Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/9-extending-pprint-for-python/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '技术相关｜对 Python built-in pprint 进行拓展',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2023-07-03 11:36:02'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">技术相关｜对 Python built-in pprint 进行拓展</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2023-03-10T08:48:09.000Z" title="發表於 2023-03-10 16:48:09">2023-03-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2023-07-03T03:36:02.268Z" title="更新於 2023-07-03 11:36:02">2023-07-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Techniques/">Techniques</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="技术相关｜对 Python built-in pprint 进行拓展"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>把上一个阶段的工作收尾之后，终于有时间实现一些平时想实现但比较麻烦就一直懒得弄的功能。事情的起因是这样的：刚刚我正在研究
+<a target="_blank" rel="noopener" href="http://vision.imar.ro/human3.6m/description.php">Human3.6M
+数据集</a>的标注，这个数据集的标注是一个类似 JSON 的格式。并且除了一般的
+JSON 文件结构外，其中还有一些字段的值是高维 <code>numpy</code>
+数组。我试着将其中的两项打印出来，命令行瞬间被一大堆各种各样的数值填满了。尽管
+IPython Terminal
+的输出有自带的格式化功能，但整个输出的格式还是被巨大的数组打乱了。</p>
+<p>实际上我平时经常行地遇到这种问题，一般的解决方法是仿照
+<code>mmcv.parallel.collate</code>
+中的形式写一个递归打印函数，然后把诸如
+<code>np.ndarray</code>、<code>torch.Tensor</code> 以及
+<code>mmcv.DataContainer</code> 这种高维数据的 <code>__repr__</code>
+函数映射为一个形式类似 <code>lambda x: f"&#123;x.shape&#125;, &#123;x.dtype&#125;"</code>
+的函数。</p>
+<p>这种方式虽然能在一定程度上解决高维数据打印的问题，但是由于函数逻辑未经仔细考虑，打印的效果依然不是非常好，甚至在一些
+corner case
+处会出现十分诡异的效果。为了比较彻底地解决这个问题，我决定基于比较成熟的
+Python built-in <code>pprint</code> 来拓展开发，实现这一功能。</p>
+<p>我首先考虑的设计方式是引入类似 <code>json.JSONEncoder</code>
+的设计方式，也就是在使用 <code>pprint</code>
+函数时，添加一个额外的参数，将一个 formatter
+类传入，对特定类型对象的序列化方式定义在这个类中，类似这样：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">CustomFormatter</span>(<span class="title class_ inherited__">DefaultFormatter</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">default</span>(<span class="params">self, obj</span>):</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">isinstance</span>(obj, (np.ndarray, torch.Tensor)):</span><br><span class="line">            <span class="keyword">return</span> <span class="string">f&quot;&lt;<span class="subst">&#123;obj.__class__.__name__&#125;</span> <span class="subst">&#123;obj.dtype&#125;</span> of shape <span class="subst">&#123;obj.shape&#125;</span>&gt;&quot;</span></span><br><span class="line">        <span class="keyword">return</span> DefaultFormatter.default(self, obj)</span><br><span class="line"></span><br><span class="line">pprint.pprint(obj, cls=CustomFormatter)</span><br></pre></td></tr></table></figure>
+<p>然而观察了一下 <code>pprint</code>
+的内部实现之后，我发现要改成这种形式还有一点难度。主要是因为在
+<code>pprint</code> 内部，不同对象的序列化并非依赖于一个
+formatter，而是通过维护一个字典，并将不同类型对象的序列化方法注册到这个字典中，在遇到相应对象时直接从字典中找到相应方法进行调用即可，类似这种形式：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">_dispatch = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">_pprint_list</span>(<span class="params">self, <span class="built_in">object</span>, stream, indent, allowance, context, level</span>):</span><br><span class="line">    stream.write(<span class="string">&#x27;[&#x27;</span>)</span><br><span class="line">    self._format_items(<span class="built_in">object</span>, stream, indent, allowance + <span class="number">1</span>,</span><br><span class="line">                       context, level)</span><br><span class="line">    stream.write(<span class="string">&#x27;]&#x27;</span>)</span><br><span class="line"></span><br><span class="line">_dispatch[<span class="built_in">list</span>.__repr__] = _pprint_list</span><br></pre></td></tr></table></figure>
+<p>如此看来，要想将其拓展到更多类别，只需要把
+<code>np.ndarray</code>、<code>torch.Tensor</code> 等类型的
+<code>__repr__</code> 函数也注册到这一 <code>_dispatch</code>
+字典中即可。然而此时仍然存在一个问题，这个字典是被所有的
+<code>PrettyPrinter</code>
+对象共享的，因此如果直接在其中添加键值对，会影响 Python
+内置方法的行为。我希望能够在维持 built-in
+行为不变的前提下添加这一功能，因此在实际进行实现时，我采用了二级
+dispatch 字典，在遇到过长对象时，首先在 <code>_dispatch_override</code>
+中查询，然后再在原有的字典中查询，即可实现重载功能。</p>
+<p>为了使这一类型具有较好的可拓展性，我也计划开放一个
+<code>register</code>
+接口，便于用户将更多自定义的类型注册到字典中，以提高更多场景下的可用性。</p>
+<p>最后放一个输出的示例（目前还没有适配
+<code>mmcv.parallel.DataContainer</code>，仅展示 <code>ndarray</code> 和
+<code>Tensor</code> 的效果）：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">&#x27;address&#x27;</span>: &#123;<span class="string">&#x27;city&#x27;</span>: <span class="string">&#x27;New York&#x27;</span>,</span><br><span class="line">             <span class="string">&#x27;postalCode&#x27;</span>: <span class="string">&#x27;10021&#x27;</span>,</span><br><span class="line">             <span class="string">&#x27;state&#x27;</span>: <span class="string">&#x27;NY&#x27;</span>,</span><br><span class="line">             <span class="string">&#x27;streetAddress&#x27;</span>: <span class="string">&#x27;21 2nd Street&#x27;</span>&#125;,</span><br><span class="line"> <span class="string">&#x27;age&#x27;</span>: <span class="number">25</span>,</span><br><span class="line"> <span class="string">&#x27;firstName&#x27;</span>: <span class="string">&#x27;John&#x27;</span>,</span><br><span class="line"> <span class="string">&#x27;lastName&#x27;</span>: <span class="string">&#x27;Smith&#x27;</span>,</span><br><span class="line"> <span class="string">&#x27;nestedDict&#x27;</span>: &#123;<span class="string">&#x27;nestedList&#x27;</span>: [&lt;Tensor (shape=torch.Size([<span class="number">233</span>]) dtype=torch.float32)&gt;,</span><br><span class="line">                               &lt;Tensor (shape=torch.Size([<span class="number">114</span>]) dtype=torch.float32)&gt;,</span><br><span class="line">                               &lt;ndarray (shape=(<span class="number">514</span>,) dtype=float64)&gt;],</span><br><span class="line">                <span class="string">&#x27;nestedNumpyArray&#x27;</span>: &lt;ndarray (shape=(<span class="number">123</span>, <span class="number">456</span>) dtype=float64)&gt;&#125;,</span><br><span class="line"> <span class="string">&#x27;numpyArray&#x27;</span>: &lt;ndarray (shape=(<span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>) dtype=float64)&gt;,</span><br><span class="line"> <span class="string">&#x27;phoneNumber&#x27;</span>: [&#123;<span class="string">&#x27;number&#x27;</span>: <span class="string">&#x27;212 555-1234&#x27;</span>, <span class="string">&#x27;type&#x27;</span>: <span class="string">&#x27;home&#x27;</span>&#125;,</span><br><span class="line">                 &#123;<span class="string">&#x27;number&#x27;</span>: <span class="string">&#x27;646 555-4567&#x27;</span>, <span class="string">&#x27;type&#x27;</span>: <span class="string">&#x27;fax&#x27;</span>&#125;],</span><br><span class="line"> <span class="string">&#x27;sex&#x27;</span>: <span class="string">&#x27;male&#x27;</span>,</span><br><span class="line"> <span class="string">&#x27;torchTensor&#x27;</span>: &lt;Tensor (shape=torch.Size([<span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>]) dtype=torch.float32)&gt;&#125;</span><br></pre></td></tr></table></figure>
+<p>这一模块目前还在开发和测试阶段，预计会在测试稳定后整合进我的 pypi
+package 中发布，如果想使用预览版，可以参考<a
+target="_blank" rel="noopener" href="https://github.com/LittleNyima/python-toolkit/blob/master/pytk/misc/pprint.py">这一链接</a>。</p>
+<p>2023-07-03 更新：前段时间发现了一种更好的实现方式，即基于
+<code>prettyprinter</code> 实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> prettyprinter</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"><span class="meta">@prettyprinter.register_pretty(<span class="params">torch.Tensor</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">pretty_torchtensor</span>(<span class="params">tensor: torch.Tensor, ctx</span>):</span><br><span class="line">    <span class="keyword">return</span> prettyprinter.pretty_call(ctx,</span><br><span class="line">                                     torch.Tensor,</span><br><span class="line">                                     shape=tensor.shape,</span><br><span class="line">                                     dtype=tensor.dtype,</span><br><span class="line">                                     device=tensor.device)</span><br><span class="line"></span><br><span class="line"><span class="meta">@prettyprinter.register_pretty(<span class="params">np.ndarray</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">pretty_npndarray</span>(<span class="params">ndarray: np.ndarray, ctx</span>):</span><br><span class="line">    <span class="keyword">return</span> prettyprinter.pretty_call(ctx,</span><br><span class="line">                                     np.ndarray,</span><br><span class="line">                                     shape=ndarray.shape,</span><br><span class="line">                                     dtype=ndarray.dtype)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">pprint = prettyprinter.pprint</span><br></pre></td></tr></table></figure>
+<p><code>prettyprinter</code> 的输出示例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">&#x27;numpyArray&#x27;</span>: numpy.ndarray(</span><br><span class="line">        shape=(<span class="number">224</span>, <span class="number">224</span>, <span class="number">3</span>),</span><br><span class="line">        dtype=dtype(<span class="string">&#x27;float64&#x27;</span>)</span><br><span class="line">    ),</span><br><span class="line">    <span class="string">&#x27;torchTensor&#x27;</span>: torch.Tensor(</span><br><span class="line">        shape=torch.Size((<span class="number">64</span>, <span class="number">3</span>, <span class="number">224</span>, <span class="number">224</span>)),</span><br><span class="line">        dtype=torch.float32,</span><br><span class="line">        device=device(<span class="built_in">type</span>=<span class="string">&#x27;cpu&#x27;</span>)</span><br><span class="line">    ),</span><br><span class="line">    <span class="string">&#x27;nestedDict&#x27;</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;nestedArray&#x27;</span>: numpy.ndarray(</span><br><span class="line">            shape=(<span class="number">224</span>, <span class="number">224</span>, <span class="number">3</span>),</span><br><span class="line">            dtype=dtype(<span class="string">&#x27;float64&#x27;</span>)</span><br><span class="line">        ),</span><br><span class="line">        <span class="string">&#x27;nestedTensor&#x27;</span>: torch.Tensor(</span><br><span class="line">            shape=torch.Size((<span class="number">64</span>, <span class="number">3</span>, <span class="number">224</span>, <span class="number">224</span>)),</span><br><span class="line">            dtype=torch.float32,</span><br><span class="line">            device=device(<span class="built_in">type</span>=<span class="string">&#x27;cpu&#x27;</span>)</span><br><span class="line">        )</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/9-extending-pprint-for-python/">https://littlenyima.github.io/posts/9-extending-pprint-for-python/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Python/">Python</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/10-hardening-virtual-machine-security/" title="技术相关｜Linux 虚拟机的安全加固"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">技术相关｜Linux 虚拟机的安全加固</div></div></a></div><div class="next-post pull-right"><a href="/posts/8-tiktok-is-ruining-pop-music/" title="杂谈｜还能不能完整听首歌了"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">杂谈｜还能不能完整听首歌了</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/12-basic-concepts-of-normalizing-flow/" title="笔记｜Normalizing Flow 理论与实现（一）：基础理论">笔记｜Normalizing Flow 理论与实现（一）：基础理论</a><time datetime="2024-05-11T02:52:41.000Z" title="發表於 2024-05-11 10:52:41">2024-05-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/11-distributed-training-with-pytorch/" title="技术相关｜使用 Pytorch 进行分布式训练">技术相关｜使用 Pytorch 进行分布式训练</a><time datetime="2024-03-15T08:54:21.000Z" title="發表於 2024-03-15 16:54:21">2024-03-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/10-hardening-virtual-machine-security/" title="技术相关｜Linux 虚拟机的安全加固">技术相关｜Linux 虚拟机的安全加固</a><time datetime="2023-07-11T17:01:42.000Z" title="發表於 2023-07-12 01:01:42">2023-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/9-extending-pprint-for-python/" title="技术相关｜对 Python built-in pprint 进行拓展">技术相关｜对 Python built-in pprint 进行拓展</a><time datetime="2023-03-10T08:48:09.000Z" title="發表於 2023-03-10 16:48:09">2023-03-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/8-tiktok-is-ruining-pop-music/" title="杂谈｜还能不能完整听首歌了">杂谈｜还能不能完整听首歌了</a><time datetime="2023-02-02T08:34:00.000Z" title="發表於 2023-02-02 16:34:00">2023-02-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/9-extending-pprint-for-python/',
+      url: 'https://littlenyima.github.io/posts/9-extending-pprint-for-python/',
+      title: '技术相关｜对 Python built-in pprint 进行拓展',
+      apikey: '__DISQUS_APIKEY_PUBLIC__',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=__DISQUS_APIKEY_PUBLIC__&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

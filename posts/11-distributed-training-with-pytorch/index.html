@@ -1,0 +1,340 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>技术相关｜使用 Pytorch 进行分布式训练 | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="其实 Pytorch 分布式训练已经不算什么新技术了，之所以专门写一篇 blog 是因为今天训模型的时候出现了一个没见过的问题，在调试的时候发现自己平时都是用别人写好的分布式代码，没有深入研究过其中的实现细节，因此感觉有必要整理吸收一下。 最简单的数据并行 作为最简单的并行计算方式，使用 nn.DataParallel 只需要添加一行代码即可完成： 123456module &#x3D; nn.DataPa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="技术相关｜使用 Pytorch 进行分布式训练">
+<meta property="og:url" content="https://littlenyima.github.io/posts/11-distributed-training-with-pytorch/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="其实 Pytorch 分布式训练已经不算什么新技术了，之所以专门写一篇 blog 是因为今天训模型的时候出现了一个没见过的问题，在调试的时候发现自己平时都是用别人写好的分布式代码，没有深入研究过其中的实现细节，因此感觉有必要整理吸收一下。 最简单的数据并行 作为最简单的并行计算方式，使用 nn.DataParallel 只需要添加一行代码即可完成： 123456module &#x3D; nn.DataPa">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2024-03-15T08:54:21.000Z">
+<meta property="article:modified_time" content="2024-03-18T16:00:33.456Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Pytorch">
+<meta property="article:tag" content="Distributed Computing">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/11-distributed-training-with-pytorch/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '技术相关｜使用 Pytorch 进行分布式训练',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-03-19 00:00:33'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">技术相关｜使用 Pytorch 进行分布式训练</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2024-03-15T08:54:21.000Z" title="發表於 2024-03-15 16:54:21">2024-03-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2024-03-18T16:00:33.456Z" title="更新於 2024-03-19 00:00:33">2024-03-19</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Techniques/">Techniques</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="技术相关｜使用 Pytorch 进行分布式训练"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>其实 Pytorch 分布式训练已经不算什么新技术了，之所以专门写一篇 blog
+是因为今天训模型的时候出现了一个没见过的问题，在调试的时候发现自己平时都是用别人写好的分布式代码，没有深入研究过其中的实现细节，因此感觉有必要整理吸收一下。</p>
+<h1 id="最简单的数据并行">最简单的数据并行</h1>
+<p>作为最简单的并行计算方式，使用 <code>nn.DataParallel</code>
+只需要添加一行代码即可完成：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">module = nn.DataParallel(</span><br><span class="line">    module,               <span class="comment"># 原始模型</span></span><br><span class="line">    device_ids=<span class="literal">None</span>,      <span class="comment"># 使用的显卡</span></span><br><span class="line">    output_device=<span class="literal">None</span>,   <span class="comment"># 输出汇总的显卡</span></span><br><span class="line">    dim=<span class="number">0</span>                 <span class="comment"># Batch 所在维度</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>除此之外，其他的部分和单卡训练的内容基本上都相同。在使用
+<code>nn.DataParallel</code>
+进行训练时，在每次前向传播时，<code>nn.DataParallel</code>
+会做以下几件事：</p>
+<ol type="1">
+<li>切分数据：对于输入的 Tensor，其会被沿 batch
+维度切分成多份，用于输入不同的显卡；对于元组、列表、字典等类型，其会被浅拷贝后用于输入；对于其他类型，在显卡之间是直接共享的。</li>
+<li>拷贝模型：为了保证模型参数在显卡间保持一致，将模型拷贝到每一张显卡上。</li>
+<li>并行计算：每张显卡分别对各自的数据执行前向传播。</li>
+<li>汇总输出：将所有显卡的前向输出汇总到 <code>output_device</code>
+对应的设备上。</li>
+</ol>
+<div class="note info flat"><p>模型和数据都需要预先加载到 GPU 中，否则可能会产生错误。</p>
+</div>
+<p>虽然非常方便，但 <code>nn.DataParallel</code>
+的缺点也是显而易见的：尽管前向传播的计算过程已经实现了并行，但由于程序依然通过单个进程控制，其他的部分（例如数据加载等）依然为串行进行，无法有效利用
+CPU
+的多核性能。同时，大量的设备间数据拷贝也会带来很大的性能损失。除此之外，由于需要将输出汇总到单个设备上，这也引入了设备间负载不均衡的问题。</p>
+<p>因此，从效率的角度上来说，<code>nn.DataParallel</code>
+并不是一个很好的解决方案，通常我们进行并行训练应该优先使用分布式的方案，也就是下一节会讲到的
+<code>torch.distributed</code> 模块。</p>
+<h1 id="分布式数据并行">分布式数据并行</h1>
+<p>顾名思义，分布式数据并行不再以单个进程来控制训练流程，而是为每一张
+GPU
+都单独分配一个进程，每个进程之间的训练流程彼此独立，仅仅在一部分流程中（例如梯度计算、参数更新等）才需要进行进程间同步，这很好地解决了上一节最后提到的问题，效率更高。</p>
+<p>在正式开始介绍之前有以下几个概念需要简单介绍一下。如下图所示，分布式训练可以分为节点（node）和进程（worker）两个层次，下图中有两个节点，每个节点内又有两个进程，每个进程使用了两张显卡。节点可以简单地理解成一台服务器（无论是一个虚拟机还是一台物理机），每个进程都是使用
+pytorch 分布式启动器从 <code>train.py</code>
+创建出来的。为了标识不同的进程（以便进程内部选择使用哪块显卡、设置种子等操作），每个进程又有一个本地序列号（local
+rank）和全局序列号（global rank）。</p>
+<p><img
+src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/03/18/distributed-concepts.png"
+alt="一些分布式的概念" /></p>
+<p>Pytorch 的分布式训练是通过一个形如 <code>torchrun train.py</code>
+的命令启动的，<code>torchrun</code> 是 Pytorch 封装的启动工具，它会
+spawn 多个进程分别用于运行 <code>train.py</code>，且在创建进程时，会将
+local rank、world size 等进程所需的值用命令行参数的形式传递给进程。</p>
+<p>基于以上的流程，我们需要做的第一件事就是接收传递的参数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">parser = argparse.ArgumentParser()</span><br><span class="line">parser.add_argument(<span class="string">&#x27;--local-rank&#x27;</span>, default=-<span class="number">1</span>, <span class="built_in">type</span>=<span class="built_in">int</span>)</span><br><span class="line">args = parser.parse_args()</span><br></pre></td></tr></table></figure>
+<p>随后初始化 GPU 之间通信使用的后端，并限定进程使用的 CUDA 设备：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.distributed <span class="keyword">as</span> dist</span><br><span class="line"></span><br><span class="line">dist.init_process_group(backend=<span class="string">&#x27;nccl&#x27;</span>)</span><br><span class="line">torch.cuda.set_device(args.local_rank)</span><br></pre></td></tr></table></figure>
+<p>为了防止不同进程中使用的数据完全相同导致训练退化，还需要用
+<code>DistributedSampler</code> 对数据的顺序进行打乱：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> torch.utils.data.distributed <span class="keyword">import</span> DistributedSampler</span><br><span class="line"></span><br><span class="line">sampler = DistributedSampler(train_dataset)</span><br><span class="line">train_dataloader = DataLoader(train_dataset, sampler=sampler)</span><br></pre></td></tr></table></figure>
+<p>最后使用 <code>DistribuedDataParallel</code> 包装模型：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> torch.nn.parallel <span class="keyword">import</span> DistributedDataParallel</span><br><span class="line"></span><br><span class="line">model = DistributedDataParallel(model, device_ids=[args.local_rank])</span><br></pre></td></tr></table></figure>
+<p>其他的部分就基本上和普通的训练代码一样了。在启动的时候也比较特殊，不是直接运行
+<code>python train.py</code>，而是需要使用启动工具：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">torchrun \</span><br><span class="line">    --nproc-per-node=8 \</span><br><span class="line">    --nnodes=1 \</span><br><span class="line">    train.py</span><br></pre></td></tr></table></figure>
+<h2 id="多机多卡训练">多机多卡训练</h2>
+<p>实际上多机多卡训练和单机多卡训练并没有本质上的区别，无论不同进程间在同一个节点还是在不同的节点，分布式训练本质上就是进程间通过一定的通信方式，将梯度进行汇总并用来更新每一个进程中的模型参数。不过和单机多卡不同的是，不同的节点之间需要知道用何种
+IP
+地址与端口号进行通信，因此相比于单机多卡，需要额外指定这两个参数。</p>
+<p>假设我们使用的 master node 的 IP 为
+<code>115.116.117.118</code>，端口号为
+<code>29500</code>，共有两个节点，那么我们只需要在两个节点上分别运行以下命令即可：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Node 0</span></span><br><span class="line">torchrun \</span><br><span class="line">    --nproc-per-node=8 \</span><br><span class="line">    --nnodes=2 \</span><br><span class="line">    --node-rank=0 \</span><br><span class="line">    --master-addr=&#x27;115.116.117.118&#x27; \</span><br><span class="line">    --master-port=29500 \</span><br><span class="line">    train.py</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Node 1</span></span><br><span class="line">torchrun \</span><br><span class="line">    --nproc-per-node=8 \</span><br><span class="line">    --nnodes=2 \</span><br><span class="line">    --node-rank=1 \</span><br><span class="line">    --master-addr=&#x27;115.116.117.118&#x27; \</span><br><span class="line">    --master-port=29500 \</span><br><span class="line">    train.py</span><br></pre></td></tr></table></figure>
+<h2 id="使用-slurm-管理多机多卡训练">使用 Slurm 管理多机多卡训练</h2>
+<p>对于一般的用户来说，上述的多机多卡训练方式已经基本上够用了。然而对于需要进行更大规模训练的人来说，在每个节点上依次运行命令比较繁琐并且容易出错。同时，大规模
+GPU 集群需要有效的管理方式，来提高资源利用率。为了做到这一点，Slurm
+是一个比较好的选择。Slurm
+主要的作用在于任务调度，其可以为用户分配计算机节点来执行任务，并且支持任务队列，可以比较高效地分配资源。</p>
+<p>在编写训练脚本时，无论启动方式如何，我们关心的都是 master
+节点地址、local rank、进程总数等信息，我们可以参考 <code>mmcv</code>
+的方式对这些内容进行初始化：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">_init_dist_slurm</span>(<span class="params">backend: <span class="built_in">str</span>, port: <span class="type">Optional</span>[<span class="built_in">int</span>] = <span class="literal">None</span></span>) -&gt; <span class="literal">None</span>:</span><br><span class="line">    proc_id = <span class="built_in">int</span>(os.environ[<span class="string">&#x27;SLURM_PROCID&#x27;</span>])</span><br><span class="line">    ntasks = <span class="built_in">int</span>(os.environ[<span class="string">&#x27;SLURM_NTASKS&#x27;</span>])</span><br><span class="line">    node_list = os.environ[<span class="string">&#x27;SLURM_NODELIST&#x27;</span>]</span><br><span class="line">    num_gpus = torch.cuda.device_count()</span><br><span class="line">    torch.cuda.set_device(proc_id % num_gpus)</span><br><span class="line">    addr = subprocess.getoutput(</span><br><span class="line">        <span class="string">f&#x27;scontrol show hostname <span class="subst">&#123;node_list&#125;</span> | head -n1&#x27;</span>)</span><br><span class="line">    <span class="comment"># specify master port</span></span><br><span class="line">    <span class="keyword">if</span> port <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        os.environ[<span class="string">&#x27;MASTER_PORT&#x27;</span>] = <span class="built_in">str</span>(port)</span><br><span class="line">    <span class="keyword">elif</span> <span class="string">&#x27;MASTER_PORT&#x27;</span> <span class="keyword">in</span> os.environ:</span><br><span class="line">        <span class="keyword">pass</span>  <span class="comment"># use MASTER_PORT in the environment variable</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># if torch.distributed default port(29500) is available</span></span><br><span class="line">        <span class="comment"># then use it, else find a free port</span></span><br><span class="line">        <span class="keyword">if</span> _is_free_port(<span class="number">29500</span>):</span><br><span class="line">            os.environ[<span class="string">&#x27;MASTER_PORT&#x27;</span>] = <span class="string">&#x27;29500&#x27;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            os.environ[<span class="string">&#x27;MASTER_PORT&#x27;</span>] = <span class="built_in">str</span>(_find_free_port())</span><br><span class="line">    <span class="comment"># use MASTER_ADDR in the environment variable if it already exists</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;MASTER_ADDR&#x27;</span> <span class="keyword">not</span> <span class="keyword">in</span> os.environ:</span><br><span class="line">        os.environ[<span class="string">&#x27;MASTER_ADDR&#x27;</span>] = addr</span><br><span class="line">    os.environ[<span class="string">&#x27;WORLD_SIZE&#x27;</span>] = <span class="built_in">str</span>(ntasks)</span><br><span class="line">    os.environ[<span class="string">&#x27;LOCAL_RANK&#x27;</span>] = <span class="built_in">str</span>(proc_id % num_gpus)</span><br><span class="line">    os.environ[<span class="string">&#x27;RANK&#x27;</span>] = <span class="built_in">str</span>(proc_id)</span><br><span class="line">    dist.init_process_group(backend=backend)</span><br></pre></td></tr></table></figure>
+<p>在任务启动时，使用 Slurm 提供的工具：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">srun \</span><br><span class="line">    -p $&#123;PARTITION&#125; \</span><br><span class="line">    --job-name=$&#123;JOB_NAME&#125; \</span><br><span class="line">    --gres=$&#123;GPUS_PER_NODE&#125; \</span><br><span class="line">    --ntasks=$&#123;GPUS&#125; \</span><br><span class="line">    --ntasks-per-node=$&#123;GPUS_PER_NODE&#125; \</span><br><span class="line">    --cpus-per-task=$&#123;CPUS_PER_TASK&#125; \</span><br><span class="line">    --kill-on-bad-exit=1 \</span><br><span class="line">    python train.py</span><br></pre></td></tr></table></figure>
+<h2 id="pytorch-版本兼容">Pytorch 版本兼容</h2>
+<p>Pytorch
+的分布式训练经历了一些迭代，启动分布式训练的方式也发生过一些变化，以下是不同版本间主要的区别：</p>
+<ol type="1">
+<li><p>Pytorch 版本低于 <code>2.0</code> 时：<code>torchrun</code>
+在传递参数时，不同的单词并非用 dash
+连接，而是使用下划线，例如：<code>torchrun --nproc_per_node=8 --nnodes=1 train.py</code>。</p></li>
+<li><p>Pytorch 版本低于 <code>1.10</code> 时：不支持
+<code>torchrun</code>，而应该使用类似如下的方式启动：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">python -m torch.distributed.launch \</span><br><span class="line">    --nproc_per_node=8 \</span><br><span class="line">    --nnodes=1 \</span><br><span class="line">    --use_env train.py</span><br></pre></td></tr></table></figure>
+<p>可以发现和 <code>torchrun</code>
+的用法基本上是一样的，只是需要在脚本路径前加上
+<code>--use_env</code>。</p></li>
+</ol>
+<blockquote>
+<p>参考资料：</p>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://github.com/tczhangzhi/pytorch-distributed"><strong>tczhangzhi/pytorch-distributed</strong></a></li>
+<li><a
+target="_blank" rel="noopener" href="https://medium.com/red-buffer/getting-started-with-pytorch-distributed-54ae933bb9f0">Getting
+Started with PyTorch Distributed</a></li>
+</ol>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/11-distributed-training-with-pytorch/">https://littlenyima.github.io/posts/11-distributed-training-with-pytorch/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Pytorch/">Pytorch</a><a class="post-meta__tags" href="/tags/Distributed-Computing/">Distributed Computing</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/12-basic-concepts-of-normalizing-flow/" title="笔记｜Normalizing Flow 理论与实现（一）：基础理论"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">笔记｜Normalizing Flow 理论与实现（一）：基础理论</div></div></a></div><div class="next-post pull-right"><a href="/posts/10-hardening-virtual-machine-security/" title="技术相关｜Linux 虚拟机的安全加固"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">技术相关｜Linux 虚拟机的安全加固</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/posts/5-replace-nvcc-while-building-extension/" title="技术相关 | 编译 Pytorch 扩展时替换 nvcc 版本"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-27</div><div class="title">技术相关 | 编译 Pytorch 扩展时替换 nvcc 版本</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C"><span class="toc-number">1.</span> <span class="toc-text">最简单的数据并行</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C"><span class="toc-number">2.</span> <span class="toc-text">分布式数据并行</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%9A%E6%9C%BA%E5%A4%9A%E5%8D%A1%E8%AE%AD%E7%BB%83"><span class="toc-number">2.1.</span> <span class="toc-text">多机多卡训练</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-slurm-%E7%AE%A1%E7%90%86%E5%A4%9A%E6%9C%BA%E5%A4%9A%E5%8D%A1%E8%AE%AD%E7%BB%83"><span class="toc-number">2.2.</span> <span class="toc-text">使用 Slurm 管理多机多卡训练</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pytorch-%E7%89%88%E6%9C%AC%E5%85%BC%E5%AE%B9"><span class="toc-number">2.3.</span> <span class="toc-text">Pytorch 版本兼容</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/12-basic-concepts-of-normalizing-flow/" title="笔记｜Normalizing Flow 理论与实现（一）：基础理论">笔记｜Normalizing Flow 理论与实现（一）：基础理论</a><time datetime="2024-05-11T02:52:41.000Z" title="發表於 2024-05-11 10:52:41">2024-05-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/11-distributed-training-with-pytorch/" title="技术相关｜使用 Pytorch 进行分布式训练">技术相关｜使用 Pytorch 进行分布式训练</a><time datetime="2024-03-15T08:54:21.000Z" title="發表於 2024-03-15 16:54:21">2024-03-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/10-hardening-virtual-machine-security/" title="技术相关｜Linux 虚拟机的安全加固">技术相关｜Linux 虚拟机的安全加固</a><time datetime="2023-07-11T17:01:42.000Z" title="發表於 2023-07-12 01:01:42">2023-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/9-extending-pprint-for-python/" title="技术相关｜对 Python built-in pprint 进行拓展">技术相关｜对 Python built-in pprint 进行拓展</a><time datetime="2023-03-10T08:48:09.000Z" title="發表於 2023-03-10 16:48:09">2023-03-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/8-tiktok-is-ruining-pop-music/" title="杂谈｜还能不能完整听首歌了">杂谈｜还能不能完整听首歌了</a><time datetime="2023-02-02T08:34:00.000Z" title="發表於 2023-02-02 16:34:00">2023-02-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/11-distributed-training-with-pytorch/',
+      url: 'https://littlenyima.github.io/posts/11-distributed-training-with-pytorch/',
+      title: '技术相关｜使用 Pytorch 进行分布式训练',
+      apikey: '__DISQUS_APIKEY_PUBLIC__',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=__DISQUS_APIKEY_PUBLIC__&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

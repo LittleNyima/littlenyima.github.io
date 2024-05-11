@@ -1,0 +1,325 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>技术相关 | Python 动画引擎 manim 浅度体验与思考 | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="前段时间在写 Wordle Solver，查阅资料的时候发现了 3Blue1Brown 的 Youtube 频道，在看视频的时候发现频道中的视频基本上都是用一个叫做 manim 的动画引擎做的。我感觉蛮有意思，就安装下来简单体验了一下。 manim 最初是由一位个人开发者开发的，由于其不承诺长期提供支持，后来又出现了 3b1b 维护的 manimgl 版和 manimCE 社区版。这三种的特性与具">
+<meta property="og:type" content="article">
+<meta property="og:title" content="技术相关 | Python 动画引擎 manim 浅度体验与思考">
+<meta property="og:url" content="https://littlenyima.github.io/posts/2-a-taste-of-manim-and-reflections/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="前段时间在写 Wordle Solver，查阅资料的时候发现了 3Blue1Brown 的 Youtube 频道，在看视频的时候发现频道中的视频基本上都是用一个叫做 manim 的动画引擎做的。我感觉蛮有意思，就安装下来简单体验了一下。 manim 最初是由一位个人开发者开发的，由于其不承诺长期提供支持，后来又出现了 3b1b 维护的 manimgl 版和 manimCE 社区版。这三种的特性与具">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2022-03-01T08:36:18.000Z">
+<meta property="article:modified_time" content="2024-03-29T02:10:28.805Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Manimgl">
+<meta property="article:tag" content="Animation engine">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/2-a-taste-of-manim-and-reflections/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '技术相关 | Python 动画引擎 manim 浅度体验与思考',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-03-29 10:10:28'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">技术相关 | Python 动画引擎 manim 浅度体验与思考</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2022-03-01T08:36:18.000Z" title="發表於 2022-03-01 16:36:18">2022-03-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2024-03-29T02:10:28.805Z" title="更新於 2024-03-29 10:10:28">2024-03-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Techniques/">Techniques</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="技术相关 | Python 动画引擎 manim 浅度体验与思考"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>前段时间在写 <a
+target="_blank" rel="noopener" href="https://github.com/LittleNyima/wordle-solver">Wordle
+Solver</a>，查阅资料的时候发现了 <a
+target="_blank" rel="noopener" href="https://www.youtube.com/c/3blue1brown">3Blue1Brown 的 Youtube
+频道</a>，在看视频的时候发现频道中的视频基本上都是用一个叫做 <a
+target="_blank" rel="noopener" href="https://github.com/3b1b/manim">manim</a>
+的动画引擎做的。我感觉蛮有意思，就安装下来简单体验了一下。</p>
+<p>manim
+最初是由一位个人开发者开发的，由于其不承诺长期提供支持，后来又出现了
+3b1b 维护的 manimgl 版和 manimCE
+社区版。这三种的特性与具体用法都存在一定的差异，考虑到 manimgl
+版本可以使用 OpenGL
+进行渲染，并且已经出现了一些基于它制作的比较高质量的成品视频，我在体验时选择了
+manimgl 版。</p>
+<blockquote>
+<p>2023-12-30 更新：近期，一位国内的开发者发布了 manim 的另一种实现 <a
+target="_blank" rel="noopener" href="https://github.com/YishiMichael/manim3">manim3</a>，great
+work！</p>
+</blockquote>
+<h1 id="manim-浅度体验">manim 浅度体验</h1>
+<p>manimgl 使用 pip 即可安装：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install manimgl</span><br><span class="line">pip install pyopengl</span><br></pre></td></tr></table></figure>
+<p>除安装上述包外，还需要安装 ffmpeg 用于视频编解码，以及 LaTeX
+以支持公式渲染（推荐使用 Tex Live
+发行版，功能相对强大一点）。由于这两者我的开发环境中已提前配置，所以无需重复这一步骤。</p>
+<p>配置完成后，即可运行其自带的 demo 脚本：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">manimgl example_scenes.py OpeningManimExample</span><br></pre></td></tr></table></figure>
+<p>运行后，会出现两个窗口，其中一个是 IPython
+的交互式命令行窗口，另一个是播放动画画面的图形窗口。在动画播放时，命令行窗口中会显示渲染进度。动画播放结束后，会进入交互模式。在交互模式中，可以使用滚轮使图像上下平移、按住
+<code>Z</code> 键滑动滚轮进行缩放、按住 <code>D</code>
+键拖动鼠标进行模视变换等。</p>
+<div class="note info flat"><p>在部分情况下，由于显卡性能问题，会出现画面渲染不完整的情况。此时应当查看系统设置，修改
+Python 使用的显卡为较高性能的显卡。</p>
+</div>
+
+
+<style>
+    .resp-container {
+        position: relative;
+        overflow: hidden;
+        padding-top: 65%;
+        margin-bottom: 16px;
+    }
+    .resp-iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+</style><div class="resp-container"><iframe class="resp-iframe" src="https://player.bilibili.com/player.html?aid=679492789&bvid=BV12S4y1g7pm&cid=530012902&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe></div>
+
+
+<p>从例子中不难发现，manim
+对数学相关元素，例如文字、公式、图形、坐标轴等元素都有很好的支持，能够创建一些补间动画，并且这些动画支持某些特定的动画曲线。</p>
+<p>阅读 <code>example_scenes.py</code> 的代码，可以猜测，在 manim
+中，所有的动画都是 <code>Scene</code>
+的子类，在运行一个脚本时，参数对应的子类将被实例化，并通过调用
+<code>construct()</code> 方法装载并渲染。以上述视频对应的代码为例：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">OpeningManimExample</span>(<span class="title class_ inherited__">Scene</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">construct</span>(<span class="params">self</span>):</span><br><span class="line">        intro_words = Text(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">            The original motivation for manim was to</span></span><br><span class="line"><span class="string">            better illustrate mathematical functions</span></span><br><span class="line"><span class="string">            as transformations.</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span>)</span><br><span class="line">        intro_words.to_edge(UP)</span><br><span class="line"></span><br><span class="line">        self.play(Write(intro_words))</span><br><span class="line">        self.wait(<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Linear transform</span></span><br><span class="line">        grid = NumberPlane((-<span class="number">10</span>, <span class="number">10</span>), (-<span class="number">5</span>, <span class="number">5</span>))</span><br><span class="line">        matrix = [[<span class="number">1</span>, <span class="number">1</span>], [<span class="number">0</span>, <span class="number">1</span>]]</span><br><span class="line">        linear_transform_words = VGroup(</span><br><span class="line">            Text(<span class="string">&quot;This is what the matrix&quot;</span>),</span><br><span class="line">            IntegerMatrix(matrix, include_background_rectangle=<span class="literal">True</span>),</span><br><span class="line">            Text(<span class="string">&quot;looks like&quot;</span>)</span><br><span class="line">        )</span><br><span class="line">        linear_transform_words.arrange(RIGHT)</span><br><span class="line">        linear_transform_words.to_edge(UP)</span><br><span class="line">        linear_transform_words.set_stroke(BLACK, <span class="number">10</span>, background=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">        self.play(</span><br><span class="line">            ShowCreation(grid),</span><br><span class="line">            FadeTransform(intro_words, linear_transform_words)</span><br><span class="line">        )</span><br><span class="line">        self.wait()</span><br><span class="line">        self.play(grid.animate.apply_matrix(matrix), run_time=<span class="number">3</span>)</span><br><span class="line">        self.wait()</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Complex map</span></span><br><span class="line">        c_grid = ComplexPlane()</span><br><span class="line">        moving_c_grid = c_grid.copy()</span><br><span class="line">        moving_c_grid.prepare_for_nonlinear_transform()</span><br><span class="line">        c_grid.set_stroke(BLUE_E, <span class="number">1</span>)</span><br><span class="line">        c_grid.add_coordinate_labels(font_size=<span class="number">24</span>)</span><br><span class="line">        complex_map_words = TexText(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">            Or thinking of the plane as $\\mathds&#123;C&#125;$,\\\\</span></span><br><span class="line"><span class="string">            this is the map $z \\rightarrow z^2$</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span>)</span><br><span class="line">        complex_map_words.to_corner(UR)</span><br><span class="line">        complex_map_words.set_stroke(BLACK, <span class="number">5</span>, background=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">        self.play(</span><br><span class="line">            FadeOut(grid),</span><br><span class="line">            Write(c_grid, run_time=<span class="number">3</span>),</span><br><span class="line">            FadeIn(moving_c_grid),</span><br><span class="line">            FadeTransform(linear_transform_words, complex_map_words),</span><br><span class="line">        )</span><br><span class="line">        self.wait()</span><br><span class="line">        self.play(</span><br><span class="line">            moving_c_grid.animate.apply_complex_function(<span class="keyword">lambda</span> z: z**<span class="number">2</span>),</span><br><span class="line">            run_time=<span class="number">6</span>,</span><br><span class="line">        )</span><br><span class="line">        self.wait(<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<p>从上面的代码可以看出，在创建一个动画时，用户并不需要为每一个对象的风格以及其运动的具体方式指定复杂的参数，而是只提供最基本的元素与变化方式，以及一些简单的外观属性（例如文字的字号、颜色、位置等）。</p>
+<h1 id="一些相关的思考">一些相关的思考</h1>
+<p>作为一个面向数学元素可视化的动画引擎，manim
+提供了一套易于开发与拓展的框架。在使用时，用户无需过多考虑具体的参数，即可得到外观相当不错的视频。对于这个框架，我也有一些自己的看法：</p>
+<ul>
+<li>作为一套面向数学的框架，manim
+支持的大多是已经确定的元素，并且由于缺少对 mesh
+的支持，比较难以创建自定义的元素。（当然，这也与其本身的定位有关。）</li>
+<li>为了创建动画，创作者必须掌握 Python 语言。我认为基于 config
+的做法比基于代码实现的做法对大多数创作者更友好一些。（虽然基于 config
+也会引入相应的问题，例如在动画生成过程中需要进行数值计算，或想要为某个动画应用一个自定义的动画曲线时，config
+无法处理所需的计算。）</li>
+<li>除了代码本身之外，要想使用该框架，还需要安装额外的软件（如
+ffmpeg、LaTeX
+等），增加了入门成本。我认为可以将这些额外的功能（如视频编码、公式支持等）作为插件引入框架，对于无需导出视频或使用公式的用户来说，则无需安装这些额外功能。</li>
+</ul>
+<p>当然对于有意于使用该框架的用户来说，想必上述问题都不难解决；对于无法解决上述问题的用户来说，也有替代方案（例如直接使用
+Adobe After
+Effects）。不过对于一个框架或软件来说，提高可用性、降低入门成本还是非常重要的。</p>
+<p>总结来说，这个引擎还是非常有趣的，在调研的过程中我也发现了不少用该引擎制作的质量不低的视频。一直以来我都对多媒体创作相关的内容比较感兴趣，如果有精力的话或许以后可以在
+manim 的基础上增加一些扩展，或开发一套符合自己设计理念的动画引擎。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/2-a-taste-of-manim-and-reflections/">https://littlenyima.github.io/posts/2-a-taste-of-manim-and-reflections/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Manimgl/">Manimgl</a><a class="post-meta__tags" href="/tags/Animation-engine/">Animation engine</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/3-basic-concepts-in-music-theory/" title="笔记 | 一些乐理笔记汇总：基本概念"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">笔记 | 一些乐理笔记汇总：基本概念</div></div></a></div><div class="next-post pull-right"><a href="/posts/1-auto-deployment-using-github-actions/" title="教程 | 利用 Github Actions 实现代码推送后自动部署"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">教程 | 利用 Github Actions 实现代码推送后自动部署</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#manim-%E6%B5%85%E5%BA%A6%E4%BD%93%E9%AA%8C"><span class="toc-number">1.</span> <span class="toc-text">manim 浅度体验</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E7%9B%B8%E5%85%B3%E7%9A%84%E6%80%9D%E8%80%83"><span class="toc-number">2.</span> <span class="toc-text">一些相关的思考</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/12-basic-concepts-of-normalizing-flow/" title="笔记｜Normalizing Flow 理论与实现（一）：基础理论">笔记｜Normalizing Flow 理论与实现（一）：基础理论</a><time datetime="2024-05-11T02:52:41.000Z" title="發表於 2024-05-11 10:52:41">2024-05-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/11-distributed-training-with-pytorch/" title="技术相关｜使用 Pytorch 进行分布式训练">技术相关｜使用 Pytorch 进行分布式训练</a><time datetime="2024-03-15T08:54:21.000Z" title="發表於 2024-03-15 16:54:21">2024-03-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/10-hardening-virtual-machine-security/" title="技术相关｜Linux 虚拟机的安全加固">技术相关｜Linux 虚拟机的安全加固</a><time datetime="2023-07-11T17:01:42.000Z" title="發表於 2023-07-12 01:01:42">2023-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/9-extending-pprint-for-python/" title="技术相关｜对 Python built-in pprint 进行拓展">技术相关｜对 Python built-in pprint 进行拓展</a><time datetime="2023-03-10T08:48:09.000Z" title="發表於 2023-03-10 16:48:09">2023-03-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/8-tiktok-is-ruining-pop-music/" title="杂谈｜还能不能完整听首歌了">杂谈｜还能不能完整听首歌了</a><time datetime="2023-02-02T08:34:00.000Z" title="發表於 2023-02-02 16:34:00">2023-02-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/2-a-taste-of-manim-and-reflections/',
+      url: 'https://littlenyima.github.io/posts/2-a-taste-of-manim-and-reflections/',
+      title: '技术相关 | Python 动画引擎 manim 浅度体验与思考',
+      apikey: '__DISQUS_APIKEY_PUBLIC__',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=__DISQUS_APIKEY_PUBLIC__&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

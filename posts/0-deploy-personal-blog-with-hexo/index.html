@@ -1,0 +1,362 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>教程 | Github Pages + hexo 搭建个人博客 | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="注意：这是一篇教程性质的文章，但为了说明的简洁性并不会讲解所有细节。我默认这篇文章的读者具有一定的信息检索能力，并具备各方面的基本知识。  心血来潮决定把个人博客搬迁到自己的网站上，因此采取这种方法进行搭建，并记录一波搭建流程，大概有以下几个步骤：  准备一个 Github page 的仓库 准备 hexo 框架 初始化你的博客 部署到服务器端  除此之外，还会提到一些关于博客日常维护和美化的方">
+<meta property="og:type" content="article">
+<meta property="og:title" content="教程 | Github Pages + hexo 搭建个人博客">
+<meta property="og:url" content="https://littlenyima.github.io/posts/0-deploy-personal-blog-with-hexo/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="注意：这是一篇教程性质的文章，但为了说明的简洁性并不会讲解所有细节。我默认这篇文章的读者具有一定的信息检索能力，并具备各方面的基本知识。  心血来潮决定把个人博客搬迁到自己的网站上，因此采取这种方法进行搭建，并记录一波搭建流程，大概有以下几个步骤：  准备一个 Github page 的仓库 准备 hexo 框架 初始化你的博客 部署到服务器端  除此之外，还会提到一些关于博客日常维护和美化的方">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2020-10-18T08:41:55.000Z">
+<meta property="article:modified_time" content="2024-03-29T02:10:28.804Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Hexo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/0-deploy-personal-blog-with-hexo/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '教程 | Github Pages + hexo 搭建个人博客',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-03-29 10:10:28'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">教程 | Github Pages + hexo 搭建个人博客</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2020-10-18T08:41:55.000Z" title="發表於 2020-10-18 16:41:55">2020-10-18</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2024-03-29T02:10:28.804Z" title="更新於 2024-03-29 10:10:28">2024-03-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Tutorials/">Tutorials</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="教程 | Github Pages + hexo 搭建个人博客"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>注意：这是一篇教程性质的文章，但为了说明的简洁性并不会讲解所有细节。我默认这篇文章的读者具有一定的信息检索能力，并具备各方面的基本知识。</p>
+</blockquote>
+<p>心血来潮决定把个人博客搬迁到自己的网站上，因此采取这种方法进行搭建，并记录一波搭建流程，大概有以下几个步骤：</p>
+<ul>
+<li>准备一个 Github page 的仓库</li>
+<li>准备 hexo 框架</li>
+<li>初始化你的博客</li>
+<li>部署到服务器端</li>
+</ul>
+<p>除此之外，还会提到一些关于博客日常维护和美化的方式。（如果之后研究得比较顺利，或许还可以分享一些定制化、调用第三方
+api、性能优化等方面的内容）</p>
+<h1 id="准备一个github仓库">准备一个Github仓库</h1>
+<p>一个 Github page 对应于一个名称以 <code>.github.io</code>
+结尾的仓库，仓库的名称即为 Github page
+的地址。与此相关需要做的工作包括：</p>
+<ul>
+<li>注册一个 Github 账号</li>
+<li>在本地配置 git</li>
+<li>（可选）配置 git 的用户名、邮箱、配置 ssh 公钥等</li>
+</ul>
+<p>上述操作可自行完成，仓库创建好后可以在其中放置一个
+<code>README.md</code> 文件，再访问对应 Github page 的地址，可以发现
+<code>README</code> 文件的内容已经在其中显示了，至此 Github page
+的准备已经完成。</p>
+<h1 id="准备hexo框架">准备hexo框架</h1>
+<p>hexo 框架的安装需要 Node.js，因此需要先安装 Node.js，可以命令行运行
+<code>npm -v</code> 验证其是否已经安装成功（正常情况下应当输出一个形如
+<code>6.14.8</code> 的版本号）。</p>
+<p>安装Node.js完成后，使用 <code>npm install -g hexo-cli</code>
+来安装hexo框架，同样可以在命令行使用 <code>hexo -v</code>
+来检查其是否安装成功。</p>
+<h1 id="初始化你的博客">初始化你的博客</h1>
+<p>首先在你想要的位置创建一个文件夹，然后将工作目录切换到这个文件夹（windows下可以在右键菜单选择“Git
+Bash Here”，其他系统可能要经过一系列 <code>cd</code> 操作）。</p>
+<p>工作目录切换完成后，工作目录所在的文件夹就将成为你的博客所在的文件夹。使用
+<code>hexo init</code> 来把这个文件夹初始化成一个博客文件夹，然后使用
+<code>hexo g</code>
+来生成网站，因为你还没有创建博客文章，因此其中会自带一篇 Hello World
+的文章。</p>
+<p>如果你想要观察网站的效果，可以使用 <code>hexo s</code>
+将生成的网站挂载到本地服务器，然后在浏览器访问 <a
+href="localhost:4000">localhost:4000</a>，就可以看到效果了。</p>
+<h1 id="将博客部署到服务器端">将博客部署到服务器端</h1>
+<p>当你对自己博客的效果满意后，便可以部署到服务器端。</p>
+<p>因为此处要部署到 Github page，因此以部署到 Github 为例。首先需要安装
+hexo-deployer-git 模块，在博客文件夹目录下，运行
+<code>npm install hexo-deployer-git --save</code> 来进行安装。</p>
+<p>然后修改博客的配置文件，在目录中有一个
+<code>_config.yml</code>，用适当的文本编辑器打开，找到其中的
+<code># Deployment</code> 一项，将其修改为形如以下形式：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Deployment</span></span><br><span class="line"><span class="comment">## Docs: https://hexo.io/docs/one-command-deployment</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repository:</span> <span class="string">git@github.com:LittleNyima/littlenyima.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+<p>其中 <code>repository</code> 一项中填自己仓库的 git
+地址，这个地址可以在 Github 的仓库页面找到，如果没有配置 ssh
+公钥，应当使用 <code>https://</code> 开头的地址，否则推荐使用
+<code>git@</code> 开头的地址。</p>
+<p><code>branch</code> 一项中填写希望推送到的分支，如果你对 git
+不够了解，可以直接填入 <del><code>master</code></del>
+<code>main</code>（更新：在无特殊设置的情况下，Github 的默认分支名已经从
+<code>master</code> 变为 <code>main</code>）。</p>
+<blockquote>
+<p>修改这一项的同时，也可以顺便修改一下配置文件中的其他项，例如站点名称、作者等信息。</p>
+</blockquote>
+<p>在以上的一切都配置妥当后，使用 <code>hexo d</code>
+命令将其部署到服务器端，部署完成后再访问对应 Github page
+页面，应当可以看到你的博客页面，至此，个人博客已经部署成功。</p>
+<blockquote>
+<p>注意：之后每次对博客进行修改后，在部署前都应当先使用
+<code>hexo g</code> 来更新文件。</p>
+</blockquote>
+<p>如果想要添加博客，可以使用命令行的 <code>hexo new</code>
+命令，也可以直接在 <code>source/_posts/</code> 创建新的文件。</p>
+<h1 id="博客的美化使用主题">博客的美化——使用主题</h1>
+<p>hexo 框架可以使用一系列主题对博客进行美化，访问 <a
+target="_blank" rel="noopener" href="https://hexo.io/themes/">https://hexo.io/themes/</a>
+来获取主题。一般来说各种主题都会随附比较详细的使用文档，这里以我个人使用的
+butterfly 主题（3.2.0版本）为例讲解主题的使用方式。</p>
+<p>首先获取主题，主题的获取方式一般可以从 git 仓库进行 clone，clone 到
+<code>themes/</code> 文件夹下。例如：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone -b master https://github.com/jerryc127/hexo-theme-butterfly.git themes/butterfly</span><br></pre></td></tr></table></figure>
+<p>然后修改 <code>_config.yml</code> 文件，修改 <code>theme</code>
+的取值：</p>
+<blockquote>
+<p>theme: butterfly</p>
+</blockquote>
+<p>然后安装所需插件：<code>npm install hexo-renderer-pug hexo-renderer-stylus</code>。此时重新生成文件并挂载，可以发现主题发生了变化。</p>
+<p>butterfly 主题提供了比较方便且详尽的定制化方法，具体可以参阅其<a
+target="_blank" rel="noopener" href="https://demo.jerryc.me/posts/21cfbf15/">文档</a>。下面讲解一些比较经常用到的定制化方法。</p>
+<p>在 <code>themes/butterfly/</code> 文件夹下同样包含一个
+<code>_config.yml</code> 文件，将其复制到博客的根目录下并重命名为
+<code>_config.butterfly.yml</code>，主题的大多数内容可以在其中修改。这个新的配置文件具有较高优先级，因此当其中内容与基础配置文件冲突时，会发生覆盖。</p>
+<p>在这个配置文件中同样具有比较详尽的注释与使用方式示例，常用的有：</p>
+<ul>
+<li><p>菜单栏的设置：在 <code>menu</code>
+项中加入条目，例如要在菜单栏加入文字为“首頁”，超链接地址为
+<code>/</code>，图标为 home 图标的项目，可以加入
+<code>首頁: / || fas fa-home</code> 的条目。</p>
+<blockquote>
+<p><code>fas fa-home</code> 是 Font-Awesome 图标在 yaml
+文件中的使用形式。如果需要使用 Font-Awesome 图标，可以访问 <a
+target="_blank" rel="noopener" href="https://fontawesome.com/icons">https://fontawesome.com/icons</a>，在其中找到所需的图标并使用。</p>
+</blockquote>
+<p>注意，加入条目后为了防止链接到不存在的页面，需要创建相应的页面。以标签页为例，使用
+<code>hexo new page tags</code> 创建新的页面，然后修改
+<code>source/tags/index.md</code> 文件头部的配置信息，例如：</p>
+<p><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">title:</span> <span class="string">標籤</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2020-10-18 18:18:06</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">&quot;tags&quot;</span></span><br></pre></td></tr></table></figure></p>
+<p>这部分配置信息的语法规则与 yaml
+的语法规则相同，对于一些特定页面，需要设置 type。</p></li>
+<li><p>代码风格设置：包括代码块主题、复制按钮、显示语言、支持收起、自动换行等项目。</p></li>
+<li><p>社交图标设置：与菜单栏设置方法类似，在 <code>social</code>
+条目下加入项目，例如
+<code>fab fa-github: https://github.com/LittleNyima || Github</code>，便可在名片底部插入一个社交图标。</p></li>
+<li><p>网站各部分图片设置：包括网站图标、头像、网站头图、背景图等内容。</p></li>
+<li><p>其他项目的设置：请参阅文件内容与注释。</p></li>
+</ul>
+<p>有关使用 hexo
+配置博客的基本知识大概就是这些，当然也有一些潜在的问题，例如如何备份博客环境、使用中文标签会导致
+url
+中出现中文字符等内容，仍有待解决，如果找得到解决方案的话或许会在以后的博客里继续更新。（发出咕咕咕的声音）</p>
+<p>最后，如果大家对我的博客感兴趣，欢迎持续关注！</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/0-deploy-personal-blog-with-hexo/">https://littlenyima.github.io/posts/0-deploy-personal-blog-with-hexo/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Hexo/">Hexo</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-full"><a href="/posts/1-auto-deployment-using-github-actions/" title="教程 | 利用 Github Actions 实现代码推送后自动部署"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">教程 | 利用 Github Actions 实现代码推送后自动部署</div></div></a></div></nav><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">13</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">13</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E4%B8%80%E4%B8%AAgithub%E4%BB%93%E5%BA%93"><span class="toc-number">1.</span> <span class="toc-text">准备一个Github仓库</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%86%E5%A4%87hexo%E6%A1%86%E6%9E%B6"><span class="toc-number">2.</span> <span class="toc-text">准备hexo框架</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E4%BD%A0%E7%9A%84%E5%8D%9A%E5%AE%A2"><span class="toc-number">3.</span> <span class="toc-text">初始化你的博客</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%86%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF"><span class="toc-number">4.</span> <span class="toc-text">将博客部署到服务器端</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8D%9A%E5%AE%A2%E7%9A%84%E7%BE%8E%E5%8C%96%E4%BD%BF%E7%94%A8%E4%B8%BB%E9%A2%98"><span class="toc-number">5.</span> <span class="toc-text">博客的美化——使用主题</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/12-basic-concepts-of-normalizing-flow/" title="笔记｜Normalizing Flow 理论与实现（一）：基础理论">笔记｜Normalizing Flow 理论与实现（一）：基础理论</a><time datetime="2024-05-11T02:52:41.000Z" title="發表於 2024-05-11 10:52:41">2024-05-11</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/11-distributed-training-with-pytorch/" title="技术相关｜使用 Pytorch 进行分布式训练">技术相关｜使用 Pytorch 进行分布式训练</a><time datetime="2024-03-15T08:54:21.000Z" title="發表於 2024-03-15 16:54:21">2024-03-15</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/10-hardening-virtual-machine-security/" title="技术相关｜Linux 虚拟机的安全加固">技术相关｜Linux 虚拟机的安全加固</a><time datetime="2023-07-11T17:01:42.000Z" title="發表於 2023-07-12 01:01:42">2023-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/9-extending-pprint-for-python/" title="技术相关｜对 Python built-in pprint 进行拓展">技术相关｜对 Python built-in pprint 进行拓展</a><time datetime="2023-03-10T08:48:09.000Z" title="發表於 2023-03-10 16:48:09">2023-03-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/8-tiktok-is-ruining-pop-music/" title="杂谈｜还能不能完整听首歌了">杂谈｜还能不能完整听首歌了</a><time datetime="2023-02-02T08:34:00.000Z" title="發表於 2023-02-02 16:34:00">2023-02-02</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/0-deploy-personal-blog-with-hexo/',
+      url: 'https://littlenyima.github.io/posts/0-deploy-personal-blog-with-hexo/',
+      title: '教程 | Github Pages + hexo 搭建个人博客',
+      apikey: '__DISQUS_APIKEY_PUBLIC__',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=__DISQUS_APIKEY_PUBLIC__&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
