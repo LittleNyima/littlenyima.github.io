@@ -8,7 +8,7 @@ categories:
 tags:
  - Deep learning
  - Normalizing flow
-series: Normalizing Flow
+series: Normalizing Flows
 ---
 
 {% series %}
