@@ -6,7 +6,7 @@
   <link href="https://littlenyima.github.io/atom.xml" rel="self"/>
   
   <link href="https://littlenyima.github.io/"/>
-  <updated>2024-05-11T10:54:43.825Z</updated>
+  <updated>2024-06-11T16:54:47.923Z</updated>
   <id>https://littlenyima.github.io/</id>
   
   <author>
@@ -17,11 +17,38 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>笔记｜扩散模型（一）：DDPM 理论与实现</title>
+    <link href="https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/"/>
+    <id>https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/</id>
+    <published>2024-06-08T12:05:39.000Z</published>
+    <updated>2024-06-11T16:54:47.923Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
+    
+    
+    <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
+    
+    <category term="Diffusion model" scheme="https://littlenyima.github.io/tags/Diffusion-model/"/>
+    
+  </entry>
+  
+  <entry>
     <title>笔记｜Normalizing Flow 理论与实现（一）：基础理论</title>
     <link href="https://littlenyima.github.io/posts/12-basic-concepts-of-normalizing-flow/"/>
     <id>https://littlenyima.github.io/posts/12-basic-concepts-of-normalizing-flow/</id>
     <published>2024-05-11T02:52:41.000Z</published>
-    <updated>2024-05-11T10:54:43.825Z</updated>
+    <updated>2024-06-08T12:06:04.803Z</updated>
     
     
       
