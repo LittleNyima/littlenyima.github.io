@@ -21,6 +21,7 @@ env:
   # THEME_BRANCH: master
   DEPLOY_REPO: LittleNyima/littlenyima.github.io
   DEPLOY_BRANCH: deploy
+  PANDOC_URL: https://github.com/jgm/pandoc/releases/download/3.2/pandoc-3.2-1-amd64.deb
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -58,6 +59,14 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node_version }}
+
+      - name: Install pandoc
+        env:
+          PANDOC_URL: ${{ env.PANDOC_URL }}
+        run: |
+          wget -c $PANDOC_URL -O /tmp/pandoc.deb
+          sudo dpkg -i /tmp/pandoc.deb
+          pandoc -v
           
       - name: Configure environment
         env:

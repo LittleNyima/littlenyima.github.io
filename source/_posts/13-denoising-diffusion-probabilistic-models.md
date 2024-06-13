@@ -7,7 +7,7 @@ categories:
  - Notes
 tags:
  - Deep learning
- - Diffusion model
+ - Diffusion models
 series: Diffusion Models
 ---
 
@@ -326,7 +326,7 @@ class DDPM:
             mean = (images - one_minus_alpha_t / sqrt_one_minus_alpha_cumprod_t * pred_noise) / sqrt_alpha_t
             
             # variance of q(x_{t-1}|x_t)
-            if timestep > 1:
+            if timestep > 0:
                 beta_t = betas[timestep]
                 one_minus_alpha_cumprod_t_minus_one = 1.0 - alphas_cumprod[timestep - 1]
                 one_divided_by_sigma_square = alpha_t / beta_t + 1.0 / one_minus_alpha_cumprod_t_minus_one
