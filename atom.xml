@@ -6,7 +6,7 @@
   <link href="https://littlenyima.github.io/atom.xml" rel="self"/>
   
   <link href="https://littlenyima.github.io/"/>
-  <updated>2024-06-11T16:54:47.923Z</updated>
+  <updated>2024-06-13T10:34:20.225Z</updated>
   <id>https://littlenyima.github.io/</id>
   
   <author>
@@ -17,11 +17,11 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>笔记｜扩散模型（一）：DDPM 理论与实现</title>
-    <link href="https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/"/>
-    <id>https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/</id>
-    <published>2024-06-08T12:05:39.000Z</published>
-    <updated>2024-06-11T16:54:47.923Z</updated>
+    <title>笔记｜扩散模型（二）：DDIM 理论与实现</title>
+    <link href="https://littlenyima.github.io/posts/14-denoising-diffusion-implicit-models/"/>
+    <id>https://littlenyima.github.io/posts/14-denoising-diffusion-implicit-models/</id>
+    <published>2024-06-12T08:59:12.000Z</published>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -39,7 +39,34 @@
     
     <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
     
-    <category term="Diffusion model" scheme="https://littlenyima.github.io/tags/Diffusion-model/"/>
+    <category term="Diffusion models" scheme="https://littlenyima.github.io/tags/Diffusion-models/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>笔记｜扩散模型（一）：DDPM 理论与实现</title>
+    <link href="https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/"/>
+    <id>https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/</id>
+    <published>2024-06-08T12:05:39.000Z</published>
+    <updated>2024-06-13T10:34:20.225Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
+    
+    
+    <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
+    
+    <category term="Diffusion models" scheme="https://littlenyima.github.io/tags/Diffusion-models/"/>
     
   </entry>
   
@@ -48,7 +75,7 @@
     <link href="https://littlenyima.github.io/posts/12-basic-concepts-of-normalizing-flow/"/>
     <id>https://littlenyima.github.io/posts/12-basic-concepts-of-normalizing-flow/</id>
     <published>2024-05-11T02:52:41.000Z</published>
-    <updated>2024-06-08T12:06:04.803Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -75,7 +102,7 @@
     <link href="https://littlenyima.github.io/posts/11-distributed-training-with-pytorch/"/>
     <id>https://littlenyima.github.io/posts/11-distributed-training-with-pytorch/</id>
     <published>2024-03-15T08:54:21.000Z</published>
-    <updated>2024-03-18T16:00:33.456Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -102,7 +129,7 @@
     <link href="https://littlenyima.github.io/posts/10-hardening-virtual-machine-security/"/>
     <id>https://littlenyima.github.io/posts/10-hardening-virtual-machine-security/</id>
     <published>2023-07-11T17:01:42.000Z</published>
-    <updated>2023-08-19T09:45:09.022Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -129,7 +156,7 @@
     <link href="https://littlenyima.github.io/posts/9-extending-pprint-for-python/"/>
     <id>https://littlenyima.github.io/posts/9-extending-pprint-for-python/</id>
     <published>2023-03-10T08:48:09.000Z</published>
-    <updated>2023-07-03T03:36:02.268Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -154,7 +181,7 @@
     <link href="https://littlenyima.github.io/posts/8-tiktok-is-ruining-pop-music/"/>
     <id>https://littlenyima.github.io/posts/8-tiktok-is-ruining-pop-music/</id>
     <published>2023-02-02T08:34:00.000Z</published>
-    <updated>2023-12-30T08:32:29.225Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -177,7 +204,7 @@
     <link href="https://littlenyima.github.io/posts/7-bohemian-rhapsody-and-wanderer/"/>
     <id>https://littlenyima.github.io/posts/7-bohemian-rhapsody-and-wanderer/</id>
     <published>2022-11-01T10:22:00.000Z</published>
-    <updated>2023-12-30T08:31:13.252Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -200,7 +227,7 @@
     <link href="https://littlenyima.github.io/posts/6-how-to-develop-on-the-intranet/"/>
     <id>https://littlenyima.github.io/posts/6-how-to-develop-on-the-intranet/</id>
     <published>2022-09-09T15:12:41.000Z</published>
-    <updated>2023-12-18T13:31:49.340Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -225,7 +252,7 @@
     <link href="https://littlenyima.github.io/posts/5-replace-nvcc-while-building-extension/"/>
     <id>https://littlenyima.github.io/posts/5-replace-nvcc-while-building-extension/</id>
     <published>2022-08-27T15:16:29.000Z</published>
-    <updated>2023-04-19T14:09:19.415Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -250,7 +277,7 @@
     <link href="https://littlenyima.github.io/posts/4-the-reason-that-i-would-write/"/>
     <id>https://littlenyima.github.io/posts/4-the-reason-that-i-would-write/</id>
     <published>2022-04-18T08:40:05.000Z</published>
-    <updated>2023-04-19T14:09:19.415Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -275,7 +302,7 @@
     <link href="https://littlenyima.github.io/posts/3-basic-concepts-in-music-theory/"/>
     <id>https://littlenyima.github.io/posts/3-basic-concepts-in-music-theory/</id>
     <published>2022-03-10T08:59:51.000Z</published>
-    <updated>2023-04-19T14:09:19.415Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -300,7 +327,7 @@
     <link href="https://littlenyima.github.io/posts/2-a-taste-of-manim-and-reflections/"/>
     <id>https://littlenyima.github.io/posts/2-a-taste-of-manim-and-reflections/</id>
     <published>2022-03-01T08:36:18.000Z</published>
-    <updated>2024-03-29T02:10:28.805Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -327,7 +354,7 @@
     <link href="https://littlenyima.github.io/posts/1-auto-deployment-using-github-actions/"/>
     <id>https://littlenyima.github.io/posts/1-auto-deployment-using-github-actions/</id>
     <published>2022-02-18T12:09:21.000Z</published>
-    <updated>2024-03-29T02:10:28.804Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
@@ -352,7 +379,7 @@
     <link href="https://littlenyima.github.io/posts/0-deploy-personal-blog-with-hexo/"/>
     <id>https://littlenyima.github.io/posts/0-deploy-personal-blog-with-hexo/</id>
     <published>2020-10-18T08:41:55.000Z</published>
-    <updated>2024-03-29T02:10:28.804Z</updated>
+    <updated>2024-06-13T10:34:20.225Z</updated>
     
     
       
