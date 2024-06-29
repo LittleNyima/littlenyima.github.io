@@ -156,7 +156,7 @@ import torch
 class DDIM:
     def __init__(
         self,
-        num_train_timesteps:int = 1000,
+        num_train_timesteps: int = 1000,
         beta_start: float = 0.0001,
         beta_end: float = 0.02,
         sample_steps: int = 20,
@@ -179,6 +179,9 @@ $$
 ```python
 import math
 from tqdm import tqdm
+
+class DDIM:
+    ...
 
     @torch.no_grad()
     def sample(
@@ -312,6 +315,7 @@ images = interpolation_grid(rows, cols, in_channels, sample_size).to(unet.device
 本文的代码在如下的链接中，后续还会更新更多 diffusion models 相关的文章，欢迎追更：
 
 - 完整代码：[https://github.com/LittleNyima/code-snippets/tree/master/ddim-tutorial](https://github.com/LittleNyima/code-snippets/tree/master/ddim-tutorial)
+- 模型权重：[https://huggingface.co/LittleNyima/ddpm-anime-faces-64](https://huggingface.co/LittleNyima/ddpm-anime-faces-64)
 
 > 参考资料：
 >

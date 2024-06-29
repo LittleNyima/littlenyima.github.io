@@ -31,9 +31,9 @@ $$
 
 在上边的公式里，我们可以认为 $\mathbf{x}_t$ 满足均值为 $\sqrt{1-\beta_t}\mathbf{x}_{t-1}$，方差为 $\sqrt{\beta_t}\mathbf{I}$ 的高斯分布。这样可以把上述加权求和的过程写成条件概率分布的形式：
 $$
-q(\mathbf{x}_t|\mathbf{x}_{t-1})=\mathcal{N}(\mathbf{x}_t;\sqrt{1-\beta_t}\mathbf{x}_{t-1},\sqrt{\beta_t}\mathbf{I})
+q(\mathbf{x}_t|\mathbf{x}_{t-1})=\mathcal{N}(\mathbf{x}_t;\sqrt{1-\beta_t}\mathbf{x}_{t-1},\beta_t\mathbf{I})
 $$
-上边等号的右边表示的就是当前的变量 $\mathbf{x}_t$ 满足一个 $\mathcal{N}(\sqrt{1-\beta_t}\mathbf{x}_{t-1},\sqrt{\beta_t}\mathbf{I})$ 的概率分布。通过上边的公式我们可以看到，每一个时间步的 $\mathbf{x}_t$ 都只和 $\mathbf{x}_{t-1}$ 有关，因此这个扩散过程是一个马尔可夫过程。在前向过程中，每一步的 $\beta$ 都是固定的，真正的变量只有 $\mathbf{x}_{t-1}$，那么我们可以将公式中的 $\mathbf{x}_{t-1}$ 进一步展开：
+上边等号的右边表示的就是当前的变量 $\mathbf{x}_t$ 满足一个 $\mathcal{N}(\sqrt{1-\beta_t}\mathbf{x}_{t-1},\beta_t\mathbf{I})$ 的概率分布。通过上边的公式我们可以看到，每一个时间步的 $\mathbf{x}_t$ 都只和 $\mathbf{x}_{t-1}$ 有关，因此这个扩散过程是一个马尔可夫过程。在前向过程中，每一步的 $\beta$ 都是固定的，真正的变量只有 $\mathbf{x}_{t-1}$，那么我们可以将公式中的 $\mathbf{x}_{t-1}$ 进一步展开：
 $$
 \begin{aligned}
 \mathbf{x}_t&=\sqrt{1-\beta_t}\mathbf{x}_{t-1}+\sqrt{\beta_t}\epsilon_{t-1}\\
@@ -58,7 +58,7 @@ $$
 $$
 通过上述的推导，我们发现给定 $\mathbf{x}_0$ 和加噪的时间步，可以直接用一步就得到 $\mathbf{x}_t$，而并不需要一步步地重复最开始的加权求和。和上述同理，这个关系也可以写成：
 $$
-q(\mathbf{x}_t|\mathbf{x}_0)=\mathcal{N}(\mathbf{x}_t;\sqrt{\bar{\alpha}_t}\mathbf{x}_0,\sqrt{1-\bar{\alpha}_t}\mathbf{I})
+q(\mathbf{x}_t|\mathbf{x}_0)=\mathcal{N}(\mathbf{x}_t;\sqrt{\bar{\alpha}_t}\mathbf{x}_0,(1-\bar{\alpha}_t)\mathbf{I})
 $$
 从这个式子里我们可以看出，加噪过程中的 $\mathbf{x}_t$ 可以看作原始图像 $\mathbf{x}_0$ 和高斯噪声 $\epsilon$ 的线性组合，且两个组合系数的平方和为 1。在实现加噪过程时，加噪的 scheduler 也是根据 $\bar{\alpha}_t$ 设计的，这样更加直接，且为了保证最后得到的足够接近噪声，可以将 $\bar\alpha_t$ 直接设置为一个接近 0 的数。
 
@@ -131,7 +131,7 @@ $$
 
 具体来说，首先从标准正态分布中采样出 $\mathbf{x}_T$ 作为初始的图像，然后重复 $T$ 步去噪过程。在每一步去噪过程中，由于我们已经推导出：
 $$
-q(\mathbf{x}_{t-1}|\mathbf{x}_t)=\mathcal{N}\left(\mathbf{x}_{t-1};\frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\tilde{\epsilon}_t\right),\sigma_t\right)
+q(\mathbf{x}_{t-1}|\mathbf{x}_t)=\mathcal{N}\left(\mathbf{x}_{t-1};\frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\tilde{\epsilon}_t\right),\sigma_t^2\right)
 $$
 利用一个重参数化技巧：从 $\mathcal{N}(\mu,\sigma^2)$ 采样可以实现为从 $\mathcal{N}(0,1)$ 采样出 $\epsilon$，再计算 $\mu+\epsilon\cdot\sigma$。这样即可实现从上述的高斯分布中采样出 $\mathbf{x}_{t-1}$。如此重复 $T$ 次即可得到最终的结果，注意最后一步的时候没有采样，而是只加上了均值。
 
