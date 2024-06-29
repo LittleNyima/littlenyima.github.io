@@ -265,7 +265,7 @@ class DDPM:
 ```python
 class DDPM:
     ...
-    
+
     def add_noise(
         self,
         original_samples: torch.Tensor,
@@ -280,12 +280,12 @@ class DDPM:
         sqrt_alpha_prod = alphas_cumprod[timesteps].flatten() ** 0.5
         while len(sqrt_alpha_prod.shape) < len(original_samples.shape):
             sqrt_alpha_prod = sqrt_alpha_prod.unsqueeze(-1)
-        
+
         # \sqrt{1 - \bar\alpha_t}
         sqrt_one_minus_alpha_prod = (1.0 - alphas_cumprod[timesteps]).flatten() ** 0.5
         while len(sqrt_one_minus_alpha_prod.shape) < len(original_samples.shape):
             sqrt_one_minus_alpha_prod = sqrt_one_minus_alpha_prod.unsqueeze(-1)
-        
+
         return sqrt_alpha_prod * original_samples + sqrt_one_minus_alpha_prod * noise
 ```
 
@@ -324,7 +324,7 @@ class DDPM:
             one_minus_alpha_t = 1.0 - alpha_t
             sqrt_one_minus_alpha_cumprod_t = (1 - alpha_cumprod_t) ** 0.5
             mean = (images - one_minus_alpha_t / sqrt_one_minus_alpha_cumprod_t * pred_noise) / sqrt_alpha_t
-            
+
             # variance of q(x_{t-1}|x_t)
             if timestep > 0:
                 beta_t = betas[timestep]
@@ -333,7 +333,7 @@ class DDPM:
                 variance = (1.0 / one_divided_by_sigma_square) ** 0.5
             else:
                 variance = torch.zeros_like(timestep)
-            
+
             epsilon = torch.randn_like(images)
             images = mean + variance * epsilon
         images = (images / 2.0 + 0.5).clamp(0, 1).cpu().permute(0, 2, 3, 1).numpy()

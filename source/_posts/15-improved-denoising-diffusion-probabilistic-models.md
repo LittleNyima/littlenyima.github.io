@@ -174,8 +174,8 @@ def extract(arr: torch.Tensor, timesteps: torch.Tensor, broadcast_shape: torch.S
 
 class IDDPM:
     ...
-    
-	@torch.no_grad()
+
+    @torch.no_grad()
     def sample(
         self,
         unet: UNet2DModel,
@@ -217,7 +217,7 @@ class IDDPM:
                 stddev = torch.exp(0.5 * log_variance)
             else:
                 stddev = torch.zeros_like(timestep)
-            
+
             epsilon = torch.randn_like(images)
             images = mean + stddev * epsilon
         images = (images / 2.0 + 0.5).clamp(0, 1).cpu().permute(0, 2, 3, 1).numpy()
@@ -426,7 +426,7 @@ class ImportanceSampler:
     def __init__(
         self,
         num_diffusion_timesteps: int = 1000,
-        history_per_term: int = 10, 
+        history_per_term: int = 10,
     ):
         self.num_diffusion_timesteps = num_diffusion_timesteps
         self.history_per_term = history_per_term
@@ -440,7 +440,7 @@ class ImportanceSampler:
 ```python
 class ImportanceSampler:
     ...
-    
+
     def update(self, timesteps: torch.Tensor, losses: torch.Tensor):
         # collect
         if dist.is_initialized():
@@ -474,8 +474,8 @@ class ImportanceSampler:
 ```python
 class ImportanceSampler:
     ...
-    
-	def sample(self, batch_size: int):
+
+    def sample(self, batch_size: int):
         weights = self.weights
         prob = weights / np.sum(weights)
         timesteps = np.random.choice(self.num_diffusion_timesteps, size=(batch_size,), p=prob)
@@ -495,4 +495,3 @@ class ImportanceSampler:
 >
 > 1. [【扩散模型】5、Improved DDPM | 引入可学习方差和余弦加噪机制来提升 DDPM](https://blog.csdn.net/jiaoyangwm/article/details/132774507)
 > 2. [KL divergence between two univariate Gaussians](https://stats.stackexchange.com/questions/7440/kl-divergence-between-two-univariate-gaussians)
-
