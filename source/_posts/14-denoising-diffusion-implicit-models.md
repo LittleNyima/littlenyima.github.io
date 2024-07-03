@@ -8,6 +8,7 @@ categories:
 tags:
  - Deep learning
  - Diffusion models
+ - Generative models
 series: Diffusion Models
 ---
 

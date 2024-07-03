@@ -8,10 +8,15 @@ categories:
 tags:
  - Deep learning
  - Diffusion models
+ - Generative models
 series: Diffusion Models
 ---
 
 {% series %}
+
+{% note pink 'fas fa-bullhorn' modern %}
+感谢 wbs、hsh 等读者对本文提出的宝贵意见（大拍手
+{% endnote %}
 
 > 论文链接：*[Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2006.11239)*
 
@@ -29,7 +34,7 @@ $$
 $$
 这里的 $\beta_t$ 就是每一步加噪使用的方差，在实际上进行加噪时，起始时使用的方差比较小，随着加噪步骤增加，方差会逐渐增大。例如在 DDPM 的原文中，使用的方差是从 $\beta_1=10^{-4}$ 随加噪时间步线性增大到 $\beta_T=0.02$。这样设置主要是为了方便模型进行学习，如果在最开始就加入很大的噪声，对图像信息的破坏会比较严重，不利于模型学习图像的信息。这个过程也可以从反向进行理解，即去噪时先去掉比较大的噪音得到图像的雏形，再去掉小噪音进行细节的微调。
 
-在上边的公式里，我们可以认为 $\mathbf{x}_t$ 满足均值为 $\sqrt{1-\beta_t}\mathbf{x}_{t-1}$，方差为 $\sqrt{\beta_t}\mathbf{I}$ 的高斯分布。这样可以把上述加权求和的过程写成条件概率分布的形式：
+在上边的公式里，我们可以认为 $\mathbf{x}_t$ 满足均值为 $\sqrt{1-\beta_t}\mathbf{x}_{t-1}$，标准差为 $\sqrt{\beta_t}\mathbf{I}$ 的高斯分布。这样可以把上述加权求和的过程写成条件概率分布的形式：
 $$
 q(\mathbf{x}_t|\mathbf{x}_{t-1})=\mathcal{N}(\mathbf{x}_t;\sqrt{1-\beta_t}\mathbf{x}_{t-1},\beta_t\mathbf{I})
 $$

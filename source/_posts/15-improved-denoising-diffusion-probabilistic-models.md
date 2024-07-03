@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（三）：IDDPM 理论与实现
+title: 笔记｜扩散模型（三）：Improved DDPM 理论与实现
 date: 2024-06-24 19:09:55
 cover: false
 mathjax: true
@@ -8,6 +8,7 @@ categories:
 tags:
  - Deep learning
  - Diffusion models
+ - Generative models
 series: Diffusion Models
 ---
 
@@ -74,7 +75,8 @@ $$
 L_\mathrm{vlb}=E_{t\sim p_t}\left[\frac{L_t}{p_t}\right],\quad\text{where}~p\propto\sqrt{E[L_t^2]}~\text{and}~\sum p_t=1
 $$
 由于 $E[L_t^2]$ 不能预先得知，并且在训练过程中会变化，实际上训练的时候会保存 10 项历史的损失，并且对此进行动态更新。这部分光看公式可能不太容易理解，可以参照下面代码实现部分的 `ImportanceSampler` 来看：具体的做法就是给每个时间步都保存了最近的 10 个历史损失，然后在采样时间步的时候，用所有保存的损失生成时间步的重要性分布，从分布里采样。除此之外这些损失还能用来计算出每个时间步的权重，在计算最终的损失的时候每个时间步的损失先乘以对应的权重，然后再进行加和得到整体的损失。
-# IDDPM 的代码实现
+
+# Improved DDPM 的代码实现
 
 为了方便和 DDPM 的效果进行比较，我们依然继承在实现 DDPM 时所写代码的主要部分，仅改变其中部分处理。对于这里没有完全介绍的部分（比如训练参数、数据集等）可以移步[这篇文章](https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/)查看，在文章的最后也给出了完整代码，被省略的部分也可以去看完整代码。
 
