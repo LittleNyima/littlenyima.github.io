@@ -63,7 +63,7 @@ $$
 
 ## 使用反向 SDE 进行采样
 
-在离散的过程里，可以用 annealed Langevin dynamics 进行采样，那么在这里我们的正向过程改为了使用 SDE 进行描述，逆向过程也要发生相应的变化。对于一个 SDE 来说，其逆向过程同样也是一个 SDE，可以表示为：
+在离散的过程里，可以用 annealed Langevin dynamics 进行采样，那么在这里我们的正向过程改为了使用 SDE 进行描述，逆向过程也要发生相应的变化。对于一个 SDE 来说，其逆向过程同样也是一个 SDE（推导过程见[这个链接](https://kexue.fm/archives/9209)），可以表示为：
 $$
 \mathrm{d}\mathbf{x}=\left[\mathbf{f}(\mathbf{x},t)-g^2(t)\textcolor{red}{\nabla_\mathbf{x}\log p_t(\mathbf{x})}\right]\mathrm{d}t+g(t)\mathrm{d}\mathbf{w}
 $$
@@ -95,7 +95,31 @@ $$
 
 # 讨论
 
-其实介绍完上述的内容之后，就已经建立起了完整的基于 SDE 的 score-based modeling 的框架了。不过关于这一框架还有一些可以讨论的内容，主要分为两个方面。
+其实介绍完上述的内容之后，就已经建立起了完整的基于 SDE 的 score-based modeling 的框架了。不过关于这一框架还有一些可以讨论的内容，主要分为三个方面。
+
+## 和 DDPM 的联系
+
+通过上文的介绍，我们可以发现用 SDE 描述的 score-based model 和扩散模型有很多相似之处。在 DDPM 中，前向过程可以描述为以下形式：
+$$
+\mathbf{x}_{t}=\sqrt{1-\beta_t}\mathbf{x}_{t-1}+\sqrt{\beta_t}\epsilon_{t-1},\quad\epsilon_{t-1}\sim\mathcal{N}(0,I)
+$$
+这是一个离散的过程，$t\in\{0,1,\cdots,T\}$。由于 SDE 是连续的，需要将 DDPM 也转变为连续的形式，为此可以将所有时间步都除以 $T$，即 $t\in\{0,\frac{1}{T},\cdots,\frac{T-1}{T},1\}$，当 $T\rightarrow\infty$，DDPM 就变成了一个连续的过程。代入上式，可以得到：
+$$
+\mathbf{x}(t+\Delta t)=\sqrt{1-\beta(t+\Delta t)\Delta t}~\mathbf{x}(t)+\sqrt{\beta(t+\Delta t)\Delta t}~\epsilon(t)
+$$
+泰勒展开后可以近似得到：
+$$
+\begin{aligned}
+\mathbf{x}(t+\Delta t)&=\sqrt{1-\beta(t+\Delta t)\Delta t}~\mathbf{x}(t)+\sqrt{\beta(t+\Delta t)\Delta t}~\epsilon(t)\\
+&\approx\mathbf{x}(t)-\frac{1}{2}\beta(t+\Delta t)\Delta t~\mathbf{x}(t)+\sqrt{\beta(t+\Delta t)\Delta t}~\epsilon(t)\\
+&\approx\mathbf{x}(t)-\frac{1}{2}\beta(t)\Delta t\mathbf{x}(t)+\sqrt{\beta(t)\Delta t}\epsilon(t)
+\end{aligned}
+$$
+当 $T\rightarrow\infty$，即 $\Delta t\rightarrow0$，有：
+$$
+\mathrm{d}\mathbf{x}=-\frac{\beta(t)\mathbf{x}}{2}\mathrm{d}t+\sqrt{\beta(t)}\mathrm{d}\mathbf{w}
+$$
+推导到这里可以发现，从 DDPM 的前向过程出发，得到了和 score-based model 形式相符的 SDE 方程，因此也可以使用 score matching、Langevin MCMC 等策略进行学习和采样。这里的推导比较简略，具体的可以看 *[Score-Based Generative Modeling through Stochastic Differential Equations](https://arxiv.org/abs/2011.13456)* 这篇文章的附录 B。
 
 ## 将 SDE 转化为 ODE 概率流
 
@@ -125,7 +149,7 @@ $$
 
 # 总结
 
-本文中我们介绍了基于 SDE 进行 score-based 建模的方式，实际上相比于上一篇文章的内容来说，使用 SDE 主要的作用就是把离散形式的扰动过程变为了连续的形式，而训练方式、采样方式都和离散的形式大同小异。而且从形式上来看，使用 SDE 的形式描述的 score-based 模型和扩散模型也存在一定的相似性，实际上这个理论完全可以用来推导 DDPM，后续可能会写一篇文章专门介绍一下。
+本文中我们介绍了基于 SDE 进行 score-based 建模的方式，实际上相比于上一篇文章的内容来说，使用 SDE 主要的作用就是把离散形式的扰动过程变为了连续的形式，而训练方式、采样方式都和离散的形式大同小异。通过指定特定形式的 $\mathbf{f}(\mathbf{x},t)$ 和 $g(t)$，可以获得和 DDPM 相同的性质，而通过将 SDE 转化为 ODE，则与 normalizing flow 比较相似，可见 SDE 是一个比较通用的描述框架。
 
 > 参考资料：
 >
