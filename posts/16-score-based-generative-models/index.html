@@ -1,0 +1,512 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>笔记｜Score-based Generative Models（一）：基础理论 | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="笔记｜Score-based Generative Models（一）：基础理论笔记｜Score-based Generative Models（二）：基于 SDE 的模型 这篇文章应该属于 Diffusion Models 系列的一个番外篇，虽然基于分数的生成模型包括了一系列比较复杂的研究，不过之所以写这篇博客是为了给 score-based diffusion models 的学习做准备，所以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="笔记｜Score-based Generative Models（一）：基础理论">
+<meta property="og:url" content="https://littlenyima.github.io/posts/16-score-based-generative-models/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="笔记｜Score-based Generative Models（一）：基础理论笔记｜Score-based Generative Models（二）：基于 SDE 的模型 这篇文章应该属于 Diffusion Models 系列的一个番外篇，虽然基于分数的生成模型包括了一系列比较复杂的研究，不过之所以写这篇博客是为了给 score-based diffusion models 的学习做准备，所以">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2024-07-02T07:13:14.000Z">
+<meta property="article:modified_time" content="2024-07-04T14:27:15.086Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Deep learning">
+<meta property="article:tag" content="Generative models">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/16-score-based-generative-models/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '笔记｜Score-based Generative Models（一）：基础理论',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-07-04 22:27:15'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">20</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">笔记｜Score-based Generative Models（一）：基础理论</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2024-07-02T07:13:14.000Z" title="發表於 2024-07-02 15:13:14">2024-07-02</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2024-07-04T14:27:15.086Z" title="更新於 2024-07-04 22:27:15">2024-07-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Notes/">Notes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="笔记｜Score-based Generative Models（一）：基础理论"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><ol><li><a href="/posts/16-score-based-generative-models/" title="笔记｜Score-based Generative Models（一）：基础理论">笔记｜Score-based Generative Models（一）：基础理论</a></li><li><a href="/posts/17-score-based-modeling-with-sde/" title="笔记｜Score-based Generative Models（二）：基于 SDE 的模型">笔记｜Score-based Generative Models（二）：基于 SDE 的模型</a></li></ol>
+<p>这篇文章应该属于 Diffusion Models
+系列的一个番外篇，虽然基于分数的生成模型包括了一系列比较复杂的研究，不过之所以写这篇博客是为了给
+score-based diffusion models
+的学习做准备，所以应该不会面面俱到，主要还是介绍基础知识。</p>
+<p>正式开始介绍之前首先解答一下这个问题：<strong>score-based
+模型是什么东西，微分方程在这个模型里到底有什么用？</strong>我们知道生成模型基本都是从某个现有的分布中进行采样得到生成的样本，为此模型需要完成对分布的建模。根据建模方式的不同可以分为隐式建模（例如
+GAN、diffusion models）和显式建模（例如 VAE、normalizing
+flows）。和上述的模型相同，score-based
+模型也是用一定方式对分布进行了建模。具体而言，这类模型建模的对象是概率分布函数
+log 的梯度，也就是 <strong>score
+function</strong>，而为了对这个建模对象进行学习，需要使用一种叫做
+<strong>score matching</strong> 的技术，这也是 score-based
+模型名字的来源。至于第二个问题，微分方程的作用本篇文章暂时不介绍，下一篇文章再进行讨论。</p>
+<p>回答完这个问题其实就对基于分数的模型有一个大致的认识了，所谓的分数实际上就是一个和概率分布有关的函数，这类模型说到底也是在对概率分布进行建模。同时我们也可以从下面这张图直观地了解一下分数的物理意义：可以看到图中的等高线表示概率分布函数，箭头表示
+score function，因为是梯度所以可以用垂直于等高线的矢量来表示。</p>
+<p><img src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/02/score-contour.jpg" alt="混合高斯分布（等高线）及其 score function（箭头）的可视化" style="width:min(100%, 300px);" /></p>
+<h1 id="score-function-和-score-based-models">Score Function 和
+Score-based Models</h1>
+<p>考虑对一个数据集 <span
+class="math inline">\(\{\mathbf{x}_1,\mathbf{x}_2,\cdots,\mathbf{x}_N\}\)</span>
+的概率分布 <span class="math inline">\(p(\mathbf{x})\)</span>
+进行建模，为了建模 <span
+class="math inline">\(p(\mathbf{x})\)</span>，首先需要用一种方式来表示这个概率分布。我们可以使用一种通用的方式来表示这个概率分布：
+<span class="math display">\[
+p_\theta(\mathbf{x})=\frac{\exp(-f_\theta(\mathbf{x}))}{Z_\theta}
+\]</span> 这个公式来源于 energy-based models，其中 <span
+class="math inline">\(f_\theta(\mathbf{x})\)</span> 表示带有可学习参数
+<span class="math inline">\(\theta\)</span>
+的函数（可以理解为某个神经网络）。因为 <span
+class="math inline">\(p_\theta(\mathbf{x})\)</span>
+是概率分布函数，所以需要满足 <span class="math inline">\(\int
+p_\theta(\mathbf{x})\mathrm{d}\mathbf{x}=1\)</span>，所以需要引入一个与
+<span class="math inline">\(\theta\)</span> 有关的归一化参数 <span
+class="math inline">\(Z_\theta=\int\exp(-f_\theta(\mathbf{x}))\mathrm{d}\mathbf{x}\)</span>。</p>
+<p>有了这个公式，我们就可以对 <span
+class="math inline">\(\theta\)</span> 进行训练来对 <span
+class="math inline">\(p(\mathbf{x})\)</span> 进行极大似然估计： <span
+class="math display">\[
+\max_{\theta}\sum_{i=1}^N\log p_\theta(\mathbf{x}_i)
+\]</span> 然而这样做依然存在问题，那就是我们还不知道 <span
+class="math inline">\(Z_\theta\)</span>
+具体是多少，对于一个任意的分布来说，这个归一化系数的值通常是无法求得的。这个问题已经有了几种不同的解决方案，例如
+normalizing flow 通过保证网络可逆来使 <span
+class="math inline">\(Z_\theta\)</span> 恒定为 <span
+class="math inline">\(1\)</span>，VAE
+学习距离的变分下界等。在这里，score-based model 是通过改为对 score
+function 进行学习，比较巧妙地规避了 <span
+class="math inline">\(Z_\theta\)</span> 的问题。形式化地来说，score
+function 定义为： <span class="math display">\[
+\mathbf{s}_\theta(\mathbf{x})=\nabla_\mathbf{x}\log p_\theta(\mathbf{x})
+\]</span> 因为 <span class="math inline">\(Z_\theta\)</span>
+是常数，因此其本身并不产生任何梯度，所以有： <span
+class="math display">\[
+\mathbf{s}_\theta(\mathbf{x})=\nabla_\mathbf{x}\log
+p_\theta(\mathbf{x})=-\nabla_\mathbf{x}f_\theta(\mathbf{x})-\nabla_\mathbf{x}\log
+Z_\theta=-\nabla_\mathbf{x}f_\theta(\mathbf{x})
+\]</span>
+可以发现最后推导出的就是神经网络的梯度，这个各位读者肯定都不陌生，使用自动求导工具可以非常容易地得到。那么我们也可以写出优化目标：
+<span class="math display">\[
+\theta=\arg\min_{\theta}\mathbb{E}_{p(\mathbf{x})}[||\nabla_\mathbf{x}\log
+p(\mathbf{x})-\mathbf{s}_\theta(\mathbf{x})||_2^2]
+\]</span> 写到这里就只有最后一个问题了：真实分布的 log 梯度 <span
+class="math inline">\(\nabla_\mathbf{x}\log p(\mathbf{x})\)</span>
+实际上是未知的，因此这个优化目标不能直接用来对模型进行训练。为了解决这个问题，需要使用一种叫做
+<strong>score matching</strong> 的方法。</p>
+<h1 id="分布学习score-matching">分布学习：Score Matching</h1>
+<p>我们现在的目标是不使用真实分布 <span
+class="math inline">\(p(\mathbf{x})\)</span>
+来计算上述的优化目标，为了简便起见，此处只讨论 <span
+class="math inline">\(\mathbf{x}\)</span> 为一元变量的情况。首先把 L2
+的平方展开： <span class="math display">\[
+\begin{aligned}
+&amp;||\nabla_x\log p(x)-\mathbf{s}_\theta(x)||_2^2\\
+=&amp;||\nabla_x\log p(x)-\nabla_x\log p_\theta(x)||_2^2\\
+=&amp;\underbrace{(\nabla_x\log p(x))^2}_{\mathrm{const}}-2\nabla_x\log
+p(x)\nabla_x\log p_\theta(x)+(\nabla_x\log p_\theta(x))^2
+\end{aligned}
+\]</span> 第一项是常量，因为我们是要对 <span
+class="math inline">\(\theta\)</span> 求 <span
+class="math inline">\(\arg\min\)</span>，所以这一项可以直接忽略掉。最后一项也可以通过数据集中的样本直接估计出来，因此现在只需要关注第二项。将第二项展开后使用分部积分法可以得到：
+<span class="math display">\[
+\begin{aligned}
+&amp;\mathbb{E}_{p(x)}[-\nabla_x\log p(x)\nabla_x\log p_\theta(x)]\\
+=&amp;-\int_{-\infty}^{\infty}\nabla_x\log p(x)\nabla_x\log
+p_\theta(x)p_\theta(x)\mathrm{d}x\\
+=&amp;-\int_{-\infty}^{\infty}\frac{\nabla_x p(x)}{p(x)}\nabla_x\log
+p_\theta(x)p(x)\mathrm{d}x\\
+=&amp;-\int_{-\infty}^{\infty}\nabla_xp(x)\nabla_x\log
+p_\theta(x)\mathrm{d}x\\
+=&amp;-p(x)\nabla_x\log
+p_\theta(x)\bigg|_{-\infty}^\infty+\int_{-\infty}^{\infty}p(x)\nabla_x^2\log
+p_\theta(x)\mathrm{d}x
+\end{aligned}
+\]</span> 可以假设对于真实的数据分布，当 <span
+class="math inline">\(|x|\rightarrow\infty\)</span>，有 <span
+class="math inline">\(p(x)\rightarrow0\)</span>，所以最后结果的第一项为
+0，继续推得： <span class="math display">\[
+\mathbb{E}_{p(x)}[-\nabla_x\log p(x)\nabla_x\log
+p_\theta(x)]=\mathbb{E}_{p(x)}[\nabla_x^2\log p_\theta(x)]
+\]</span> 最后得到总体的优化目标为： <span class="math display">\[
+\begin{aligned}
+&amp;\mathbb{E}_{p(x)}\left[||\nabla_x\log
+p(x)-\mathbf{s}_\theta(x)||_2^2\right]\\
+=&amp;2\mathbb{E}_{p(x)}\left[\nabla_x^2\log
+p_\theta(x)\right]+\mathbb{E}_{p(x)}\left[(\nabla_x\log
+p_\theta(x))^2\right]+\mathrm{const}
+\end{aligned}
+\]</span> 对于多元的情况则是 <span
+class="math inline">\(\mathbb{E}_{p(\mathbf{x})}\left[2\mathrm{tr}(\nabla_\mathbf{x}^2\log
+p_\theta(\mathbf{x}))+||\nabla_\mathbf{x}\log
+p_\theta(\mathbf{x})||_2^2\right]+\mathrm{const}\)</span>。可以看到现在优化目标不包含真实分布
+<span class="math inline">\(p(x)\)</span>，可以直接用于优化。</p>
+<p>这是最基本的 score matching
+方法，后续为了在高维数据上进行加速还提出了 sliced score
+matching，这里就不展开介绍了。总之现在 score-based model
+的训练问题也得到了解决，最后就是如何从训练好的分布中进行采样。</p>
+<h1 id="从分布采样langevin-dynamics">从分布采样：Langevin Dynamics</h1>
+<p>到这一步我们已经得到了 <span
+class="math inline">\(\mathbf{s}_\theta(\mathbf{x})\approx\nabla_\mathbf{x}\log
+p(\mathbf{x})\)</span>，要从这样的一个梯度的分布中进行采样，可以通过
+Langevin Dynamics（直译是朗之万动力学）过程实现。</p>
+<p>朗之万动力学过程是一种马尔可夫链蒙特卡洛过程，具体来说，其首先从任意的先验分布中采样出初始状态
+<span
+class="math inline">\(\mathbf{x}_0\sim\pi(\mathbf{x})\)</span>，然后进行迭代：
+<span class="math display">\[
+\mathbf{x}_{i+1}\leftarrow\mathbf{x}_i+\epsilon\nabla_\mathbf{x}\log
+p(\mathbf{x})+\sqrt{2\epsilon}\mathbf{z}_i,\quad i=0,1,\cdots,K
+\]</span> 其中 <span
+class="math inline">\(\mathbf{z}_i\sim\mathcal{N}(0,I)\)</span>，当
+<span class="math inline">\(\epsilon\rightarrow0\)</span> 且 <span
+class="math inline">\(K\rightarrow\infty\)</span>，上述过程得到的 <span
+class="math inline">\(\mathbf{x}_K\)</span> 收敛到从 <span
+class="math inline">\(p(\mathbf{x})\)</span>
+直接采样的结果。可以比较直观地理解这个迭代过程的含义：第一项 <span
+class="math inline">\(\mathbf{x}_i\)</span> 是上一个状态，第二项 <span
+class="math inline">\(\epsilon\nabla_\mathbf{x}\log
+p(\mathbf{x})\)</span> 相当于沿着梯度的方向移动了 <span
+class="math inline">\(\epsilon\)</span> 单位，最后一项 <span
+class="math inline">\(\sqrt{2\epsilon}\mathbf{z}_i\)</span>
+添加了一些随机扰动，应该是为了防止样本落入梯度比较小的位置。可以进一步从下面这个动图理解这一过程：</p>
+<p><img
+src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/03/langevin.gif"
+alt="Langevin Dynamics 采样过程" /></p>
+<p>一般来说只要 <span class="math inline">\(\epsilon\)</span>
+的取值足够小，且迭代步骤数量 <span class="math inline">\(K\)</span>
+足够多，得到结果的误差就会比较小。同时从上式中可以发现，迭代过程中只使用了
+<span class="math inline">\(\nabla_\mathbf{x}\log p(\mathbf{x})\)</span>
+也就是 <span
+class="math inline">\(\mathbf{s}_\theta(\mathbf{x})\)</span> 而没有使用
+<span class="math inline">\(p(\mathbf{x})\)</span>，所以从学习到的 <span
+class="math inline">\(\mathbf{s}_\theta(\mathbf{x})\)</span>
+即可完成采样。</p>
+<h1 id="存在的问题与改进方案">存在的问题与改进方案</h1>
+<p>经过上面的几个步骤，score-based model
+中最重要的几个问题其实已经解决了，我们能够通过 score matching
+的过程对分布进行建模，也可以利用 Langevin dynamics
+进行采样。不过这种做法依然存在一些问题，本章节将会介绍存在的问题和改进方案。</p>
+<h2 id="低概率密度区域建模不准确问题">低概率密度区域建模不准确问题</h2>
+<p>根据 score matching 的过程，在对分布建模时优化的目标为： <span
+class="math display">\[
+\mathbb{E}_{p(\mathbf{x})}\left[||\nabla_\mathbf{x}\log
+p(\mathbf{x})-\mathbf{s}_\theta(\mathbf{x})||_2^2\right]=\int
+p(\mathbf{x})||\nabla_\mathbf{x}\log
+p(\mathbf{x})-\mathbf{s}_\theta(\mathbf{x})||_2^2\mathrm{d}\mathbf{x}
+\]</span> 可以看到等式右侧的 L2 损失被 <span
+class="math inline">\(p(\mathbf{x})\)</span>
+进行了加权，那么用这种方式进行优化会导致 <span
+class="math inline">\(p(\mathbf{x})\)</span>
+比较小的区域被忽略掉，从而无法在相应的范围内进行比较准确的建模。这个现象可以从下图得到一个比较直观的理解：对于最左侧的混合高斯分布，只有左下和右上的区域概率比较大，这些区域会在训练的过程中得到比较多的关注，而其他的大部分区域都被忽略，无法进行准确的建模。这限制了
+score-based 模型得到比较好的结果。</p>
+<p><img
+src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/03/pitfalls-of-score-matching.jpg"
+alt="低概率密度的区域无法准确建模" /></p>
+<h2 id="multiple-noise-pertubations">Multiple Noise Pertubations</h2>
+<p>为了解决这个问题，一个比较符合直觉的方案就是通过一些方式使分布更加均匀。但是这样依然存在一个问题，举一个极端的例子，如果无限平均分布，让分布成为一个处处相等的均匀分布，这样学习到的分布对原始分布就没有充足的代表性。因此需要在这两者之间寻找一个平衡点，既不能让分布过于不平衡，使低频率区域的学习效果过差，同时也不能严重破坏原有分布，使学习到的分布与真实分布偏差过大。</p>
+<p>实际上解决这个问题的方案相当简单，为了对分布进行平衡，可以使用各向同性高斯噪声对分布进行扰动（也就是这一节标题中的
+pertubation）。一个扰动的示例如下图所示，直观上看其实类似于对概率密度进行了高斯模糊，处理之后概率分布变得比较均匀，从而能进行准确建模。同时，由于不同的分布需要的扰动程度是不同的，因此并不使用单一的高斯分布进行扰动，而是使用一系列扰动，这样就可以规避扰动程度的选择问题。</p>
+<p><img
+src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/03/pertubation.jpg"
+alt="对分布进行扰动的示例" /></p>
+<p>形式化地说，对于使用高斯噪声进行扰动的情况，可以使用 <span
+class="math inline">\(L\)</span> 个带有不同方差 <span
+class="math inline">\(\sigma_1&lt;\sigma_2&lt;\cdots&lt;\sigma_L\)</span>
+的高斯分布 <span
+class="math inline">\(\mathcal{N}(0,\sigma_i^2I),i=1,2,\cdots,L\)</span>
+分别对原始分布 <span class="math inline">\(p(\mathbf{x})\)</span>
+进行扰动： <span class="math display">\[
+p_{\sigma_i}(\mathbf{x})=\int
+p(\mathbf{y})\mathcal{N}(\mathbf{x};\mathbf{y},\sigma_i^2I)\mathrm{d}\mathbf{y}
+\]</span> 从 <span
+class="math inline">\(p_{\sigma_i}(\mathbf{x})\)</span>
+中采样是比较容易的，和 diffusion 中的重参数化技巧类似：先采样 <span
+class="math inline">\(\mathbf{x}\sim p(\mathbf{x})\)</span>，再计算
+<span class="math inline">\(\mathbf{x}+\sigma_i\mathbf{z}\)</span>，其中
+<span
+class="math inline">\(\mathbf{z}\sim\mathcal{N}(0,I)\)</span>。</p>
+<p>获得一系列用噪声进行扰动过的分布后，依然是对每一个分布进行 score
+matching，对于 <span class="math inline">\(\nabla_\mathbf{x}\log
+p_{\sigma_i}(\mathbf{x})\)</span> 得到一个与噪声有关的 score function
+<span
+class="math inline">\(\mathbf{s}_\theta(\mathbf{x},i)\)</span>。总体上的优化目标是对所有的这些分布
+score matching 优化目标的加权： <span class="math display">\[
+\sum_{i=1}^L\lambda(i)\mathbb{E}_{p_{\sigma_i}(\mathbf{x})}\left[||\nabla_\mathbf{x}\log
+p_{\sigma_i}(\mathbf{x})-\mathbf{s}_\theta(\mathbf{x},i)||_2^2\right]
+\]</span> 对于加权权重的选择，通常直接指定 <span
+class="math inline">\(\lambda(i)=\sigma_i^2\)</span>。这样我们就获得了一系列用不同的高斯噪声扰动过的分布，直观地看，扰动程度比较小的分布更接近真实分布，能在高概率密度的区域提供比较好的估计；扰动程度比较大的分布则能在低概率密度的区域提供比较好的估计，带有不同扰动程度的分布形成了一种比较互补的关系，有利于提高概率建模质量。</p>
+<p>采样的过程依然是进行一系列迭代，不过因为有多个分布，所以需要依次对每个分布迭代一遍，相当于一共迭代
+<span class="math inline">\(L\times T\)</span>
+轮，得到最终的结果。这种采样方法叫做 Annealed Langevin
+Dynamics，具体的采样算法可以参考<a
+target="_blank" rel="noopener" href="https://uvadl2c.github.io/lectures/Advanced%20Generative%20&amp;%20Energy-based%20Models/modern-based-models/lecture%204.2.pdf">这个链接</a>的内容。</p>
+<h1 id="总结">总结</h1>
+<p>作为生成模型的一种，score-based model
+也遵循学习+采样的范式，其学习过程使用 score matching
+来间接学习分布，采样过程使用 Langevin dynamics 通过迭代过程进行采样（和
+diffusion models
+的采样过程有点类似）。在训练时由于低概率密度区域会有比较低的权重，所以这部分区域无法准确学习，为了解决这个问题，又使用
+multiple noise pertubation 和 annealed Langevin dynamics
+进行了改进。不过介绍到这里其实只介绍了一些基础知识，我们关心的 SDE
+目前还没有出场，这部分知识应该会在下一篇文章中进行介绍，欢迎追更）</p>
+<blockquote>
+<p>参考资料：</p>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://yang-song.net/blog/2021/score/">Generative Modeling
+by Estimating Gradients of the Data Distribution</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/589106222">一文解释 Diffusion
+Model (二) Score-based SDE 理论推导</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://andrewcharlesjones.github.io/journal/21-score-matching.html">Score
+Matching</a></li>
+</ol>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/16-score-based-generative-models/">https://littlenyima.github.io/posts/16-score-based-generative-models/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Deep-learning/">Deep learning</a><a class="post-meta__tags" href="/tags/Generative-models/">Generative models</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/17-score-based-modeling-with-sde/" title="笔记｜Score-based Generative Models（二）：基于 SDE 的模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">笔记｜Score-based Generative Models（二）：基于 SDE 的模型</div></div></a></div><div class="next-post pull-right"><a href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">笔记｜扩散模型（三）：Improved DDPM 理论与实现</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/posts/13-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（一）：DDPM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-08</div><div class="title">笔记｜扩散模型（一）：DDPM 理论与实现</div></div></a></div><div><a href="/posts/14-denoising-diffusion-implicit-models/" title="笔记｜扩散模型（二）：DDIM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-12</div><div class="title">笔记｜扩散模型（二）：DDIM 理论与实现</div></div></a></div><div><a href="/posts/17-score-based-modeling-with-sde/" title="笔记｜Score-based Generative Models（二）：基于 SDE 的模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-05</div><div class="title">笔记｜Score-based Generative Models（二）：基于 SDE 的模型</div></div></a></div><div><a href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-10</div><div class="title">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</div></div></a></div><div><a href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-24</div><div class="title">笔记｜扩散模型（三）：Improved DDPM 理论与实现</div></div></a></div><div><a href="/posts/12-basic-concepts-of-normalizing-flow/" title="笔记｜Normalizing Flow 理论与实现（一）：基础理论"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-05-11</div><div class="title">笔记｜Normalizing Flow 理论与实现（一）：基础理论</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">20</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#score-function-%E5%92%8C-score-based-models"><span class="toc-number">1.</span> <span class="toc-text">Score Function 和
+Score-based Models</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%86%E5%B8%83%E5%AD%A6%E4%B9%A0score-matching"><span class="toc-number">2.</span> <span class="toc-text">分布学习：Score Matching</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%8E%E5%88%86%E5%B8%83%E9%87%87%E6%A0%B7langevin-dynamics"><span class="toc-number">3.</span> <span class="toc-text">从分布采样：Langevin Dynamics</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98%E4%B8%8E%E6%94%B9%E8%BF%9B%E6%96%B9%E6%A1%88"><span class="toc-number">4.</span> <span class="toc-text">存在的问题与改进方案</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%8E%E6%A6%82%E7%8E%87%E5%AF%86%E5%BA%A6%E5%8C%BA%E5%9F%9F%E5%BB%BA%E6%A8%A1%E4%B8%8D%E5%87%86%E7%A1%AE%E9%97%AE%E9%A2%98"><span class="toc-number">4.1.</span> <span class="toc-text">低概率密度区域建模不准确问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#multiple-noise-pertubations"><span class="toc-number">4.2.</span> <span class="toc-text">Multiple Noise Pertubations</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-post-series"><div class="item-headline"><i class="fa-solid fa-layer-group"></i><span>文章系列</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/17-score-based-modeling-with-sde/" title="笔记｜Score-based Generative Models（二）：基于 SDE 的模型">笔记｜Score-based Generative Models（二）：基于 SDE 的模型</a><time datetime="2024-07-05T08:37:40.000Z" title="發表於 2024-07-05 16:37:40">2024-07-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/16-score-based-generative-models/" title="笔记｜Score-based Generative Models（一）：基础理论">笔记｜Score-based Generative Models（一）：基础理论</a><time datetime="2024-07-02T07:13:14.000Z" title="發表於 2024-07-02 15:13:14">2024-07-02</time></div></div></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</a><time datetime="2024-07-12T08:27:55.000Z" title="發表於 2024-07-12 16:27:55">2024-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</a><time datetime="2024-07-10T09:40:51.000Z" title="發表於 2024-07-10 17:40:51">2024-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/17-score-based-modeling-with-sde/" title="笔记｜Score-based Generative Models（二）：基于 SDE 的模型">笔记｜Score-based Generative Models（二）：基于 SDE 的模型</a><time datetime="2024-07-05T08:37:40.000Z" title="發表於 2024-07-05 16:37:40">2024-07-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/16-score-based-generative-models/" title="笔记｜Score-based Generative Models（一）：基础理论">笔记｜Score-based Generative Models（一）：基础理论</a><time datetime="2024-07-02T07:13:14.000Z" title="發表於 2024-07-02 15:13:14">2024-07-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现">笔记｜扩散模型（三）：Improved DDPM 理论与实现</a><time datetime="2024-06-24T11:09:55.000Z" title="發表於 2024-06-24 19:09:55">2024-06-24</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/16-score-based-generative-models/',
+      url: 'https://littlenyima.github.io/posts/16-score-based-generative-models/',
+      title: '笔记｜Score-based Generative Models（一）：基础理论',
+      apikey: '__DISQUS_APIKEY_PUBLIC__',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=__DISQUS_APIKEY_PUBLIC__&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

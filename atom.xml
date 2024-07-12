@@ -6,7 +6,7 @@
   <link href="https://littlenyima.github.io/atom.xml" rel="self"/>
   
   <link href="https://littlenyima.github.io/"/>
-  <updated>2024-06-11T16:54:47.923Z</updated>
+  <updated>2024-07-12T11:24:25.143Z</updated>
   <id>https://littlenyima.github.io/</id>
   
   <author>
@@ -17,11 +17,11 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>笔记｜扩散模型（一）：DDPM 理论与实现</title>
-    <link href="https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/"/>
-    <id>https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/</id>
-    <published>2024-06-08T12:05:39.000Z</published>
-    <updated>2024-06-11T16:54:47.923Z</updated>
+    <title>笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</title>
+    <link href="https://littlenyima.github.io/posts/19-classifier-free-guidance-for-diffusion-models/"/>
+    <id>https://littlenyima.github.io/posts/19-classifier-free-guidance-for-diffusion-models/</id>
+    <published>2024-07-12T08:27:55.000Z</published>
+    <updated>2024-07-12T11:24:25.143Z</updated>
     
     
       
@@ -39,7 +39,179 @@
     
     <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
     
-    <category term="Diffusion model" scheme="https://littlenyima.github.io/tags/Diffusion-model/"/>
+    <category term="Diffusion models" scheme="https://littlenyima.github.io/tags/Diffusion-models/"/>
+    
+    <category term="Genetative models" scheme="https://littlenyima.github.io/tags/Genetative-models/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>笔记｜扩散模型（四）：Classifier Guidance 理论与实现</title>
+    <link href="https://littlenyima.github.io/posts/18-classifier-guidance-for-diffusion-models/"/>
+    <id>https://littlenyima.github.io/posts/18-classifier-guidance-for-diffusion-models/</id>
+    <published>2024-07-10T09:40:51.000Z</published>
+    <updated>2024-07-10T16:07:10.002Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
+    
+    
+    <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
+    
+    <category term="Generative models" scheme="https://littlenyima.github.io/tags/Generative-models/"/>
+    
+    <category term="Diffusion models" scheme="https://littlenyima.github.io/tags/Diffusion-models/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>笔记｜Score-based Generative Models（二）：基于 SDE 的模型</title>
+    <link href="https://littlenyima.github.io/posts/17-score-based-modeling-with-sde/"/>
+    <id>https://littlenyima.github.io/posts/17-score-based-modeling-with-sde/</id>
+    <published>2024-07-05T08:37:40.000Z</published>
+    <updated>2024-07-06T09:05:41.935Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
+    
+    
+    <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
+    
+    <category term="Generative models" scheme="https://littlenyima.github.io/tags/Generative-models/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>笔记｜Score-based Generative Models（一）：基础理论</title>
+    <link href="https://littlenyima.github.io/posts/16-score-based-generative-models/"/>
+    <id>https://littlenyima.github.io/posts/16-score-based-generative-models/</id>
+    <published>2024-07-02T07:13:14.000Z</published>
+    <updated>2024-07-04T14:27:15.086Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
+    
+    
+    <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
+    
+    <category term="Generative models" scheme="https://littlenyima.github.io/tags/Generative-models/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>笔记｜扩散模型（三）：Improved DDPM 理论与实现</title>
+    <link href="https://littlenyima.github.io/posts/15-improved-denoising-diffusion-probabilistic-models/"/>
+    <id>https://littlenyima.github.io/posts/15-improved-denoising-diffusion-probabilistic-models/</id>
+    <published>2024-06-24T11:09:55.000Z</published>
+    <updated>2024-07-02T07:14:42.742Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
+    
+    
+    <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
+    
+    <category term="Generative models" scheme="https://littlenyima.github.io/tags/Generative-models/"/>
+    
+    <category term="Diffusion models" scheme="https://littlenyima.github.io/tags/Diffusion-models/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>笔记｜扩散模型（二）：DDIM 理论与实现</title>
+    <link href="https://littlenyima.github.io/posts/14-denoising-diffusion-implicit-models/"/>
+    <id>https://littlenyima.github.io/posts/14-denoising-diffusion-implicit-models/</id>
+    <published>2024-06-12T08:59:12.000Z</published>
+    <updated>2024-07-02T07:14:39.854Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
+    
+    
+    <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
+    
+    <category term="Generative models" scheme="https://littlenyima.github.io/tags/Generative-models/"/>
+    
+    <category term="Diffusion models" scheme="https://littlenyima.github.io/tags/Diffusion-models/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>笔记｜扩散模型（一）：DDPM 理论与实现</title>
+    <link href="https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/"/>
+    <id>https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/</id>
+    <published>2024-06-08T12:05:39.000Z</published>
+    <updated>2024-07-02T07:14:35.249Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
+    
+    
+    <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
+    
+    <category term="Generative models" scheme="https://littlenyima.github.io/tags/Generative-models/"/>
+    
+    <category term="Diffusion models" scheme="https://littlenyima.github.io/tags/Diffusion-models/"/>
     
   </entry>
   

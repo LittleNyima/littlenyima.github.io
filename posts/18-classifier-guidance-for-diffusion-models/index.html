@@ -1,0 +1,459 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>笔记｜扩散模型（四）：Classifier Guidance 理论与实现 | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="笔记｜扩散模型（一）：DDPM 理论与实现笔记｜扩散模型（二）：DDIM 理论与实现笔记｜扩散模型（三）：Improved DDPM 理论与实现笔记｜扩散模型（四）：Classifier Guidance 理论与实现笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现  论文链接：Diffusion Models Beat GANs on Image Synthesi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="笔记｜扩散模型（四）：Classifier Guidance 理论与实现">
+<meta property="og:url" content="https://littlenyima.github.io/posts/18-classifier-guidance-for-diffusion-models/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="笔记｜扩散模型（一）：DDPM 理论与实现笔记｜扩散模型（二）：DDIM 理论与实现笔记｜扩散模型（三）：Improved DDPM 理论与实现笔记｜扩散模型（四）：Classifier Guidance 理论与实现笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现  论文链接：Diffusion Models Beat GANs on Image Synthesi">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2024-07-10T09:40:51.000Z">
+<meta property="article:modified_time" content="2024-07-10T16:07:10.002Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Deep learning">
+<meta property="article:tag" content="Generative models">
+<meta property="article:tag" content="Diffusion models">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/18-classifier-guidance-for-diffusion-models/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '笔记｜扩散模型（四）：Classifier Guidance 理论与实现',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-07-11 00:07:10'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">20</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2024-07-10T09:40:51.000Z" title="發表於 2024-07-10 17:40:51">2024-07-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2024-07-10T16:07:10.002Z" title="更新於 2024-07-11 00:07:10">2024-07-11</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Notes/">Notes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><ol><li><a href="/posts/13-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（一）：DDPM 理论与实现">笔记｜扩散模型（一）：DDPM 理论与实现</a></li><li><a href="/posts/14-denoising-diffusion-implicit-models/" title="笔记｜扩散模型（二）：DDIM 理论与实现">笔记｜扩散模型（二）：DDIM 理论与实现</a></li><li><a href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现">笔记｜扩散模型（三）：Improved DDPM 理论与实现</a></li><li><a href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</a></li><li><a href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</a></li></ol>
+<blockquote>
+<p>论文链接：<em><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2105.05233">Diffusion
+Models Beat GANs on Image Synthesis</a></em></p>
+</blockquote>
+<p>在前边的几篇文章中我们已经学习了 DDPM
+以及分别对其训练和采样过程进行改进的工作，不过这些方法都只能进行无条件生成，而无法对生成过程进行控制。我们这次学习的不再是无条件生成，而是通过一定方式对生成过程进行控制，比较常见的有两种：Classifier
+Guidance 与 Classifier-Free Guidance，本文首先介绍第一种。</p>
+<h1 id="一些工作背景">一些工作背景</h1>
+<p>实际上 Classifier Guidance 是上边给出的论文工作中的一部分，虽然
+Improved DDPM 已经比较有效地提升了 DDPM
+的生成效果，但在一些大数据集上的效果仍然不如当时主流的生成模型 GAN。因此
+OpenAI 在 Improved DDPM
+的基础上继续进行了一些改进，主要是一些工程上的改进：</p>
+<ul>
+<li>在模型的尺寸基本不变的前提下，提升模型的深度与宽度之比，相当于使用更深的模型；</li>
+<li>增加多头注意力中 head 的数量；</li>
+<li>使用多分辨率 attention，即 32x32、16x16 和 8x8，而不是只在 16x16
+的尺度计算 attention；</li>
+<li>使用 BigGAN 的残差模块来进行上下采样；</li>
+<li>将残差连接的权重改为 <span
+class="math inline">\(\frac{1}{\sqrt{2}}\)</span>。</li>
+</ul>
+<p>经过一系列改进，DDPM 的性能超过了 GAN，文章把改进后的模型称为 Ablated
+Diffusion Model（ADM）。</p>
+<h1 id="classifier-guidance">Classifier Guidance</h1>
+<p>上边的工程改进并不是本文要讨论的重点，我们言归正传来讲 Classifier
+Guidance。顾名思义，这种可控生成的方式引入了一个额外的分类器，具体来说，是使用分类器的梯度对生成的过程进行引导。</p>
+<h2 id="类别引导">类别引导</h2>
+<p>要使用类别标签 <span class="math inline">\(y\)</span>
+对生成过程进行引导，需要学习的是条件概率 <span
+class="math inline">\(p(\mathbf{x}_t|y)\)</span>，直接使用贝叶斯公式可以得到：
+<span class="math display">\[
+p(\mathbf{x}_t|y)=\frac{p(\mathbf{x}_t)p(y|\mathbf{x}_t)}{p(y)}
+\]</span> 直接求解并不容易，但可以使用 score-based models
+的方式进行求解（对 score-based models 不熟悉的读者可以先阅读我的 <a
+href="https://littlenyima.github.io/posts/16-score-based-generative-models/">score-based
+models 基础知识讲解</a>和<a
+href="https://littlenyima.github.io/posts/17-score-based-modeling-with-sde/">基于
+SDE 的 score-based models 讲解</a>这两篇文章作为前置知识），也就是利用
+score function： <span class="math display">\[
+\begin{aligned}
+\nabla_{\mathbf{x}_t}\log
+p(\mathbf{x}_t|y)&amp;=\nabla_{\mathbf{x}_t}\log\frac{p(\mathbf{x}_t)p(y|\mathbf{x}_t)}{p(y)}\\
+&amp;=\nabla_{\mathbf{x}_t}\log
+p(\mathbf{x}_t)+\nabla_{\mathbf{x}_t}\log
+p(y|\mathbf{x}_t)-\nabla_{\mathbf{x}_t}\log p(y)\\
+&amp;=\nabla_{\mathbf{x}_t}\log
+p(\mathbf{x}_t)+\nabla_{\mathbf{x}_t}\log p(y|\mathbf{x}_t)
+\end{aligned}
+\]</span> 在上边的推导过程中，因为 <span
+class="math inline">\(p(y)\)</span> 对 <span
+class="math inline">\(\mathbf{x}_t\)</span> 没有梯度，所以有 <span
+class="math inline">\(\nabla_{\mathbf{x}_t}\log
+p(y)=0\)</span>。最后得到的式子中，第一项 <span
+class="math inline">\(\nabla_{\mathbf{x}_t}\log p(\mathbf{x}_t)\)</span>
+就是 score function，这个已经由 diffusion model
+进行学习，可以认为也是已知的。因此，现在仍需要求解的就只剩最后一项 <span
+class="math inline">\(\nabla_{\mathbf{x}_t}\log
+p(y|\mathbf{x}_t)\)</span>。</p>
+<p>单看 <span
+class="math inline">\(p(y|\mathbf{x}_t)\)</span>，这个表示的是从 <span
+class="math inline">\(\mathbf{x}_t\)</span> 得到类别 <span
+class="math inline">\(y\)</span>
+的概率，这个过程和分类任务的过程是相同的。那么求解这一项可以使用一个非常直接的思路，也就是真的使用一个分类器对
+<span class="math inline">\(\mathbf{x}_t\)</span>
+进行分类，再对分类结果概率分布的 <span
+class="math inline">\(\log\)</span>
+求梯度。这样就可以直接得到上面公式里的最后一项，从而实现基于类别对生成进行引导。</p>
+<p>在实际使用的时候通常会用一个额外的参数 <span
+class="math inline">\(s\)</span> 来控制 guidance 的规模，也就是： <span
+class="math display">\[
+\nabla_{\mathbf{x}_t}\log
+p(\mathbf{x}_t|y)=\underbrace{\nabla_{\mathbf{x}_t}\log
+p(\mathbf{x}_t)}_{\textrm{unconditional}~\textrm{score}}+s\underbrace{\nabla_{\mathbf{x}_t}\log
+p(y|\mathbf{x}_t)}_{\textrm{adversarial}~\textrm{gradient}}
+\]</span> 这个参数被称为 guidance
+scale。这个式子也可以直观地进行理解：第一项是无条件生成的 score
+function，第二项是分类器的梯度，这个梯度表示的是从噪声指向条件 <span
+class="math inline">\(y\)</span> 的方向，把这个方向加到无条件生成的
+score 上，就可以让降噪的方向也指向 <span
+class="math inline">\(y\)</span> 的方向。</p>
+<h2 id="另一种理解思路">另一种理解思路</h2>
+<p>如果有读者阅读了原始论文，就会发现原论文中给出的算法和上述的解释有一些不同。在原文中，模型从
+<span class="math inline">\(\mathbf{x}_t\)</span> 预测出均值 <span
+class="math inline">\(\mu\)</span> 和方差 <span
+class="math inline">\(\Sigma\)</span> 后，得到 <span
+class="math inline">\(\mathbf{x}_{t-1}\)</span> 的方式是： <span
+class="math display">\[
+\mathbf{x}_{t-1}\sim\mathcal{N}(\mu+s\Sigma\nabla_{\mathbf{x}_t}\log
+p_\phi(y|\mathbf{x}_t),\Sigma)
+\]</span> 这个是因为推导方式不同，论文的作者没有使用 score
+function，而是从条件概率的角度出发。我们知道 DDPM 的反向过程是学习 <span
+class="math inline">\(p_\theta(\mathbf{x}_t|\mathbf{x}_{t+1})\)</span>，加入条件
+<span class="math inline">\(y\)</span> 后这个条件概率分布变为 <span
+class="math inline">\(p_{\theta,\phi}(\mathbf{x}_t|\mathbf{x}_{t+1},y)\)</span>，经过一系列条件概率的变换（推导过程有点复杂，具体的可以看原论文的附录
+H），可以得到： <span class="math display">\[
+p_{\theta,\phi}(\mathbf{x}_t|\mathbf{x}_{t+1},y)=Zp_\theta(\mathbf{x}_t|\mathbf{x}_{t+1})p_\phi(y|\mathbf{x}_t)
+\]</span> 其中 <span class="math inline">\(Z\)</span>
+是一个常量，类似能量模型中的归一化常数。上边式子右侧的第一个分布我们已经知道是一个高斯分布，其均值
+<span class="math inline">\(\mu\)</span> 和方差 <span
+class="math inline">\(\Sigma\)</span> 都可以从 <span
+class="math inline">\(\mathbf{x}_t\)</span> 和 <span
+class="math inline">\(t\)</span> 估计出来，因此： <span
+class="math display">\[
+\begin{aligned}
+p_\theta(\mathbf{x}_t|\mathbf{x}_{t+1})&amp;=\mathcal{N}(\mu,\Sigma)\\
+\log
+p_\theta(\mathbf{x}_t|\mathbf{x}_{t+1})&amp;=-\frac{1}{2}(\mathbf{x}_t-\mu)^T\Sigma^{-1}(\mathbf{x}_t-\mu)+C
+\end{aligned}
+\]</span> 当方差 <span
+class="math inline">\(||\Sigma||\rightarrow0\)</span>，第二项可以在
+<span class="math inline">\(\mathbf{x}_t=\mu\)</span> 进行泰勒展开：
+<span class="math display">\[
+\begin{aligned}
+\log p_\phi(y|\mathbf{x}_t)&amp;\approx\log
+p_\phi(y|\mathbf{x}_t)\bigg|_{\mathbf{x}_t=\mu}+(\mathbf{x}_t-\mu)\nabla_{\mathbf{x}_t}\log
+p_\phi(y|\mathbf{x}_t)\bigg|_{\mathbf{x}_t=\mu}\\
+&amp;=(\mathbf{x}_t-\mu)\nabla_{\mathbf{x}_t}\log
+p_\phi(y|\mathbf{x}_t)\bigg|_{\mathbf{x}_t=\mu}+C
+\end{aligned}
+\]</span> 令 <span class="math inline">\(g=\nabla_{\mathbf{x}_t}\log
+p_\phi(y|\mathbf{x}_t)\bigg|_{\mathbf{x}_t=\mu}\)</span>，则可以推导（具体过程可以参考原论文）：
+<span class="math display">\[
+\begin{aligned}
+\log\left(p_\theta(\mathbf{x}_t|\mathbf{x}_{t+1})p_\phi(y|\mathbf{x}_t)\right)&amp;\approx-\frac{1}{2}(\mathbf{x}_t-\mu)^T\Sigma^{-1}(\mathbf{x}_t-\mu)+(\mathbf{x}_t-\mu)g+C\\
+&amp;=\log p(z)+C,\quad z\sim\mathcal{N}(\mu+\Sigma g,\Sigma)
+\end{aligned}
+\]</span> 因此最后推出 <span
+class="math inline">\(\mathbf{x}_t\sim\mathcal{N}(\mu+\Sigma
+g,\Sigma)\)</span>，加上 guidance scale 就是 <span
+class="math inline">\(\mathbf{x}_t\sim\mathcal{N}(\mu+s\Sigma
+g,\Sigma)\)</span>。虽然这部分的推导以及结果相比于上一节中的没有那么直观，但也可以发现这种方法也是用分类器的梯度对采样时的均值进行了引导，内在的逻辑应当是相通的。</p>
+<h1 id="代码实现">代码实现</h1>
+<p>虽然推导看起来依然很复杂，但需要改动的代码其实非常少，获得梯度之后再用梯度更新一下就可以了。这里给出一些关键的代码片段，与核心方法无关的部分就直接省略了。</p>
+<h2 id="获取分类器梯度">获取分类器梯度</h2>
+<p>获取分类器对 <span class="math inline">\(\mathbf{x}_t\)</span>
+的梯度其实也比较直接，可以直接使用 Pytorch 的自动求导工具。先让 <span
+class="math inline">\(\mathbf{x}\)</span>
+带上梯度，然后输入分类器获取概率分布，最后再提取出 <span
+class="math inline">\(y\)</span>
+对应的一项计算梯度。这里有一个比较神奇的点，就是一般来说分类模型的输入都是不计算梯度的，不过这里的输入也是带梯度的，感觉类似于
+DETR 里的 learnable query：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">classifier_guidance</span>(<span class="params"></span></span><br><span class="line"><span class="params">    x: torch.Tensor,</span></span><br><span class="line"><span class="params">    t: torch.Tensor,</span></span><br><span class="line"><span class="params">    y: torch.Tensor,</span></span><br><span class="line"><span class="params">    classifier: torch.nn.Module</span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    <span class="keyword">with</span> torch.enable_grad():</span><br><span class="line">        <span class="comment"># 激活梯度计算</span></span><br><span class="line">        x_with_grad = x.detach().requires_grad_(<span class="literal">True</span>)</span><br><span class="line">        <span class="comment"># 获取 log 形式的概率分布</span></span><br><span class="line">        logits = classifier(x_with_grad, t)</span><br><span class="line">        log_prob = F.log_softmax(logits, dim=-<span class="number">1</span>)</span><br><span class="line">        <span class="comment"># 选取出 y 对应的项</span></span><br><span class="line">        selected = log_prob[<span class="built_in">range</span>(<span class="built_in">len</span>(logits)), y.view(-<span class="number">1</span>)]</span><br><span class="line">        <span class="comment"># 计算梯度</span></span><br><span class="line">        <span class="keyword">return</span> torch.autograd.grad(selected.<span class="built_in">sum</span>(), x_with_grad)[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+<p>这一部分也就相当于 <span
+class="math inline">\(\nabla_{\mathbf{x}_t}\log
+p(y|\mathbf{x}_t)\)</span>
+这一项，这在上一章的两种解释中都是相通的。而如何使用得到的梯度对采样过程进行引导，会根据推导不同有两种实现方式。</p>
+<h2 id="第一种引导的实现">第一种引导的实现</h2>
+<p>这种方法相对比较好理解，就是用梯度朝着指向 <span
+class="math inline">\(y\)</span> 的方向对生成结果进行一个修正：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> timestep <span class="keyword">in</span> tqdm(scheduler.timesteps):</span><br><span class="line">    <span class="comment"># 预测噪声</span></span><br><span class="line">    <span class="keyword">with</span> torch.no_grad():</span><br><span class="line">        noise_pred = unet(images, timestep).sample</span><br><span class="line">    <span class="comment"># 根据噪声和时间步获得 x_&#123;t-1&#125;</span></span><br><span class="line">    images = scheduler.step(noise_pred, timestep, images).prev_sample</span><br><span class="line">    <span class="comment"># 计算分类器梯度</span></span><br><span class="line">    guidance = classifier_guidance(images, timestep, y, classifier)</span><br><span class="line">    <span class="comment"># 加到 x_&#123;t-1&#125; 上</span></span><br><span class="line">    images += guidance_scale * guidance</span><br></pre></td></tr></table></figure>
+<p>在上边的代码中，<code>images</code> 对应 <span
+class="math inline">\(\mathbf{x}\)</span>，先从 <span
+class="math inline">\(\mathbf{x}_t\)</span> 得到了 <span
+class="math inline">\(\mathbf{x}_{t-1}\)</span> 和 guidance，再把
+guidance 加到 <span class="math inline">\(\mathbf{x}_{t-1}\)</span>
+上。</p>
+<h2 id="第二种引导的实现">第二种引导的实现</h2>
+<p>这种实现方式和 openai 的官方实现相同，也就是直接按照原论文的 <span
+class="math inline">\(\mathbf{x}_t\sim\mathcal{N}(\mu+s\Sigma
+g,\Sigma)\)</span> 得到结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 先预测均值和方差</span></span><br><span class="line">mean, variance = p_mean_var[<span class="string">&#x27;mean&#x27;</span>], p_mean_var[<span class="string">&#x27;variance&#x27;</span>]</span><br><span class="line"><span class="comment"># 计算梯度</span></span><br><span class="line">guidance = classifier_guidance(images, timestep, y, classifier)</span><br><span class="line"><span class="comment"># 根据原始的均值方差，和梯度一起计算出新的均值</span></span><br><span class="line">new_mean = mean.<span class="built_in">float</span>() + guidance_scale * variance * guidance.<span class="built_in">float</span>()</span><br></pre></td></tr></table></figure>
+<p>在这份代码中，<code>p_mean_var</code>
+就是模型预测出的均值和方差。因为官方实现基于 Improved DDPM
+修改，所以方差也是可学习的。根据公式可以计算出新的均值，得到新的均值和方差后，再从对应的高斯分布中进行采样即可。</p>
+<h1 id="总结">总结</h1>
+<p>以上就是 Classifier Guidance
+相关的内容了，感觉用梯度进行引导还是挺神奇的。虽然现在很少有方法再用这种方式进行条件生成了（毕竟还需要专门训一个分类器），不过学习学习也算开拓一下思路）</p>
+<blockquote>
+<p>参考资料：</p>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2208.11970">Understanding Diffusion
+Models: A Unified Perspective</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/660518657">Classifier Guidance
+和 Classifier Free Guidance，一堆公式不如两行代码</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://github.com/openai/guided-diffusion/tree/main">openai/guided-diffusion</a></li>
+</ol>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/18-classifier-guidance-for-diffusion-models/">https://littlenyima.github.io/posts/18-classifier-guidance-for-diffusion-models/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Deep-learning/">Deep learning</a><a class="post-meta__tags" href="/tags/Generative-models/">Generative models</a><a class="post-meta__tags" href="/tags/Diffusion-models/">Diffusion models</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</div></div></a></div><div class="next-post pull-right"><a href="/posts/17-score-based-modeling-with-sde/" title="笔记｜Score-based Generative Models（二）：基于 SDE 的模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">笔记｜Score-based Generative Models（二）：基于 SDE 的模型</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/posts/13-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（一）：DDPM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-08</div><div class="title">笔记｜扩散模型（一）：DDPM 理论与实现</div></div></a></div><div><a href="/posts/14-denoising-diffusion-implicit-models/" title="笔记｜扩散模型（二）：DDIM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-12</div><div class="title">笔记｜扩散模型（二）：DDIM 理论与实现</div></div></a></div><div><a href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-24</div><div class="title">笔记｜扩散模型（三）：Improved DDPM 理论与实现</div></div></a></div><div><a href="/posts/16-score-based-generative-models/" title="笔记｜Score-based Generative Models（一）：基础理论"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-02</div><div class="title">笔记｜Score-based Generative Models（一）：基础理论</div></div></a></div><div><a href="/posts/17-score-based-modeling-with-sde/" title="笔记｜Score-based Generative Models（二）：基于 SDE 的模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-05</div><div class="title">笔记｜Score-based Generative Models（二）：基于 SDE 的模型</div></div></a></div><div><a href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-12</div><div class="title">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">20</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E4%BA%9B%E5%B7%A5%E4%BD%9C%E8%83%8C%E6%99%AF"><span class="toc-number">1.</span> <span class="toc-text">一些工作背景</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#classifier-guidance"><span class="toc-number">2.</span> <span class="toc-text">Classifier Guidance</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%88%AB%E5%BC%95%E5%AF%BC"><span class="toc-number">2.1.</span> <span class="toc-text">类别引导</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%A6%E4%B8%80%E7%A7%8D%E7%90%86%E8%A7%A3%E6%80%9D%E8%B7%AF"><span class="toc-number">2.2.</span> <span class="toc-text">另一种理解思路</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.</span> <span class="toc-text">代码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%88%86%E7%B1%BB%E5%99%A8%E6%A2%AF%E5%BA%A6"><span class="toc-number">3.1.</span> <span class="toc-text">获取分类器梯度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E7%A7%8D%E5%BC%95%E5%AF%BC%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.2.</span> <span class="toc-text">第一种引导的实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E7%A7%8D%E5%BC%95%E5%AF%BC%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.3.</span> <span class="toc-text">第二种引导的实现</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-post-series"><div class="item-headline"><i class="fa-solid fa-layer-group"></i><span>文章系列</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</a><time datetime="2024-07-12T08:27:55.000Z" title="發表於 2024-07-12 16:27:55">2024-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</a><time datetime="2024-07-10T09:40:51.000Z" title="發表於 2024-07-10 17:40:51">2024-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现">笔记｜扩散模型（三）：Improved DDPM 理论与实现</a><time datetime="2024-06-24T11:09:55.000Z" title="發表於 2024-06-24 19:09:55">2024-06-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/14-denoising-diffusion-implicit-models/" title="笔记｜扩散模型（二）：DDIM 理论与实现">笔记｜扩散模型（二）：DDIM 理论与实现</a><time datetime="2024-06-12T08:59:12.000Z" title="發表於 2024-06-12 16:59:12">2024-06-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/13-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（一）：DDPM 理论与实现">笔记｜扩散模型（一）：DDPM 理论与实现</a><time datetime="2024-06-08T12:05:39.000Z" title="發表於 2024-06-08 20:05:39">2024-06-08</time></div></div></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</a><time datetime="2024-07-12T08:27:55.000Z" title="發表於 2024-07-12 16:27:55">2024-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</a><time datetime="2024-07-10T09:40:51.000Z" title="發表於 2024-07-10 17:40:51">2024-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/17-score-based-modeling-with-sde/" title="笔记｜Score-based Generative Models（二）：基于 SDE 的模型">笔记｜Score-based Generative Models（二）：基于 SDE 的模型</a><time datetime="2024-07-05T08:37:40.000Z" title="發表於 2024-07-05 16:37:40">2024-07-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/16-score-based-generative-models/" title="笔记｜Score-based Generative Models（一）：基础理论">笔记｜Score-based Generative Models（一）：基础理论</a><time datetime="2024-07-02T07:13:14.000Z" title="發表於 2024-07-02 15:13:14">2024-07-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现">笔记｜扩散模型（三）：Improved DDPM 理论与实现</a><time datetime="2024-06-24T11:09:55.000Z" title="發表於 2024-06-24 19:09:55">2024-06-24</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/18-classifier-guidance-for-diffusion-models/',
+      url: 'https://littlenyima.github.io/posts/18-classifier-guidance-for-diffusion-models/',
+      title: '笔记｜扩散模型（四）：Classifier Guidance 理论与实现',
+      apikey: '__DISQUS_APIKEY_PUBLIC__',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=__DISQUS_APIKEY_PUBLIC__&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

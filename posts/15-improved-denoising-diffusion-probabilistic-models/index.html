@@ -1,0 +1,525 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>笔记｜扩散模型（三）：Improved DDPM 理论与实现 | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="笔记｜扩散模型（一）：DDPM 理论与实现笔记｜扩散模型（二）：DDIM 理论与实现笔记｜扩散模型（三）：Improved DDPM 理论与实现笔记｜扩散模型（四）：Classifier Guidance 理论与实现笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现  论文链接：Improved Denoising Diffusion Probabilistic M">
+<meta property="og:type" content="article">
+<meta property="og:title" content="笔记｜扩散模型（三）：Improved DDPM 理论与实现">
+<meta property="og:url" content="https://littlenyima.github.io/posts/15-improved-denoising-diffusion-probabilistic-models/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="笔记｜扩散模型（一）：DDPM 理论与实现笔记｜扩散模型（二）：DDIM 理论与实现笔记｜扩散模型（三）：Improved DDPM 理论与实现笔记｜扩散模型（四）：Classifier Guidance 理论与实现笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现  论文链接：Improved Denoising Diffusion Probabilistic M">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2024-06-24T11:09:55.000Z">
+<meta property="article:modified_time" content="2024-07-02T07:14:42.742Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Deep learning">
+<meta property="article:tag" content="Generative models">
+<meta property="article:tag" content="Diffusion models">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/15-improved-denoising-diffusion-probabilistic-models/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '笔记｜扩散模型（三）：Improved DDPM 理论与实现',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-07-02 15:14:42'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">20</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">笔记｜扩散模型（三）：Improved DDPM 理论与实现</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2024-06-24T11:09:55.000Z" title="發表於 2024-06-24 19:09:55">2024-06-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2024-07-02T07:14:42.742Z" title="更新於 2024-07-02 15:14:42">2024-07-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Notes/">Notes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="笔记｜扩散模型（三）：Improved DDPM 理论与实现"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><ol><li><a href="/posts/13-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（一）：DDPM 理论与实现">笔记｜扩散模型（一）：DDPM 理论与实现</a></li><li><a href="/posts/14-denoising-diffusion-implicit-models/" title="笔记｜扩散模型（二）：DDIM 理论与实现">笔记｜扩散模型（二）：DDIM 理论与实现</a></li><li><a href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现">笔记｜扩散模型（三）：Improved DDPM 理论与实现</a></li><li><a href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</a></li><li><a href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</a></li></ol>
+<blockquote>
+<p>论文链接：<em><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2102.09672">Improved
+Denoising Diffusion Probabilistic Models</a></em></p>
+</blockquote>
+<p>在前边两篇文章中我们学习了 DDPM 和 DDIM，这篇文章介绍的是 Improved
+DDPM，是一个针对 DDPM 生成效果进行改进的工作。</p>
+<p>虽然 DDPM 在生成任务上取得了不错的效果，但如果使用一些 metric 对 DDPM
+进行评价，就会发现其虽然能在 FID 和 Inception Score
+上获得不错的效果，但在负对数似然（Negative
+Log-likelihood，NLL）这个指标上表现不够好。根据 <a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/1906.00446">VQ-VAE2</a> 文章中的观点，NLL
+上的表现体现的是模型捕捉数据整体分布的能力。而且有工作表明即使在 NLL
+指标上仅有微小的提升，就会在生成效果和特征表征能力上有很大的提升。</p>
+<p>Improved DDPM 主要是针对 DDPM
+的训练过程进行改进，主要从两个方面进行改进：</p>
+<ol type="1">
+<li>不使用 DDPM 原有的固定方差，而是使用可学习的方差；</li>
+<li>改进了加噪过程，使用余弦形式的 Scheduler，而不是线性
+Scheduler。</li>
+</ol>
+<h1 id="可学习的方差">可学习的方差</h1>
+<p>我们知道 DDPM 规定了一系列固定的 <span
+class="math inline">\(\beta_t\)</span> 作为方差，并且将 <span
+class="math inline">\(\sigma^2_t\)</span> 分别取为 <span
+class="math inline">\(\sigma_t^2=\beta_t\)</span> 和 <span
+class="math inline">\(\sigma_t^2=\tilde{\beta}_t\)</span>
+得到的结果差别并不大。之所以会出现这种情况，可以从下面的左图中看出大致的原因，只有在扩散过程最开始的时候
+<span class="math inline">\(\tilde{\beta}_t\)</span> 才和 <span
+class="math inline">\(\beta_t\)</span>
+有比较大的差距，而当扩散步骤增大时，这两者基本上没有区别。这说明当扩散步骤足够大的时候，<span
+class="math inline">\(\sigma_t\)</span>
+的选取对采样的质量影响不大，也就是说这种情况下，模型的平均值 <span
+class="math inline">\(\mu_\theta(\mathbf{x}_t,t)\)</span> 比方差 <span
+class="math inline">\(\Sigma_\theta(\mathbf{x}_t,t)\)</span>
+更能决定生成的分布。</p>
+<p>虽然上边这个发现从一定程度上可以说明方差的选取并不重要。但再来看一下下面的右图，可以发现在扩散的过程中，最初的几步扩散对
+VLB 的影响是最大的，在这几个步骤里 <span
+class="math inline">\(\sigma_t\)</span>
+依然是有一定的作用的，因此作者认为可以通过选取比较好的方差来获得更好的
+log-likelihood。从这个角度出发，作者引入了一个可学习的方差。</p>
+<p><img
+src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/06/24/iddpm-variances-loss.png"
+alt="DDPM 中的方差和损失函数" /></p>
+<p>既然要选择一个可学习的方差，那么现在的问题就变成了应该如何选取一个合适的方差。这个工作的作者认为因为方差的变化范围比较小，不太容易用神经网络进行学习，所以实际上使用的方差是对
+<span class="math inline">\(\beta_t\)</span> 和 <span
+class="math inline">\(\tilde{\beta}_t\)</span> 进行插值的结果： <span
+class="math display">\[
+\Sigma_\theta(\mathbf{x}_t,t)=\exp(v\log\beta_t+(1-v)\log\tilde\beta_t)
+\]</span> 在实际训练的时候并没有对 <span
+class="math inline">\(v\)</span>
+进行约束，所以理论上来说最后的方差不一定在这两者之间，不过经过实验发现没有出现这个情况。</p>
+<h1 id="cosine-noise-schedule">Cosine Noise Schedule</h1>
+<p>本文的作者发现线性的 <span class="math inline">\(\beta_t\)</span>
+对于高分辨率图像效果不错，但对于低分辨率的图像表现不佳。在之前的文章中我们提到过，在
+DDPM 加噪的时候 <span class="math inline">\(\beta_t\)</span>
+是从一个比较小的数值逐渐增加到比较大的数值的，因为如果最开始的时候加入很大的噪声，会严重破坏图像信息，不利于图像的学习。在这里应该也是相同的道理，因为低分辨率图像包含的信息本身就不多，虽然一开始使用了比较小的
+<span class="math inline">\(\beta_t\)</span>，但线性的 schedule
+对于这些低分辨率图像来说还是加噪比较快。</p>
+<p>作者把方差用一种 cosine 的形式定义，不过并不是直接定义 <span
+class="math inline">\(\beta_t\)</span>，而是定义 <span
+class="math inline">\(\bar{\alpha}_t\)</span>： <span
+class="math display">\[
+\bar{\alpha}_t=\frac{f(t)}{f(0)},\quad
+f(t)=\cos\left(\frac{t/T+s}{1+s}\cdot\frac{\pi}{2}\right)^2
+\]</span> 这个 schedule 和线性 schedule 的比较如下图所示：</p>
+<p><img src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/06/24/ddim-alpha_bar-eps.png" alt="Linear schedule 和 cosine schedule 的比较" style="width:min(100%, 400px);" /></p>
+<p>这个 schedule 在 <span class="math inline">\(t=0\)</span> 和 <span
+class="math inline">\(t=T\)</span>
+附近都变化比较小，而在中间有一个接近于线性的下降过程，同时可以发现
+cosine schedule 比 linear schedule
+对信息的破坏更慢。这也印证了我们在前边提到的理论：在扩散开始的时候更加缓慢地加噪，可以得到更好的训练效果。除此之外设计这个
+schedule 的时候作者也有一些比较细节的考虑，比如选取一个比较小的偏移量
+<span class="math inline">\(s=8\times10^{-3}\)</span>，防止 <span
+class="math inline">\(\beta_t\)</span> 在 <span
+class="math inline">\(t=0\)</span> 附近过小，并且将 <span
+class="math inline">\(\beta_t\)</span> 裁剪到 <span
+class="math inline">\(0.999\)</span> 来防止 <span
+class="math inline">\(t=T\)</span> 附近出现奇异点。</p>
+<h1 id="训练过程">训练过程</h1>
+<p>最终训练使用的损失是两项损失的加权： <span class="math display">\[
+L_\mathrm{hybrid}=L_\mathrm{simple}+\lambda L_\mathrm{vlb}
+\]</span> 在这里，<span class="math inline">\(L_\mathrm{simple}\)</span>
+就是 DDPM 使用的 L2 损失：<span
+class="math inline">\(L_\mathrm{simple}=E_{t,\mathbf{x}_0,\epsilon}[||\epsilon-\epsilon_\theta(\mathbf{x}_t,t)||^2]\)</span>，而
+<span class="math inline">\(L_\mathrm{vlb}\)</span> 是用 VAE
+的形式写出的损失函数： <span class="math display">\[
+\begin{aligned}
+L_\mathrm{vlb}&amp;=L_0+L_1+\cdots+L_{T-1}+L_T\\
+L_0&amp;=-\log p_\theta(\mathbf{x}_0|\mathbf{x}_1)\\
+L_{t-1}&amp;=D_{KL}(q(\mathbf{x}_{t-1}|\mathbf{x}_t,\mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1}|\mathbf{x}_t))\\
+L_T&amp;=D_{KL}(q(\mathbf{x}_T|\mathbf{x}_0)||p(\mathbf{x}_T))
+\end{aligned}
+\]</span> 为了防止 <span class="math inline">\(L_\mathrm{vlb}\)</span>
+影响 <span
+class="math inline">\(L_\mathrm{simple}\)</span>，这里使用了一个比较小的权重
+<span class="math inline">\(\lambda=1\times10^{-3}\)</span>，并且对 VLB
+损失中的均值项 <span
+class="math inline">\(\mu_\theta(\mathbf{x}_t,t)\)</span> 进行了
+stop-gradient，从而让 <span
+class="math inline">\(L_\mathrm{simple}\)</span>
+依然是均值的主要决定因素。</p>
+<p>作者也表示最开始本来想直接优化 <span
+class="math inline">\(L_\mathrm{vlb}\)</span>，但是后来发现 <span
+class="math inline">\(L_\mathrm{vlb}\)</span> 很难优化。作者分析认为
+<span class="math inline">\(L_\mathrm{vlb}\)</span> 的梯度比 <span
+class="math inline">\(L_\mathrm{hybrid}\)</span> 更加
+noisy，这是因为不同时间步的 VLB
+损失大小不一（也就是上边那个损失曲线），均匀采样时间步 <span
+class="math inline">\(t\)</span>
+会引入比较多的噪音。为了解决这个问题，作者引入了一个重要性采样： <span
+class="math display">\[
+L_\mathrm{vlb}=E_{t\sim
+p_t}\left[\frac{L_t}{p_t}\right],\quad\text{where}~p\propto\sqrt{E[L_t^2]}~\text{and}~\sum
+p_t=1
+\]</span> 由于 <span class="math inline">\(E[L_t^2]\)</span>
+不能预先得知，并且在训练过程中会变化，实际上训练的时候会保存 10
+项历史的损失，并且对此进行动态更新。这部分光看公式可能不太容易理解，可以参照下面代码实现部分的
+<code>ImportanceSampler</code>
+来看：具体的做法就是给每个时间步都保存了最近的 10
+个历史损失，然后在采样时间步的时候，用所有保存的损失生成时间步的重要性分布，从分布里采样。除此之外这些损失还能用来计算出每个时间步的权重，在计算最终的损失的时候每个时间步的损失先乘以对应的权重，然后再进行加和得到整体的损失。</p>
+<h1 id="improved-ddpm-的代码实现">Improved DDPM 的代码实现</h1>
+<p>为了方便和 DDPM 的效果进行比较，我们依然继承在实现 DDPM
+时所写代码的主要部分，仅改变其中部分处理。对于这里没有完全介绍的部分（比如训练参数、数据集等）可以移步<a
+href="https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/">这篇文章</a>查看，在文章的最后也给出了完整代码，被省略的部分也可以去看完整代码。</p>
+<h2 id="cosine-noise-schedule-1">Cosine Noise Schedule</h2>
+<p>我们先从比较简单的部分开始实现，因为前文已经给出了 cosine noise
+schedule 的公式，我们直接对着公式写出代码就可以了： <span
+class="math display">\[
+\begin{aligned}
+\bar{\alpha}_t&amp;=\frac{f(t)}{f(0)},\quad
+f(t)=\cos\left(\frac{t/T+s}{1+s}\cdot\frac{\pi}{2}\right)^2\\
+\beta_t&amp;=1-\frac{\bar{\alpha}_t}{\bar{\alpha}_{t-1}}
+\end{aligned}
+\]</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> tqdm <span class="keyword">import</span> tqdm</span><br><span class="line"><span class="keyword">from</span> functools <span class="keyword">import</span> partial</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">make_betas_cosine_schedule</span>(<span class="params"></span></span><br><span class="line"><span class="params">    num_diffusion_timesteps: <span class="built_in">int</span> = <span class="number">1000</span>,</span></span><br><span class="line"><span class="params">    beta_max: <span class="built_in">float</span> = <span class="number">0.999</span>,</span></span><br><span class="line"><span class="params">    s: <span class="built_in">float</span> = <span class="number">8e-3</span>,</span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    fn = <span class="keyword">lambda</span> t: math.cos((t + s) / (<span class="number">1</span> + s) * math.pi / <span class="number">2</span>) ** <span class="number">2</span></span><br><span class="line">    betas = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(num_diffusion_timesteps):</span><br><span class="line">        t1 = i / num_diffusion_timesteps</span><br><span class="line">        t2 = (i + <span class="number">1</span>) / num_diffusion_timesteps</span><br><span class="line">        betas.append(<span class="number">1.0</span> - fn(t2) / fn(t1))</span><br><span class="line">    <span class="keyword">return</span> torch.tensor(betas, dtype=torch.float32).clamp_max(beta_max)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">IDDPM</span>:</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        num_diffusion_timesteps: <span class="built_in">int</span> = <span class="number">1000</span>,</span></span><br><span class="line"><span class="params">        beta_max: <span class="built_in">float</span> = <span class="number">0.999</span>,</span></span><br><span class="line"><span class="params">    </span>):</span><br><span class="line">        self.num_diffusion_timesteps = num_diffusion_timesteps</span><br><span class="line">        self.betas = make_betas_cosine_schedule(num_diffusion_timesteps, beta_max)</span><br><span class="line">        self.alphas = <span class="number">1.0</span> - self.betas</span><br><span class="line">        self.alphas_cumprod = torch.cumprod(self.alphas, dim=<span class="number">0</span>)</span><br><span class="line">        self.alphas_cumprod_prev = torch.concat((torch.ones(<span class="number">1</span>).to(self.alphas_cumprod), self.alphas_cumprod[:-<span class="number">1</span>]))</span><br><span class="line">        self.alphas_cumprod_next = torch.concat((self.alphas_cumprod[<span class="number">1</span>:], torch.zeros(<span class="number">1</span>).to(self.alphas_cumprod)))</span><br><span class="line">        self.timesteps = torch.arange(num_diffusion_timesteps - <span class="number">1</span>, -<span class="number">1</span>, -<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="可学习的方差-1">可学习的方差</h2>
+<p>实现可学习方差非常简单，只需要把原来的 3 通道输出直接改成 6
+通道就可以了，前三个通道表示学习的均值，后三个通道表示学习的方差：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> diffusers <span class="keyword">import</span> UNet2DModel</span><br><span class="line"></span><br><span class="line">model = UNet2DModel(</span><br><span class="line">    sample_size=config.image_size,</span><br><span class="line">    in_channels=<span class="number">3</span>,</span><br><span class="line">    out_channels=<span class="number">6</span>,</span><br><span class="line">    layers_per_block=<span class="number">2</span>,</span><br><span class="line">    block_out_channels=(<span class="number">128</span>, <span class="number">128</span>, <span class="number">256</span>, <span class="number">256</span>, <span class="number">512</span>, <span class="number">512</span>),</span><br><span class="line">    down_block_types=(</span><br><span class="line">        <span class="string">&quot;DownBlock2D&quot;</span>,</span><br><span class="line">        <span class="string">&quot;DownBlock2D&quot;</span>,</span><br><span class="line">        <span class="string">&quot;DownBlock2D&quot;</span>,</span><br><span class="line">        <span class="string">&quot;DownBlock2D&quot;</span>,</span><br><span class="line">        <span class="string">&quot;AttnDownBlock2D&quot;</span>,</span><br><span class="line">        <span class="string">&quot;DownBlock2D&quot;</span>,</span><br><span class="line">    ),</span><br><span class="line">    up_block_types=(</span><br><span class="line">        <span class="string">&quot;UpBlock2D&quot;</span>,</span><br><span class="line">        <span class="string">&quot;AttnUpBlock2D&quot;</span>,</span><br><span class="line">        <span class="string">&quot;UpBlock2D&quot;</span>,</span><br><span class="line">        <span class="string">&quot;UpBlock2D&quot;</span>,</span><br><span class="line">        <span class="string">&quot;UpBlock2D&quot;</span>,</span><br><span class="line">        <span class="string">&quot;UpBlock2D&quot;</span>,</span><br><span class="line">    ),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<h2 id="采样过程">采样过程</h2>
+<p>Improved DDPM 的加噪过程和 DDPM
+是完全一样的，在这里就不赘述了，主要不同的是采样的过程。在采样过程中，均值的计算与
+DDPM 也是完全一样，直接把之前写的 DDPM 均值计算 copy
+过来就可以了。主要需要改动的是方差的计算部分，其实也比较简单直接，就是
+DDPM 的方差直接和 <span class="math inline">\(\log\beta_t\)</span> 和
+<span class="math inline">\(\log\tilde{\beta}_t\)</span>
+直接加权。因为广播需要维度数量对齐，所以这里专门定义了一个对齐维度的函数。这里也贴一下公式方便参考：
+<span class="math display">\[
+\begin{aligned}
+\tilde{\beta}_t&amp;=\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t}\beta_t\\
+\Sigma_\theta(\mathbf{x}_t,t)&amp;=\exp(v\log\beta_t+(1-v)\log\tilde\beta_t)
+\end{aligned}
+\]</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">extract</span>(<span class="params">arr: torch.Tensor, timesteps: torch.Tensor, broadcast_shape: torch.Size</span>):</span><br><span class="line">    arr = arr[timesteps]</span><br><span class="line">    <span class="keyword">while</span> <span class="built_in">len</span>(arr.shape) &lt; <span class="built_in">len</span>(broadcast_shape):</span><br><span class="line">        arr = arr.unsqueeze(-<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> arr.expand(broadcast_shape)</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">IDDPM</span>:</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line"><span class="meta">    @torch.no_grad()</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">sample</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        unet: UNet2DModel,</span></span><br><span class="line"><span class="params">        batch_size: <span class="built_in">int</span>,</span></span><br><span class="line"><span class="params">        in_channels: <span class="built_in">int</span>,</span></span><br><span class="line"><span class="params">        sample_size: <span class="built_in">int</span>,</span></span><br><span class="line"><span class="params">    </span>):</span><br><span class="line">        images = torch.randn((batch_size, in_channels, sample_size, sample_size), device=unet.device)</span><br><span class="line"></span><br><span class="line">        betas = self.betas.to(unet.device)</span><br><span class="line">        alphas = self.alphas.to(unet.device)</span><br><span class="line">        alphas_cumprod = self.alphas_cumprod.to(unet.device)</span><br><span class="line">        alphas_cumprod_prev = self.alphas_cumprod_prev.to(unet.device)</span><br><span class="line">        timesteps = self.timesteps.to(unet.device)</span><br><span class="line"></span><br><span class="line">        sqrt_recip_alphas_cumprod = (<span class="number">1.0</span> / alphas_cumprod) ** <span class="number">0.5</span></span><br><span class="line">        sqrt_recipm1_alphas_cumprod = (<span class="number">1.0</span> / alphas_cumprod - <span class="number">1.0</span>) ** <span class="number">0.5</span></span><br><span class="line"></span><br><span class="line">        posterior_variance = betas * (<span class="number">1.0</span> - alphas_cumprod_prev) / (<span class="number">1.0</span> - alphas_cumprod)</span><br><span class="line">        posterior_log_variance_clipped = torch.log(torch.concat((posterior_variance[<span class="number">1</span>:<span class="number">2</span>], posterior_variance[<span class="number">1</span>:])))</span><br><span class="line">        posterior_mean_coef1 = betas * alphas_cumprod_prev ** <span class="number">0.5</span> / (<span class="number">1.0</span> - alphas_cumprod)</span><br><span class="line">        posterior_mean_coef2 = (<span class="number">1.0</span> - alphas_cumprod_prev) * alphas ** <span class="number">0.5</span> / (<span class="number">1.0</span> - alphas_cumprod)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> timestep <span class="keyword">in</span> tqdm(timesteps, desc=<span class="string">&#x27;Sampling&#x27;</span>):</span><br><span class="line">            _extract = partial(extract, timesteps=timestep, broadcast_shape=images.shape)</span><br><span class="line">            preds: torch.Tensor = unet(images, timestep).sample</span><br><span class="line">            pred_noises, pred_vars = torch.split(preds, in_channels, dim=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">            <span class="comment"># mean of p(x_&#123;t-1&#125;|x_t), same to DDPM</span></span><br><span class="line">            x_0 = _extract(sqrt_recip_alphas_cumprod) * images - _extract(sqrt_recipm1_alphas_cumprod) * pred_noises</span><br><span class="line">            mean = _extract(posterior_mean_coef1) * x_0.clamp(-<span class="number">1</span>, <span class="number">1</span>) + _extract(posterior_mean_coef2) * images</span><br><span class="line"></span><br><span class="line">            <span class="comment"># variance of p(x_&#123;t-1&#125;|x_t), learned</span></span><br><span class="line">            <span class="keyword">if</span> timestep &gt; <span class="number">0</span>:</span><br><span class="line">                min_log = _extract(posterior_log_variance_clipped)</span><br><span class="line">                max_log = _extract(torch.log(betas))</span><br><span class="line">                frac = (pred_vars + <span class="number">1.0</span>) / <span class="number">2.0</span></span><br><span class="line">                log_variance = frac * max_log + (<span class="number">1.0</span> - frac) * min_log</span><br><span class="line">                stddev = torch.exp(<span class="number">0.5</span> * log_variance)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                stddev = torch.zeros_like(timestep)</span><br><span class="line"></span><br><span class="line">            epsilon = torch.randn_like(images)</span><br><span class="line">            images = mean + stddev * epsilon</span><br><span class="line">        images = (images / <span class="number">2.0</span> + <span class="number">0.5</span>).clamp(<span class="number">0</span>, <span class="number">1</span>).cpu().permute(<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">1</span>).numpy()</span><br><span class="line">        <span class="keyword">return</span> images</span><br></pre></td></tr></table></figure>
+<h2 id="模型训练">模型训练</h2>
+<h3 id="损失函数">损失函数</h3>
+<p>训练的大部分代码都和 DDPM
+一样，不一样的只有损失函数以及重要性采样。这里定义一个专门用来计算 IDDPM
+的损失函数。损失函数共由两项组成，也就是 <span
+class="math inline">\(L_\mathrm{simple}\)</span> 和 <span
+class="math inline">\(L_\mathrm{vlb}\)</span>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">training_losses</span>(<span class="params"></span></span><br><span class="line"><span class="params">    iddpm: IDDPM,</span></span><br><span class="line"><span class="params">    model: UNet2DModel,</span></span><br><span class="line"><span class="params">    clean_images: torch.Tensor,</span></span><br><span class="line"><span class="params">    noise: torch.Tensor,</span></span><br><span class="line"><span class="params">    noisy_images: torch.Tensor,</span></span><br><span class="line"><span class="params">    timesteps: torch.Tensor,</span></span><br><span class="line"><span class="params">    vlb_weight: <span class="built_in">float</span> = <span class="number">1e-3</span>,</span></span><br><span class="line"><span class="params"></span>) -&gt; torch.Tensor:</span><br><span class="line">    _, channels, _, _ = noisy_images.shape</span><br><span class="line">    pred: torch.Tensor = model(noisy_images, timesteps, return_dict=<span class="literal">False</span>)[<span class="number">0</span>]</span><br><span class="line">    pred_noises, pred_vars = torch.split(pred, channels, dim=<span class="number">1</span>)</span><br><span class="line">    <span class="comment"># 1. L_simple</span></span><br><span class="line">    l_simple = (pred_noises - noise) ** <span class="number">2</span></span><br><span class="line">    l_simple = l_simple.mean(dim=<span class="built_in">list</span>(<span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(l_simple.shape))))</span><br><span class="line">    <span class="comment"># 2. L_vlb</span></span><br><span class="line">    l_vlb = vlb_loss(iddpm, pred_noises.detach(), pred_vars, clean_images, noisy_images, timesteps)</span><br><span class="line">    <span class="keyword">return</span> l_simple + vlb_weight * l_vlb</span><br></pre></td></tr></table></figure>
+<p><span class="math inline">\(L_\mathrm{simple}\)</span> 就是之前用的
+MSE 损失，而 VLB
+损失则相对来说比较复杂。我们先梳理一下这个损失是怎么计算的，这里是文中给出的公式：
+<span class="math display">\[
+\begin{aligned}
+L_\mathrm{vlb}&amp;=L_0+L_1+\cdots+L_{T-1}+L_T\\
+L_0&amp;=-\log p_\theta(\mathbf{x}_0|\mathbf{x}_1)\\
+L_{t-1}&amp;=D_{KL}(q(\mathbf{x}_{t-1}|\mathbf{x}_t,\mathbf{x}_0)||p_\theta(\mathbf{x}_{t-1}|\mathbf{x}_t))\\
+L_T&amp;=D_{KL}(q(\mathbf{x}_T|\mathbf{x}_0)||p(\mathbf{x}_T))
+\end{aligned}
+\]</span> 可以看到这个损失中存在两种情况：对于直接推出 <span
+class="math inline">\(\mathbf{x}_0\)</span> 的项，直接使用 NLL
+损失；而对于其他的项则是需要计算 KL 散度。对于 NLL
+的计算，我们可以计算出图像落在给定高斯分布中的区间，区间上下界处的累积分布函数作差即可得到重建图像与给定高斯分布的
+NLL（这个理解不一定正确，我其实也没太搞懂具体是怎么算的）。对于 KL
+散度，我们知道上式中计算 KL 散度的两个分布都是高斯分布，那么可以这样计算
+KL 散度： <span class="math display">\[
+\begin{aligned}
+D_{KL}(p,q)&amp;=-\int p(x)\log q(x)\mathrm{d}x+\int p(x)\log
+p(x)\mathrm{d}x\\
+&amp;=\frac{1}{2}\log(2\pi\sigma_2^2)+\frac{\sigma_1^2+(\mu_1-\mu_2)^2}{2\sigma_2^2}-\frac{1}{2}(1+\log(2\pi\sigma_1^2))\\
+&amp;=\log\frac{\sigma_2}{\sigma_1}+\frac{\sigma_1^2+(\mu_1-\mu_2)^2}{2\sigma_2^2}-\frac{1}{2}
+\end{aligned}
+\]</span> 那么我们先写出 VLB 损失的一个整体框架：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">vlb_loss</span>(<span class="params"></span></span><br><span class="line"><span class="params">    iddpm: IDDPM,</span></span><br><span class="line"><span class="params">    pred_noises: torch.Tensor,</span></span><br><span class="line"><span class="params">    pred_vars: torch.Tensor,</span></span><br><span class="line"><span class="params">    clean_images: torch.Tensor, <span class="comment"># x_0</span></span></span><br><span class="line"><span class="params">    noisy_images: torch.Tensor, <span class="comment"># x_t</span></span></span><br><span class="line"><span class="params">    timesteps: torch.Tensor,    <span class="comment"># t</span></span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    <span class="comment"># 1. calculate predicted mean and log var, same to sampling</span></span><br><span class="line">    pred_mean, pred_logvar = pred_mean_logvar(iddpm, pred_noises, pred_vars, noisy_images, timesteps)</span><br><span class="line">    <span class="comment"># 2. calculate the true mean and log var with q(x_&#123;t-1&#125;|x_t,x_0)</span></span><br><span class="line">    true_mean, true_logvar = true_mean_logvar(iddpm, clean_images, noisy_images, timesteps)</span><br><span class="line">    <span class="comment"># 3. calculate the KL divergences</span></span><br><span class="line">    kl = gaussian_kl_divergence(true_mean, true_logvar, pred_mean, pred_logvar)</span><br><span class="line">    kl = kl.mean(dim=<span class="built_in">list</span>(<span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(kl.shape)))) / math.log(<span class="number">2.0</span>)</span><br><span class="line">    <span class="comment"># 4. calculate the NLL</span></span><br><span class="line">    nll = gaussian_nll(clean_images, pred_mean, pred_logvar * <span class="number">0.5</span>)</span><br><span class="line">    nll = nll.mean(dim=<span class="built_in">list</span>(<span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(nll.shape)))) / math.log(<span class="number">2.0</span>)</span><br><span class="line">    <span class="comment"># 5. gather results</span></span><br><span class="line">    results = torch.where(timesteps == <span class="number">0</span>, nll, kl)</span><br><span class="line">    <span class="keyword">return</span> results</span><br></pre></td></tr></table></figure>
+<p>然后分别实现这几部分，<code>pred_mean_log_var</code>
+和采样时的计算过程相同，直接把采样代码复制过来稍微改改就行了，这个就不赘述了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">pred_mean_logvar</span>(<span class="params"></span></span><br><span class="line"><span class="params">    iddpm: IDDPM,</span></span><br><span class="line"><span class="params">    pred_noises: torch.Tensor,</span></span><br><span class="line"><span class="params">    pred_vars: torch.Tensor,</span></span><br><span class="line"><span class="params">    noisy_images: torch.Tensor,</span></span><br><span class="line"><span class="params">    timesteps: torch.Tensor,</span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    betas = iddpm.betas.to(timesteps.device)</span><br><span class="line">    alphas = iddpm.alphas.to(timesteps.device)</span><br><span class="line">    alphas_cumprod = iddpm.alphas_cumprod.to(timesteps.device)</span><br><span class="line">    alphas_cumprod_prev = iddpm.alphas_cumprod_prev.to(timesteps.device)</span><br><span class="line"></span><br><span class="line">    sqrt_recip_alphas_cumprod = (<span class="number">1.0</span> / alphas_cumprod) ** <span class="number">0.5</span></span><br><span class="line">    sqrt_recipm1_alphas_cumprod = (<span class="number">1.0</span> / alphas_cumprod - <span class="number">1.0</span>) ** <span class="number">0.5</span></span><br><span class="line"></span><br><span class="line">    posterior_variance = betas * (<span class="number">1.0</span> - alphas_cumprod_prev) / (<span class="number">1.0</span> - alphas_cumprod)</span><br><span class="line">    posterior_log_variance_clipped = torch.log(torch.concat((posterior_variance[<span class="number">1</span>:<span class="number">2</span>], posterior_variance[<span class="number">1</span>:])))</span><br><span class="line">    posterior_mean_coef1 = betas * alphas_cumprod_prev ** <span class="number">0.5</span> / (<span class="number">1.0</span> - alphas_cumprod)</span><br><span class="line">    posterior_mean_coef2 = (<span class="number">1.0</span> - alphas_cumprod_prev) * alphas ** <span class="number">0.5</span> / (<span class="number">1.0</span> - alphas_cumprod)</span><br><span class="line"></span><br><span class="line">    _extract = partial(extract, timesteps=timesteps, broadcast_shape=noisy_images.shape)</span><br><span class="line">    <span class="comment"># mean of p(x_&#123;t-1&#125;|x_t), same to DDPM</span></span><br><span class="line">    x_0 = _extract(sqrt_recip_alphas_cumprod) * noisy_images - _extract(sqrt_recipm1_alphas_cumprod) * pred_noises</span><br><span class="line">    mean = _extract(posterior_mean_coef1) * x_0.clamp(-<span class="number">1</span>, <span class="number">1</span>) + _extract(posterior_mean_coef2) * noisy_images</span><br><span class="line">    <span class="comment"># variance of p(x_&#123;t-1&#125;|x_t), learned</span></span><br><span class="line">    min_log = _extract(posterior_log_variance_clipped)</span><br><span class="line">    max_log = _extract(torch.log(betas))</span><br><span class="line">    frac = (pred_vars + <span class="number">1.0</span>) / <span class="number">2.0</span></span><br><span class="line">    log_variance = frac * max_log + (<span class="number">1.0</span> - frac) * min_log</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> mean, log_variance</span><br></pre></td></tr></table></figure>
+<p>真实的均值和方差已经在 DDPM 中推导过了，因为这里我们是知道 <span
+class="math inline">\(\mathbf{x}_0\)</span> 了，因此可以直接计算： <span
+class="math display">\[
+\begin{aligned}
+\tilde{\beta}_t&amp;=\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t}\beta_t\\
+\tilde{\mu}_t(\mathbf{x}_t,\mathbf{x}_0)&amp;=\frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t}\mathbf{x}_0+\frac{\sqrt{\alpha_t}(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}\mathbf{x}_t
+\end{aligned}
+\]</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">true_mean_logvar</span>(<span class="params"></span></span><br><span class="line"><span class="params">    iddpm: IDDPM,</span></span><br><span class="line"><span class="params">    clean_images: torch.Tensor,</span></span><br><span class="line"><span class="params">    noisy_images: torch.Tensor,</span></span><br><span class="line"><span class="params">    timesteps: torch.Tensor,</span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    betas = iddpm.betas.to(timesteps.device)</span><br><span class="line">    alphas = iddpm.alphas.to(timesteps.device)</span><br><span class="line">    alphas_cumprod = iddpm.alphas_cumprod.to(timesteps.device)</span><br><span class="line">    alphas_cumprod_prev = iddpm.alphas_cumprod_prev.to(timesteps.device)</span><br><span class="line"></span><br><span class="line">    posterior_variance = betas * (<span class="number">1.0</span> - alphas_cumprod_prev) / (<span class="number">1.0</span> - alphas_cumprod)</span><br><span class="line">    posterior_log_variance_clipped = torch.log(torch.concat((posterior_variance[<span class="number">1</span>:<span class="number">2</span>], posterior_variance[<span class="number">1</span>:])))</span><br><span class="line">    posterior_mean_coef1 = betas * alphas_cumprod_prev ** <span class="number">0.5</span> / (<span class="number">1.0</span> - alphas_cumprod)</span><br><span class="line">    posterior_mean_coef2 = (<span class="number">1.0</span> - alphas_cumprod_prev) * alphas ** <span class="number">0.5</span> / (<span class="number">1.0</span> - alphas_cumprod)</span><br><span class="line"></span><br><span class="line">    _extract = partial(extract, timesteps=timesteps, broadcast_shape=noisy_images.shape)</span><br><span class="line">    posterior_mean = _extract(posterior_mean_coef1) * clean_images + _extract(posterior_mean_coef2) * noisy_images</span><br><span class="line">    posterior_log_variance_clipped = _extract(posterior_log_variance_clipped)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> posterior_mean, posterior_log_variance_clipped</span><br></pre></td></tr></table></figure>
+<p>KL 散度的公式也已经有了，实现也就很直接了： <span
+class="math display">\[
+D_{KL}(p,q)=\log\frac{\sigma_2}{\sigma_1}+\frac{\sigma_1^2+(\mu_1-\mu_2)^2}{2\sigma_2^2}-\frac{1}{2}
+\]</span></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">gaussian_kl_divergence</span>(<span class="params"></span></span><br><span class="line"><span class="params">    mean_1: torch.Tensor,</span></span><br><span class="line"><span class="params">    logvar_1: torch.Tensor,</span></span><br><span class="line"><span class="params">    mean_2: torch.Tensor,</span></span><br><span class="line"><span class="params">    logvar_2: torch.Tensor,</span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0.5</span> * (</span><br><span class="line">        -<span class="number">1.0</span></span><br><span class="line">        + logvar_2</span><br><span class="line">        - logvar_1</span><br><span class="line">        + torch.exp(logvar_1 - logvar_2)</span><br><span class="line">        + ((mean_1 - mean_2) ** <span class="number">2</span>) * torch.exp(-logvar_2)</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+<p>然后是 NLL
+的计算，这里主要就是计算一下累积分布函数的差，然后处理一下边界条件：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">approx_standard_normal_cdf</span>(<span class="params">x</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0.5</span> * (<span class="number">1.0</span> + torch.tanh(math.sqrt(<span class="number">2.0</span> / math.pi) * (x + <span class="number">0.044715</span> * torch.<span class="built_in">pow</span>(x, <span class="number">3</span>))))</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">gaussian_nll</span>(<span class="params"></span></span><br><span class="line"><span class="params">    clean_images: torch.Tensor,</span></span><br><span class="line"><span class="params">    pred_mean: torch.Tensor,</span></span><br><span class="line"><span class="params">    pred_logvar: torch.Tensor,</span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    <span class="comment"># stdnorm = Normal(torch.Tensor([0.0]), torch.Tensor([1.0]))</span></span><br><span class="line">    centered_x = clean_images - pred_mean</span><br><span class="line">    inv_stdv = torch.exp(-pred_logvar)</span><br><span class="line">    plus_in = inv_stdv * (centered_x + <span class="number">1.0</span> / <span class="number">255.0</span>)</span><br><span class="line">    cdf_plus = approx_standard_normal_cdf(plus_in).clamp_min(<span class="number">1e-12</span>)</span><br><span class="line">    <span class="comment"># cdf_plus = stdnorm.cdf(plus_in).clamp_min(1e-12)</span></span><br><span class="line">    min_in = inv_stdv * (centered_x - <span class="number">1.0</span> / <span class="number">255.0</span>)</span><br><span class="line">    cdf_min = approx_standard_normal_cdf(min_in).clamp_min(<span class="number">1e-12</span>)</span><br><span class="line">    <span class="comment"># cdf_min = stdnorm.cdf(min_in).clamp_min(1e-12)</span></span><br><span class="line">    cdf_delta = (cdf_plus - cdf_min).clamp_min(<span class="number">1e-12</span>)</span><br><span class="line">    log_cdf_plus = torch.log(cdf_plus)</span><br><span class="line">    log_one_minus_cdf_min = torch.log((<span class="number">1.0</span> - cdf_min).clamp_min(<span class="number">1e-12</span>))</span><br><span class="line">    log_probs = torch.log(cdf_delta.clamp_min(<span class="number">1e-12</span>))</span><br><span class="line">    log_probs[clean_images &lt; -<span class="number">0.999</span>] = log_cdf_plus[clean_images &lt; -<span class="number">0.999</span>]</span><br><span class="line">    log_probs[clean_images &gt; <span class="number">0.999</span>] = log_one_minus_cdf_min[clean_images &gt; <span class="number">0.999</span>]</span><br><span class="line">    <span class="keyword">return</span> log_probs</span><br></pre></td></tr></table></figure>
+<h3 id="重要性采样">重要性采样</h3>
+<p>论文中给出了重要性采样的公式，如下所示。在训练的时候不同的时间步是根据损失的权重采样出来的，并且最后在计算损失的时候，不同时间步对应的损失也都乘以了相应的权重。同时，根据论文中的描述，每个时间步都存储了
+10 个历史的损失，将损失作为权重，并且在每个时间步都存储 10
+项损失之前，采样是均匀采样。 <span class="math display">\[
+L_\mathrm{vlb}=E_{t\sim
+p_t}\left[\frac{L_t}{p_t}\right],\quad\text{where}~p\propto\sqrt{E[L_t^2]}~\text{and}~\sum
+p_t=1
+\]</span>
+我们首先定义最基本的常量，包括时间步数量、每个时间步存储几个损失等：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ImportanceSampler</span>:</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        num_diffusion_timesteps: <span class="built_in">int</span> = <span class="number">1000</span>,</span></span><br><span class="line"><span class="params">        history_per_term: <span class="built_in">int</span> = <span class="number">10</span>,</span></span><br><span class="line"><span class="params">    </span>):</span><br><span class="line">        self.num_diffusion_timesteps = num_diffusion_timesteps</span><br><span class="line">        self.history_per_term = history_per_term</span><br><span class="line">        self.uniform_prob = <span class="number">1.0</span> / num_diffusion_timesteps</span><br><span class="line">        self.loss_history = np.zeros([num_diffusion_timesteps, history_per_term], dtype=np.float64)</span><br><span class="line">        self.loss_counts = np.zeros([num_diffusion_timesteps], dtype=<span class="built_in">int</span>)</span><br></pre></td></tr></table></figure>
+<p>除了存储的损失之外还需要记录已经存储的损失数量。然后是更新 buffer
+的逻辑，如下代码所示。虽然看起来非常的冗长，但是逻辑其实非常的简单，就是把所有进程的时间步和损失都收集到一起，然后统一更新到
+buffer 中：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ImportanceSampler</span>:</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">self, timesteps: torch.Tensor, losses: torch.Tensor</span>):</span><br><span class="line">        <span class="comment"># collect</span></span><br><span class="line">        <span class="keyword">if</span> dist.is_initialized():</span><br><span class="line">            world_size = dist.get_world_size()</span><br><span class="line">            <span class="comment"># get batch sizes for padding to the maximum bs</span></span><br><span class="line">            batch_sizes = [torch.tensor([<span class="number">0</span>], dtype=torch.int32, device=timesteps.device) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(world_size)]</span><br><span class="line">            dist.all_gather(batch_sizes, torch.full_like(batch_sizes[<span class="number">0</span>], timesteps.size(<span class="number">0</span>)))</span><br><span class="line">            max_batch_size = <span class="built_in">max</span>([bs.item() <span class="keyword">for</span> bs <span class="keyword">in</span> batch_sizes])</span><br><span class="line">            <span class="comment"># gather all timesteps and losses</span></span><br><span class="line">            timestep_batches: <span class="type">List</span>[torch.Tensor] = [torch.zeros(max_batch_size).to(timesteps) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(world_size)]</span><br><span class="line">            loss_batches: <span class="type">List</span>[torch.Tensor] = [torch.zeros(max_batch_size).to(losses) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(world_size)]</span><br><span class="line">            dist.all_gather(timestep_batches, timesteps)</span><br><span class="line">            dist.all_gather(loss_batches, losses)</span><br><span class="line">            all_timesteps = [ts.item() <span class="keyword">for</span> ts_batch, bs <span class="keyword">in</span> <span class="built_in">zip</span>(timestep_batches, batch_sizes) <span class="keyword">for</span> ts <span class="keyword">in</span> ts_batch[:bs]]</span><br><span class="line">            all_losses = [loss.item() <span class="keyword">for</span> loss_batch, bs <span class="keyword">in</span> <span class="built_in">zip</span>(loss_batches, batch_sizes) <span class="keyword">for</span> loss <span class="keyword">in</span> loss_batch[:bs]]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            all_timesteps = timesteps.tolist()</span><br><span class="line">            all_losses = losses.tolist()</span><br><span class="line">        <span class="comment"># update</span></span><br><span class="line">        <span class="keyword">for</span> timestep, loss <span class="keyword">in</span> <span class="built_in">zip</span>(all_timesteps, all_losses):</span><br><span class="line">            <span class="keyword">if</span> self.loss_counts[timestep] == self.history_per_term:</span><br><span class="line">                self.loss_history[timestep, :-<span class="number">1</span>] = self.loss_history[timestep, <span class="number">1</span>:]</span><br><span class="line">                self.loss_history[timestep, -<span class="number">1</span>] = loss</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                self.loss_history[timestep, self.loss_counts[timestep]] = loss</span><br><span class="line">                self.loss_counts[timestep] += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>最后是根据概率进行采样，训练时使用的时间步以及损失函数的权重就是从这里采样出来的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">ImportanceSampler</span>:</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">sample</span>(<span class="params">self, batch_size: <span class="built_in">int</span></span>):</span><br><span class="line">        weights = self.weights</span><br><span class="line">        prob = weights / np.<span class="built_in">sum</span>(weights)</span><br><span class="line">        timesteps = np.random.choice(self.num_diffusion_timesteps, size=(batch_size,), p=prob)</span><br><span class="line">        weights = <span class="number">1.0</span> / (self.num_diffusion_timesteps * prob[timesteps])</span><br><span class="line">        <span class="keyword">return</span> torch.from_numpy(timesteps).long(), torch.from_numpy(weights).<span class="built_in">float</span>()</span><br></pre></td></tr></table></figure>
+<h1 id="总结">总结</h1>
+<p>训练需要的时间和结果相比 DDPM
+变化不算太大（看不太出来训出来的模型有没有变好，从生成效果上看感觉差不太多），所以具体的实验结果和权重就不在这里贴了。到这里
+Improved DDPM
+的理论和实现的讲解就基本上结束了。不得不说随着方法越来越复杂，代码量也变大了不少，而且可以预想后续的多模态方法比较难训出来一个
+demo，所以以后的一部分可能会把自己造轮子变成直接解读现成的开源代码，也敬请期待～</p>
+<p>完整的代码如下，可以参考：</p>
+<ul>
+<li>完整代码：<a
+target="_blank" rel="noopener" href="https://github.com/LittleNyima/code-snippets/tree/master/iddpm-tutorial">https://github.com/LittleNyima/code-snippets/tree/master/iddpm-tutorial</a></li>
+</ul>
+<blockquote>
+<p>参考资料：</p>
+<ol type="1">
+<li><a
+target="_blank" rel="noopener" href="https://blog.csdn.net/jiaoyangwm/article/details/132774507">【扩散模型】5、Improved
+DDPM | 引入可学习方差和余弦加噪机制来提升 DDPM</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://stats.stackexchange.com/questions/7440/kl-divergence-between-two-univariate-gaussians">KL
+divergence between two univariate Gaussians</a></li>
+</ol>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/15-improved-denoising-diffusion-probabilistic-models/">https://littlenyima.github.io/posts/15-improved-denoising-diffusion-probabilistic-models/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Deep-learning/">Deep learning</a><a class="post-meta__tags" href="/tags/Generative-models/">Generative models</a><a class="post-meta__tags" href="/tags/Diffusion-models/">Diffusion models</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/posts/16-score-based-generative-models/" title="笔记｜Score-based Generative Models（一）：基础理论"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">笔记｜Score-based Generative Models（一）：基础理论</div></div></a></div><div class="next-post pull-right"><a href="/posts/14-denoising-diffusion-implicit-models/" title="笔记｜扩散模型（二）：DDIM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">笔记｜扩散模型（二）：DDIM 理论与实现</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/posts/13-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（一）：DDPM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-08</div><div class="title">笔记｜扩散模型（一）：DDPM 理论与实现</div></div></a></div><div><a href="/posts/14-denoising-diffusion-implicit-models/" title="笔记｜扩散模型（二）：DDIM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-12</div><div class="title">笔记｜扩散模型（二）：DDIM 理论与实现</div></div></a></div><div><a href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-10</div><div class="title">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</div></div></a></div><div><a href="/posts/16-score-based-generative-models/" title="笔记｜Score-based Generative Models（一）：基础理论"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-02</div><div class="title">笔记｜Score-based Generative Models（一）：基础理论</div></div></a></div><div><a href="/posts/17-score-based-modeling-with-sde/" title="笔记｜Score-based Generative Models（二）：基于 SDE 的模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-05</div><div class="title">笔记｜Score-based Generative Models（二）：基于 SDE 的模型</div></div></a></div><div><a href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-12</div><div class="title">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">20</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8F%AF%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%96%B9%E5%B7%AE"><span class="toc-number">1.</span> <span class="toc-text">可学习的方差</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#cosine-noise-schedule"><span class="toc-number">2.</span> <span class="toc-text">Cosine Noise Schedule</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E8%BF%87%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">训练过程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#improved-ddpm-%E7%9A%84%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.</span> <span class="toc-text">Improved DDPM 的代码实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#cosine-noise-schedule-1"><span class="toc-number">4.1.</span> <span class="toc-text">Cosine Noise Schedule</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%AF%E5%AD%A6%E4%B9%A0%E7%9A%84%E6%96%B9%E5%B7%AE-1"><span class="toc-number">4.2.</span> <span class="toc-text">可学习的方差</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%87%E6%A0%B7%E8%BF%87%E7%A8%8B"><span class="toc-number">4.3.</span> <span class="toc-text">采样过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="toc-number">4.4.</span> <span class="toc-text">模型训练</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="toc-number">4.4.1.</span> <span class="toc-text">损失函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%87%8D%E8%A6%81%E6%80%A7%E9%87%87%E6%A0%B7"><span class="toc-number">4.4.2.</span> <span class="toc-text">重要性采样</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-post-series"><div class="item-headline"><i class="fa-solid fa-layer-group"></i><span>文章系列</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</a><time datetime="2024-07-12T08:27:55.000Z" title="發表於 2024-07-12 16:27:55">2024-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</a><time datetime="2024-07-10T09:40:51.000Z" title="發表於 2024-07-10 17:40:51">2024-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现">笔记｜扩散模型（三）：Improved DDPM 理论与实现</a><time datetime="2024-06-24T11:09:55.000Z" title="發表於 2024-06-24 19:09:55">2024-06-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/14-denoising-diffusion-implicit-models/" title="笔记｜扩散模型（二）：DDIM 理论与实现">笔记｜扩散模型（二）：DDIM 理论与实现</a><time datetime="2024-06-12T08:59:12.000Z" title="發表於 2024-06-12 16:59:12">2024-06-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/13-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（一）：DDPM 理论与实现">笔记｜扩散模型（一）：DDPM 理论与实现</a><time datetime="2024-06-08T12:05:39.000Z" title="發表於 2024-06-08 20:05:39">2024-06-08</time></div></div></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</a><time datetime="2024-07-12T08:27:55.000Z" title="發表於 2024-07-12 16:27:55">2024-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</a><time datetime="2024-07-10T09:40:51.000Z" title="發表於 2024-07-10 17:40:51">2024-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/17-score-based-modeling-with-sde/" title="笔记｜Score-based Generative Models（二）：基于 SDE 的模型">笔记｜Score-based Generative Models（二）：基于 SDE 的模型</a><time datetime="2024-07-05T08:37:40.000Z" title="發表於 2024-07-05 16:37:40">2024-07-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/16-score-based-generative-models/" title="笔记｜Score-based Generative Models（一）：基础理论">笔记｜Score-based Generative Models（一）：基础理论</a><time datetime="2024-07-02T07:13:14.000Z" title="發表於 2024-07-02 15:13:14">2024-07-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现">笔记｜扩散模型（三）：Improved DDPM 理论与实现</a><time datetime="2024-06-24T11:09:55.000Z" title="發表於 2024-06-24 19:09:55">2024-06-24</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/15-improved-denoising-diffusion-probabilistic-models/',
+      url: 'https://littlenyima.github.io/posts/15-improved-denoising-diffusion-probabilistic-models/',
+      title: '笔记｜扩散模型（三）：Improved DDPM 理论与实现',
+      apikey: '__DISQUS_APIKEY_PUBLIC__',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=__DISQUS_APIKEY_PUBLIC__&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
