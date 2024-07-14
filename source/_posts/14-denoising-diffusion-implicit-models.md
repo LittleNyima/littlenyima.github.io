@@ -12,8 +12,6 @@ tags:
 series: Diffusion Models
 ---
 
-{% series %}
-
 > 论文链接：*[Denoising Diffusion Implicit Models](https://arxiv.org/abs/2010.02502)*
 
 在[上一篇文章](https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/)中我们进行了 DDPM 的理论推导，并且自己编写代码实现了 DDPM 的训练和采样过程。虽然取得了还不错的效果，但 DDPM 有一个非常明显的问题：采样过程很慢。因为 DDPM 的反向过程利用了马尔可夫假设，所以每次都必须在相邻的时间步之间进行去噪，而不能跳过中间步骤。原始论文使用了 1000 个时间步，所以我们在采样时也需要循环 1000 次去噪过程，这个过程是非常慢的。

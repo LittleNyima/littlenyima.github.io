@@ -12,8 +12,6 @@ tags:
 series: Diffusion Models
 ---
 
-{% series %}
-
 > 论文链接：*[Improved Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2102.09672)*
 
 在前边两篇文章中我们学习了 DDPM 和 DDIM，这篇文章介绍的是 Improved DDPM，是一个针对 DDPM 生成效果进行改进的工作。

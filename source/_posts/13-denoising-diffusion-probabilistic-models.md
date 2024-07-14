@@ -12,8 +12,6 @@ tags:
 series: Diffusion Models
 ---
 
-{% series %}
-
 {% note pink 'fas fa-bullhorn' modern %}
 感谢 wbs、hsh 等读者对本文提出的宝贵意见（大拍手
 {% endnote %}

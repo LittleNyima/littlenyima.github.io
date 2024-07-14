@@ -11,8 +11,6 @@ tags:
 series: Normalizing Flows
 ---
 
-{% series %}
-
 Normalizing flow（标准化流）是一类对概率分布进行建模的工具，它能完成简单的概率分布（例如高斯分布）和任意复杂分布之间的相互转换，经常被用于 data generation、density estimation、inpainting 等任务中，例如 Stability AI 提出的 [Stable Diffusion 3](https://arxiv.org/abs/2403.03206) 中用到的 rectified flow 就是 normalizing flow 的变体之一。
 
 ![Normalizing flow 示意图（图源 Lil'Log）](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/03/26/normalizing-flow.png)

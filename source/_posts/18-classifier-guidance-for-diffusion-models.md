@@ -12,8 +12,6 @@ tags:
 series: Diffusion Models
 ---
 
-{% series %}
-
 > 论文链接：*[Diffusion Models Beat GANs on Image Synthesis](https://arxiv.org/abs/2105.05233)*
 
 在前边的几篇文章中我们已经学习了 DDPM 以及分别对其训练和采样过程进行改进的工作，不过这些方法都只能进行无条件生成，而无法对生成过程进行控制。我们这次学习的不再是无条件生成，而是通过一定方式对生成过程进行控制，比较常见的有两种：Classifier Guidance 与 Classifier-Free Guidance，本文首先介绍第一种。

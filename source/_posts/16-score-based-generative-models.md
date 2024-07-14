@@ -11,8 +11,6 @@ tags:
 series: Score-based Models
 ---
 
-{% series %}
-
 这篇文章应该属于 Diffusion Models 系列的一个番外篇，虽然基于分数的生成模型包括了一系列比较复杂的研究，不过之所以写这篇博客是为了给 score-based diffusion models 的学习做准备，所以应该不会面面俱到，主要还是介绍基础知识。
 
 正式开始介绍之前首先解答一下这个问题：**score-based 模型是什么东西，微分方程在这个模型里到底有什么用？**我们知道生成模型基本都是从某个现有的分布中进行采样得到生成的样本，为此模型需要完成对分布的建模。根据建模方式的不同可以分为隐式建模（例如 GAN、diffusion models）和显式建模（例如 VAE、normalizing flows）。和上述的模型相同，score-based 模型也是用一定方式对分布进行了建模。具体而言，这类模型建模的对象是概率分布函数 log 的梯度，也就是 **score function**，而为了对这个建模对象进行学习，需要使用一种叫做 **score matching** 的技术，这也是 score-based 模型名字的来源。至于第二个问题，微分方程的作用本篇文章暂时不介绍，下一篇文章再进行讨论。
