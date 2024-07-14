@@ -11,13 +11,17 @@ top: 1
 
 1. [笔记｜Normalizing Flow 理论与实现（一）：基础理论](../12-basic-concepts-of-normalizing-flow)
 
-## Diffusion Models: 通用理论
+## Diffusion Models：通用理论
 
 1. [笔记｜扩散模型（一）：DDPM 理论与实现](../13-denoising-diffusion-probabilistic-models)
 2. [笔记｜扩散模型（二）：DDIM 理论与实现](../14-denoising-diffusion-implicit-models)
 3. [笔记｜扩散模型（三）：Improved DDPM 理论与实现](../15-improved-denoising-diffusion-probabilistic-models)
 4. [笔记｜扩散模型（四）：Classifier Guidance 理论与实现](../18-classifier-guidance-for-diffusion-models)
 5. [笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现](../19-classifier-free-guidance-for-diffusion-models)
+
+## Diffusion Models：文生图
+
+1. [笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图](../20-dalle-zero-shot-text-to-image-generation)
 
 ## Score-based Models
 
