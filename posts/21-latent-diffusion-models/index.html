@@ -1,0 +1,411 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现 | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="论文链接：High-Resolution Image Synthesis with Latent Diffusion Models 官方实现：CompVis&#x2F;latent-diffusion、CompVis&#x2F;stable-diffusion  这一篇文章的内容是 Latent Diffusion Models（LDM），也就是大名鼎鼎的 Stable Diffusion。先前的扩散模型一直面临的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现">
+<meta property="og:url" content="https://littlenyima.github.io/posts/21-latent-diffusion-models/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="论文链接：High-Resolution Image Synthesis with Latent Diffusion Models 官方实现：CompVis&#x2F;latent-diffusion、CompVis&#x2F;stable-diffusion  这一篇文章的内容是 Latent Diffusion Models（LDM），也就是大名鼎鼎的 Stable Diffusion。先前的扩散模型一直面临的">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2024-07-16T08:18:25.000Z">
+<meta property="article:modified_time" content="2024-07-16T10:10:06.949Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Deep learning">
+<meta property="article:tag" content="Diffusion models">
+<meta property="article:tag" content="Generative models">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/21-latent-diffusion-models/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-07-16 18:10:06'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">23</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2024-07-16T08:18:25.000Z" title="發表於 2024-07-16 16:18:25">2024-07-16</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2024-07-16T10:10:06.949Z" title="更新於 2024-07-16 18:10:06">2024-07-16</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Notes/">Notes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>论文链接：<em><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2112.10752">High-Resolution Image Synthesis
+with Latent Diffusion Models</a></em></p>
+<p>官方实现：<strong><a
+target="_blank" rel="noopener" href="https://github.com/CompVis/latent-diffusion">CompVis/latent-diffusion</a></strong>、<strong><a
+target="_blank" rel="noopener" href="https://github.com/CompVis/stable-diffusion">CompVis/stable-diffusion</a></strong></p>
+</blockquote>
+<p>这一篇文章的内容是 Latent Diffusion Models（LDM），也就是大名鼎鼎的
+Stable
+Diffusion。先前的扩散模型一直面临的比较大的问题是采样空间太大，学习的噪声维度和图像的维度是相同的。当进行高分辨率图像生成时，需要的计算资源会急剧增加，虽然
+DDIM 等工作已经对此有所改善，但效果依然有限。Stable Diffusion
+的方法非常巧妙，其把扩散过程转换到了低维度的隐空间中，解决了这个问题。</p>
+<h1 id="方法介绍">方法介绍</h1>
+<p>本方法的整体结构如下图所示，主要分为三部分：最左侧的红框对应于感知图像压缩，中间的绿框对应
+Latent Diffusion
+Models，右侧的白框表示生成条件，下面将分别介绍这三个部分。</p>
+<p><img
+src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/16/latent-diffusion-models.jpg"
+alt="Latent Diffusion Models 结构图" /></p>
+<h2 id="感知图像压缩">感知图像压缩</h2>
+<p>LDM
+把图像生成过程从原始的图像像素空间转换到了一个隐空间，具体来说，对于一个维度为
+<span class="math inline">\(\mathbf{x}\in\mathbb{R}^{H\times W\times
+3}\)</span> 的 RGB 图像，可以使用一个 encoder <span
+class="math inline">\(\mathcal{E}\)</span> 将其转换为隐变量 <span
+class="math inline">\(\mathbf{z}=\mathcal{E}(\mathbf{x})\)</span>，也可以用一个
+decoder <span class="math inline">\(\mathcal{D}\)</span>
+将其从隐变量转换回像素空间 <span
+class="math inline">\(\tilde{\mathbf{x}}=\mathcal{D}(\mathcal{E}(\mathbf{x}))\)</span>。在转换时会将图像下采样，作者测试了一系列下采样倍数
+<span class="math inline">\(f\in\{1, 2, 4, 8, 16,
+32\}\)</span>，发现下采样 4-16 倍的时候可以比较好地权衡效率和质量。</p>
+<p>在进行图像压缩时，为了防止压缩后的空间是某个高方差的空间，需要进行正则化。作者使用了两种正则化，第一种是
+KL-正则化，也就是将隐变量和标准高斯分布使用一个 KL
+惩罚项进行正则化；第二种是 VQ-正则化，也就是使用一个 vector quantization
+层进行正则化。</p>
+<h2 id="latent-diffusion-models">Latent Diffusion Models</h2>
+<p>实际上 latent diffusion models
+和普通的扩散模型没有太大区别，只是因为从像素空间变到了隐空间，所以维度降低了。训练的优化目标也没有太大变化，普通的扩散模型优化目标为：
+<span class="math display">\[
+L_\textrm{DM}=\mathbb{E}_{\mathbf{x},\epsilon\sim\mathcal{N}(0,1),t}\left[||\epsilon-\epsilon_\theta(\mathbf{x}_t,t)||_2^2\right]
+\]</span> 而 Latent Diffusion Models 的优化目标只是套了一层
+autoencoder： <span class="math display">\[
+L_\textrm{LDM}=\mathbb{E}_{\textcolor{red}{\mathcal{E}(\mathbf{x})},\epsilon\sim\mathcal{N}(0,1),t}\left[||\epsilon-\epsilon_\theta(\mathbf{x}_t,t)||_2^2\right]
+\]</span> 在采样时，首先从隐空间随机采样噪声，在去噪后再用 decoder
+转换到像素空间即可。</p>
+<h2 id="条件生成">条件生成</h2>
+<p>为了进行条件生成，需要学习 <span
+class="math inline">\(\epsilon_\theta(\mathbf{x}_t,t,y)\)</span>，这里使用的方法是在去噪网络中加入
+cross attention 层，条件通过交叉注意力注入。在计算注意力时，<span
+class="math inline">\(\mathbf{z}\)</span> 为 Query、<span
+class="math inline">\(y\)</span> 为 Key 和 Value，具体的内容已经在 <a
+href="https://littlenyima.github.io/posts/19-classifier-free-guidance-for-diffusion-models/">Classifier-Free
+Guidance 的文章中</a>介绍过了，对具体细节感兴趣的读者可以去看一下。</p>
+<h1 id="代码解读">代码解读</h1>
+<p>Stable Diffusion 有两套主流的代码实现，第一种是 CompVis
+的官方实现，第二种是 huggingface
+的实现。这里的代码解读都以文生图任务为例。</p>
+<h2 id="compvis-的实现">CompVis 的实现</h2>
+<p>这个实现的代码比较分散，层次结构不太好梳理，不过可以照着配置文件看各部分都在哪里。这个配置文件有点类似
+openmmlab 的那套框架的写法，例如文生图的配置文件
+<code>models/ldm/text2img256/config.yaml</code>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">model:</span></span><br><span class="line">  <span class="attr">target:</span> <span class="string">ldm.models.diffusion.ddpm.LatentDiffusion</span></span><br><span class="line">  <span class="attr">params:</span></span><br><span class="line">    <span class="attr">unet_config:</span></span><br><span class="line">      <span class="attr">target:</span> <span class="string">ldm.modules.diffusionmodules.openaimodel.UNetModel</span></span><br><span class="line">    <span class="attr">first_stage_config:</span></span><br><span class="line">      <span class="attr">target:</span> <span class="string">ldm.models.autoencoder.VQModelInterface</span></span><br><span class="line">    <span class="attr">cond_stage_config:</span></span><br><span class="line">      <span class="attr">target:</span> <span class="string">ldm.modules.encoders.modules.BERTEmbedder</span></span><br></pre></td></tr></table></figure>
+<p>无关的内容都略去，可以看到顶层的模块是
+<code>LatentDiffusion</code>，去噪网络是 <code>UNetModel</code>、encoder
+是 <code>VQModelInterface</code>、文本编码器是
+<code>BERTEmbedder</code>。</p>
+<p>这里主要还是关注 <code>LatentDiffusion</code>
+的采样过程。具体的采样代码位于 <code>LatentDiffusion.sample</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@torch.no_grad()</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">sample</span>(<span class="params">self, cond, batch_size=<span class="number">16</span>, return_intermediates=<span class="literal">False</span>, x_T=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">           verbose=<span class="literal">True</span>, timesteps=<span class="literal">None</span>, quantize_denoised=<span class="literal">False</span>,</span></span><br><span class="line"><span class="params">           mask=<span class="literal">None</span>, x0=<span class="literal">None</span>, shape=<span class="literal">None</span>, **kwargs</span>):</span><br><span class="line">    <span class="comment"># 一些数据的封装以及格式转换等等</span></span><br><span class="line">    <span class="keyword">if</span> shape <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        shape = (batch_size, self.channels, self.image_size, self.image_size)</span><br><span class="line">    <span class="keyword">if</span> cond <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">isinstance</span>(cond, <span class="built_in">dict</span>):</span><br><span class="line">            cond = &#123;key: cond[key][:batch_size] <span class="keyword">if</span> <span class="keyword">not</span> <span class="built_in">isinstance</span>(cond[key], <span class="built_in">list</span>) <span class="keyword">else</span></span><br><span class="line">            <span class="built_in">list</span>(<span class="built_in">map</span>(<span class="keyword">lambda</span> x: x[:batch_size], cond[key])) <span class="keyword">for</span> key <span class="keyword">in</span> cond&#125;</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            cond = [c[:batch_size] <span class="keyword">for</span> c <span class="keyword">in</span> cond] <span class="keyword">if</span> <span class="built_in">isinstance</span>(cond, <span class="built_in">list</span>) <span class="keyword">else</span> cond[:batch_size]</span><br><span class="line">    <span class="comment"># 实际的采样过程</span></span><br><span class="line">    <span class="keyword">return</span> self.p_sample_loop(cond,</span><br><span class="line">                              shape,</span><br><span class="line">                              return_intermediates=return_intermediates, x_T=x_T,</span><br><span class="line">                              verbose=verbose, timesteps=timesteps, quantize_denoised=quantize_denoised,</span><br><span class="line">                              mask=mask, x0=x0)</span><br></pre></td></tr></table></figure>
+<p>可以看到实际的采样过程并不是在这一层进行，这一层只进行了一些封装，例如采样的大小以及条件的数据格式等等，具体的采样则是在
+<code>p_sample_loop</code> 中进行的：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@torch.no_grad()</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">p_sample_loop</span>(<span class="params">self, cond, shape, timesteps=<span class="literal">None</span></span>):</span><br><span class="line">    iterator = tqdm(<span class="built_in">reversed</span>(<span class="built_in">range</span>(<span class="number">0</span>, timesteps)), desc=<span class="string">&#x27;Sampling t&#x27;</span>, total=timesteps) <span class="keyword">if</span> verbose <span class="keyword">else</span> <span class="built_in">reversed</span>(<span class="built_in">range</span>(<span class="number">0</span>, timesteps))</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> iterator:</span><br><span class="line">        ts = torch.full((b,), i, device=device, dtype=torch.long)</span><br><span class="line">        img = self.p_sample(img, cond, ts,</span><br><span class="line">                            clip_denoised=self.clip_denoised,</span><br><span class="line">                            quantize_denoised=quantize_denoised)</span><br><span class="line">    <span class="keyword">return</span> img</span><br></pre></td></tr></table></figure>
+<p>去掉一堆杂七杂八的代码之后可以发现在 <code>p_sample_loop</code>
+中是一个循环，也就对应于一步步进行降噪的过程，具体的降噪在
+<code>p_sample</code> 中实现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@torch.no_grad()</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">p_sample</span>(<span class="params">self, x, c, t, clip_denoised=<span class="literal">False</span>, repeat_noise=<span class="literal">False</span>,</span></span><br><span class="line"><span class="params">             return_codebook_ids=<span class="literal">False</span>, quantize_denoised=<span class="literal">False</span>, return_x0=<span class="literal">False</span>,</span></span><br><span class="line"><span class="params">             temperature=<span class="number">1.</span>, noise_dropout=<span class="number">0.</span>, score_corrector=<span class="literal">None</span>, corrector_kwargs=<span class="literal">None</span></span>):</span><br><span class="line">    b, *_, device = *x.shape, x.device</span><br><span class="line">    outputs = self.p_mean_variance(x=x, c=c, t=t, clip_denoised=clip_denoised,</span><br><span class="line">                                   return_codebook_ids=return_codebook_ids,</span><br><span class="line">                                   quantize_denoised=quantize_denoised,</span><br><span class="line">                                   return_x0=return_x0,</span><br><span class="line">                                   score_corrector=score_corrector,</span><br><span class="line">                                   corrector_kwargs=corrector_kwargs)</span><br><span class="line">    model_mean, _, model_log_variance = outputs</span><br><span class="line">    noise = noise_like(x.shape, device, repeat_noise) * temperature</span><br><span class="line">    <span class="keyword">if</span> noise_dropout &gt; <span class="number">0.</span>:</span><br><span class="line">        noise = torch.nn.functional.dropout(noise, p=noise_dropout)</span><br><span class="line">    <span class="comment"># no noise when t == 0</span></span><br><span class="line">    nonzero_mask = (<span class="number">1</span> - (t == <span class="number">0</span>).<span class="built_in">float</span>()).reshape(b, *((<span class="number">1</span>,) * (<span class="built_in">len</span>(x.shape) - <span class="number">1</span>)))</span><br><span class="line">    <span class="keyword">return</span> model_mean + nonzero_mask * (<span class="number">0.5</span> * model_log_variance).exp() * noise</span><br></pre></td></tr></table></figure>
+<p>在 <code>p_sample</code> 中，首先用模型预测出了均值和方差（也就是
+<code>p_mean_variance</code>，这里就不展开讲了），然后进行了去噪。</p>
+<p>综合上述分析来看，如果看原始代码，可能会觉得非常混乱，但是其实去掉不重要的内容之后，核心的代码并不算非常多。这里没有展开具体的
+<code>p_mean_variance</code> 内部的内容，在 CompVis 的框架中，定义了很多
+diffusion 中常用的常量（例如
+<code>alphas_cumprod</code>、<code>sqrt_recipm1_alphas_cumprod</code>
+等）和方法（例如
+<code>q_mean_variance</code>、<code>p_mean_variance</code>
+等），后续我应该还会写一篇文章专门介绍这些内容，这里暂时略过，只需要知道最顶层的
+<code>p_mean_variance</code> 是预测了均值和方差即可。</p>
+<h2 id="huggingface-的实现">huggingface 的实现</h2>
+<p>相比于 CompVis 的实现，huggingface 的实现更加工程化一点，相关的在
+<code>diffusers</code>
+库中。这个库主要包括三大类元素：models（各种神经网络的实现，unet、vae
+等）、schedulers（diffusion 相关的操作，加噪去噪等）、pipelines（high
+level 封装，相当于 models+schedulers，这个应该是方便用户直接用的）。</p>
+<p>这里直接看
+<code>diffusers/pipelines/stable_diffusion/pipeline_stable_diffusion.py</code>
+的采样过程，定义在 <code>__call__</code> 函数中：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@torch.no_grad()</span></span><br><span class="line"><span class="meta">@replace_example_docstring(<span class="params">EXAMPLE_DOC_STRING</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">__call__</span>(<span class="params"></span></span><br><span class="line"><span class="params">    self,</span></span><br><span class="line"><span class="params">    prompt: <span class="type">Union</span>[<span class="built_in">str</span>, <span class="type">List</span>[<span class="built_in">str</span>]] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    height: <span class="type">Optional</span>[<span class="built_in">int</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    width: <span class="type">Optional</span>[<span class="built_in">int</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    num_inference_steps: <span class="built_in">int</span> = <span class="number">50</span>,</span></span><br><span class="line"><span class="params">    timesteps: <span class="type">List</span>[<span class="built_in">int</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    sigmas: <span class="type">List</span>[<span class="built_in">float</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    guidance_scale: <span class="built_in">float</span> = <span class="number">7.5</span>,</span></span><br><span class="line"><span class="params">    negative_prompt: <span class="type">Optional</span>[<span class="type">Union</span>[<span class="built_in">str</span>, <span class="type">List</span>[<span class="built_in">str</span>]]] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    num_images_per_prompt: <span class="type">Optional</span>[<span class="built_in">int</span>] = <span class="number">1</span>,</span></span><br><span class="line"><span class="params">    eta: <span class="built_in">float</span> = <span class="number">0.0</span>,</span></span><br><span class="line"><span class="params">    generator: <span class="type">Optional</span>[<span class="type">Union</span>[torch.Generator, <span class="type">List</span>[torch.Generator]]] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    latents: <span class="type">Optional</span>[torch.Tensor] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    prompt_embeds: <span class="type">Optional</span>[torch.Tensor] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    negative_prompt_embeds: <span class="type">Optional</span>[torch.Tensor] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    ip_adapter_image: <span class="type">Optional</span>[PipelineImageInput] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    ip_adapter_image_embeds: <span class="type">Optional</span>[<span class="type">List</span>[torch.Tensor]] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    output_type: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="string">&quot;pil&quot;</span>,</span></span><br><span class="line"><span class="params">    return_dict: <span class="built_in">bool</span> = <span class="literal">True</span>,</span></span><br><span class="line"><span class="params">    cross_attention_kwargs: <span class="type">Optional</span>[<span class="type">Dict</span>[<span class="built_in">str</span>, <span class="type">Any</span>]] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    guidance_rescale: <span class="built_in">float</span> = <span class="number">0.0</span>,</span></span><br><span class="line"><span class="params">    clip_skip: <span class="type">Optional</span>[<span class="built_in">int</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    callback_on_step_end: <span class="type">Optional</span>[</span></span><br><span class="line"><span class="params">        <span class="type">Union</span>[<span class="type">Callable</span>[[<span class="built_in">int</span>, <span class="built_in">int</span>, <span class="type">Dict</span>], <span class="literal">None</span>], PipelineCallback, MultiPipelineCallbacks]</span></span><br><span class="line"><span class="params">    ] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    callback_on_step_end_tensor_inputs: <span class="type">List</span>[<span class="built_in">str</span>] = [<span class="string">&quot;latents&quot;</span>],</span></span><br><span class="line"><span class="params">    **kwargs,</span></span><br><span class="line"><span class="params"></span>):</span><br></pre></td></tr></table></figure>
+<p>可以看到参数实在是非常的多，我们在这里不关注工程的部分，只关注核心的逻辑。这里的第一个需要关注的点是对生成条件进行编码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">prompt_embeds, negative_prompt_embeds = self.encode_prompt(</span><br><span class="line">    prompt,</span><br><span class="line">    device,</span><br><span class="line">    num_images_per_prompt,</span><br><span class="line">    self.do_classifier_free_guidance,</span><br><span class="line">    negative_prompt,</span><br><span class="line">    prompt_embeds=prompt_embeds,</span><br><span class="line">    negative_prompt_embeds=negative_prompt_embeds,</span><br><span class="line">    lora_scale=lora_scale,</span><br><span class="line">    clip_skip=self.clip_skip,</span><br><span class="line">)</span><br><span class="line"><span class="comment"># For classifier free guidance, we need to do two forward passes.</span></span><br><span class="line"><span class="comment"># Here we concatenate the unconditional and text embeddings into a single batch</span></span><br><span class="line"><span class="comment"># to avoid doing two forward passes</span></span><br><span class="line"><span class="keyword">if</span> self.do_classifier_free_guidance:</span><br><span class="line">    prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds])</span><br></pre></td></tr></table></figure>
+<p>这里实际上还有 LoRA 和 IP-Adaptor
+相关的处理，暂时省略。可以看到这里对生成的 prompt
+进行了编码，并且不仅有正常的 prompt，还有 negative 的 prompt，这是为了做
+classifier-free guidance。并且由于两个 prompt 需要分别推理，这里还将其在
+batch 维度拼接，来进行并行化。随后获取 timesteps：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">timesteps, num_inference_steps = retrieve_timesteps(</span><br><span class="line">    self.scheduler, num_inference_steps, device, timesteps, sigmas</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>然后初始化噪声，这个就相当于 <span
+class="math inline">\(\mathbf{x}_T\)</span>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">num_channels_latents = self.unet.config.in_channels</span><br><span class="line">latents = self.prepare_latents(</span><br><span class="line">    batch_size * num_images_per_prompt,</span><br><span class="line">    num_channels_latents,</span><br><span class="line">    height,</span><br><span class="line">    width,</span><br><span class="line">    prompt_embeds.dtype,</span><br><span class="line">    device,</span><br><span class="line">    generator,</span><br><span class="line">    latents,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>上边准备了 <span class="math inline">\(\mathbf{x}\)</span>、timestep
+以及 condition，现在就可以正式进行生成了：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">num_warmup_steps = <span class="built_in">len</span>(timesteps) - num_inference_steps * self.scheduler.order</span><br><span class="line">self._num_timesteps = <span class="built_in">len</span>(timesteps)</span><br><span class="line"><span class="keyword">with</span> self.progress_bar(total=num_inference_steps) <span class="keyword">as</span> progress_bar:</span><br><span class="line">    <span class="keyword">for</span> i, t <span class="keyword">in</span> <span class="built_in">enumerate</span>(timesteps):</span><br><span class="line">        <span class="comment"># expand the latents if we are doing classifier free guidance</span></span><br><span class="line">        latent_model_input = torch.cat([latents] * <span class="number">2</span>) <span class="keyword">if</span> self.do_classifier_free_guidance <span class="keyword">else</span> latents</span><br><span class="line">        latent_model_input = self.scheduler.scale_model_input(latent_model_input, t)</span><br><span class="line">        <span class="comment"># predict the noise residual</span></span><br><span class="line">        noise_pred = self.unet(</span><br><span class="line">            latent_model_input,</span><br><span class="line">            t,</span><br><span class="line">            encoder_hidden_states=prompt_embeds,</span><br><span class="line">            timestep_cond=timestep_cond,</span><br><span class="line">            cross_attention_kwargs=self.cross_attention_kwargs,</span><br><span class="line">            added_cond_kwargs=added_cond_kwargs,</span><br><span class="line">            return_dict=<span class="literal">False</span>,</span><br><span class="line">        )[<span class="number">0</span>]</span><br><span class="line">        <span class="comment"># perform guidance</span></span><br><span class="line">        <span class="keyword">if</span> self.do_classifier_free_guidance:</span><br><span class="line">            noise_pred_uncond, noise_pred_text = noise_pred.chunk(<span class="number">2</span>)</span><br><span class="line">            noise_pred = noise_pred_uncond + self.guidance_scale * (noise_pred_text - noise_pred_uncond)</span><br><span class="line">        <span class="keyword">if</span> self.do_classifier_free_guidance <span class="keyword">and</span> self.guidance_rescale &gt; <span class="number">0.0</span>:</span><br><span class="line">            <span class="comment"># Based on 3.4. in https://arxiv.org/pdf/2305.08891.pdf</span></span><br><span class="line">            noise_pred = rescale_noise_cfg(noise_pred, noise_pred_text, guidance_rescale=self.guidance_rescale)</span><br><span class="line">        <span class="comment"># compute the previous noisy sample x_t -&gt; x_t-1</span></span><br><span class="line">        latents = self.scheduler.step(noise_pred, t, latents, **extra_step_kwargs, return_dict=<span class="literal">False</span>)[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+<p>可以看到有一些为了 classifier-free guidance
+进行的处理，其他的都是正常 diffusion
+的操作。最后将隐变量解码回像素空间得到生成结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">image = self.vae.decode(latents / self.vae.config.scaling_factor, return_dict=<span class="literal">False</span>, generator=generator)[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+<h1 id="总结">总结</h1>
+<p>最近看了这么多文章，感觉比较成功的 researcher
+的工作都是连贯的。就像宋飏研究 sliced score matching，然后紧随其后做出了
+score-based generative model；又如 OpenAI 训出 CLIP 然后基于 CLIP
+做了一系列文生图的工作。今天这篇文章看起来也是 CompVis 把 VQGAN 迁移到
+diffusion models
+上的成果，感觉对平时做研究的启发还是很大的，我个人一直以来研究方向都比较摇摆不定，也应该反思学习一下。</p>
+<blockquote>
+<p>参考资料：</p>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="http://www.myhz0606.com/article/ldm">diffusion
+model(五)：LDM: 在隐空间用diffusion model合成高质量图片</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://lichtung612.github.io/posts/6-diffusion-models/">扩散模型（六）|
+Stable Diffusion</a></li>
+</ol>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/21-latent-diffusion-models/">https://littlenyima.github.io/posts/21-latent-diffusion-models/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Deep-learning/">Deep learning</a><a class="post-meta__tags" href="/tags/Diffusion-models/">Diffusion models</a><a class="post-meta__tags" href="/tags/Generative-models/">Generative models</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/posts/20-dalle-zero-shot-text-to-image-generation/" title="笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/posts/20-dalle-zero-shot-text-to-image-generation/" title="笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-14</div><div class="title">笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图</div></div></a></div><div><a href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-10</div><div class="title">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</div></div></a></div><div><a href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-24</div><div class="title">笔记｜扩散模型（三）：Improved DDPM 理论与实现</div></div></a></div><div><a href="/posts/14-denoising-diffusion-implicit-models/" title="笔记｜扩散模型（二）：DDIM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-12</div><div class="title">笔记｜扩散模型（二）：DDIM 理论与实现</div></div></a></div><div><a href="/posts/13-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（一）：DDPM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-08</div><div class="title">笔记｜扩散模型（一）：DDPM 理论与实现</div></div></a></div><div><a href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-12</div><div class="title">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">23</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">方法介绍</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%84%9F%E7%9F%A5%E5%9B%BE%E5%83%8F%E5%8E%8B%E7%BC%A9"><span class="toc-number">1.1.</span> <span class="toc-text">感知图像压缩</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#latent-diffusion-models"><span class="toc-number">1.2.</span> <span class="toc-text">Latent Diffusion Models</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%A1%E4%BB%B6%E7%94%9F%E6%88%90"><span class="toc-number">1.3.</span> <span class="toc-text">条件生成</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB"><span class="toc-number">2.</span> <span class="toc-text">代码解读</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#compvis-%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.1.</span> <span class="toc-text">CompVis 的实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#huggingface-%E7%9A%84%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.2.</span> <span class="toc-text">huggingface 的实现</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-post-series"><div class="item-headline"><i class="fa-solid fa-layer-group"></i><span>文章系列</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/21-latent-diffusion-models/" title="笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现">笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现</a><time datetime="2024-07-16T08:18:25.000Z" title="發表於 2024-07-16 16:18:25">2024-07-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/20-dalle-zero-shot-text-to-image-generation/" title="笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图">笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图</a><time datetime="2024-07-14T08:48:41.000Z" title="發表於 2024-07-14 16:48:41">2024-07-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</a><time datetime="2024-07-12T08:27:55.000Z" title="發表於 2024-07-12 16:27:55">2024-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</a><time datetime="2024-07-10T09:40:51.000Z" title="發表於 2024-07-10 17:40:51">2024-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现">笔记｜扩散模型（三）：Improved DDPM 理论与实现</a><time datetime="2024-06-24T11:09:55.000Z" title="發表於 2024-06-24 19:09:55">2024-06-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/14-denoising-diffusion-implicit-models/" title="笔记｜扩散模型（二）：DDIM 理论与实现">笔记｜扩散模型（二）：DDIM 理论与实现</a><time datetime="2024-06-12T08:59:12.000Z" title="發表於 2024-06-12 16:59:12">2024-06-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/13-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（一）：DDPM 理论与实现">笔记｜扩散模型（一）：DDPM 理论与实现</a><time datetime="2024-06-08T12:05:39.000Z" title="發表於 2024-06-08 20:05:39">2024-06-08</time></div></div></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/21-latent-diffusion-models/" title="笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现">笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现</a><time datetime="2024-07-16T08:18:25.000Z" title="發表於 2024-07-16 16:18:25">2024-07-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/20-dalle-zero-shot-text-to-image-generation/" title="笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图">笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图</a><time datetime="2024-07-14T08:48:41.000Z" title="發表於 2024-07-14 16:48:41">2024-07-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/top-1-article-index/" title="置顶｜本站文章索引">置顶｜本站文章索引</a><time datetime="2024-07-14T08:08:11.000Z" title="發表於 2024-07-14 16:08:11">2024-07-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</a><time datetime="2024-07-12T08:27:55.000Z" title="發表於 2024-07-12 16:27:55">2024-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</a><time datetime="2024-07-10T09:40:51.000Z" title="發表於 2024-07-10 17:40:51">2024-07-10</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/21-latent-diffusion-models/',
+      url: 'https://littlenyima.github.io/posts/21-latent-diffusion-models/',
+      title: '笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现',
+      apikey: 'yEvh2ZR9MQAvSxA73VjpJEa32eHr6TrkXS88LLNbhFGfkpRB2vRPuF3Yfn6IhP3o',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=yEvh2ZR9MQAvSxA73VjpJEa32eHr6TrkXS88LLNbhFGfkpRB2vRPuF3Yfn6IhP3o&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
