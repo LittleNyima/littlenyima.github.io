@@ -22,7 +22,8 @@ top: 1
 ## Diffusion Models：文生图
 
 1. [笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图](../20-dalle-zero-shot-text-to-image-generation)
-1. [扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现](../21-latent-diffusion-models)
+1. [笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现](../21-latent-diffusion-models)
+1. [笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现](../22-dalle-2-hierarchical-text-to-image-generation)
 
 ## Score-based Models
 
