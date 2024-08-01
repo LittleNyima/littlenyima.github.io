@@ -1,0 +1,383 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成 | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="论文链接：DreamBooth: Fine Tuning Text-to-Image Diffusion Models for Subject-Driven Generation 项目主页：https:&#x2F;&#x2F;dreambooth.github.io&#x2F; 非官方实现：huggingface&#x2F;diffusers、XavierXiao&#x2F;Dreambooth-Stable-Diffusion  时隔快两周继">
+<meta property="og:type" content="article">
+<meta property="og:title" content="笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成">
+<meta property="og:url" content="https://littlenyima.github.io/posts/24-dreambooth-subject-driven-generation/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="论文链接：DreamBooth: Fine Tuning Text-to-Image Diffusion Models for Subject-Driven Generation 项目主页：https:&#x2F;&#x2F;dreambooth.github.io&#x2F; 非官方实现：huggingface&#x2F;diffusers、XavierXiao&#x2F;Dreambooth-Stable-Diffusion  时隔快两周继">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2024-08-01T06:56:59.000Z">
+<meta property="article:modified_time" content="2024-08-01T08:38:53.341Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Deep learning">
+<meta property="article:tag" content="Diffusion models">
+<meta property="article:tag" content="Generative models">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/24-dreambooth-subject-driven-generation/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-08-01 16:38:53'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2024-08-01T06:56:59.000Z" title="發表於 2024-08-01 14:56:59">2024-08-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2024-08-01T08:38:53.341Z" title="更新於 2024-08-01 16:38:53">2024-08-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Notes/">Notes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>论文链接：<em><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2208.12242">DreamBooth:
+Fine Tuning Text-to-Image Diffusion Models for Subject-Driven
+Generation</a></em></p>
+<p>项目主页：<a
+target="_blank" rel="noopener" href="https://dreambooth.github.io/">https://dreambooth.github.io/</a></p>
+<p>非官方实现：<strong><a
+target="_blank" rel="noopener" href="https://github.com/huggingface/diffusers/blob/main/examples/dreambooth/train_dreambooth.py">huggingface/diffusers</a></strong>、<strong><a
+target="_blank" rel="noopener" href="https://github.com/XavierXiao/Dreambooth-Stable-Diffusion">XavierXiao/Dreambooth-Stable-Diffusion</a></strong></p>
+</blockquote>
+<p>时隔快两周继续更新一下 AIGC
+系列的学习笔记，这篇文章算是比较火的一个工作，而且很多 AI
+照相馆应用的背后也是这个算法。这一算法关注的任务是主题驱动生成，也就是给定某个特定物体（或者某个人或动物）的几张图像对模型进行微调，微调后就能生成该主题在各种场景、姿态下的图像。具体效果如下图所示，给出几张柯基的照片对模型进行微调，模型就能生成这只小狗的各种图像。</p>
+<p><img
+src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/01/dreambooth-sample.jpg"
+alt="Dreambooth 效果示意图" /></p>
+<h1 id="dreambooth">Dreambooth</h1>
+<p>Dreambooth
+这个方法使用的依然是基础的文生图扩散模型，不过对这类模型进行了「个性化」。具体来说就是用给出的几张图像以及设计好的
+prompt 对原始模型进行微调。微调的主要目的是把要生成的目标植入到输出
+domain 中，这样在生成新图像时就可以从这个 domain
+中查询出与其相关的新图像。</p>
+<h2 id="prompt-设计">Prompt 设计</h2>
+<p>为了让模型知道要生成的是这个新主题的图像，作者设计了一种
+prompt，也就是 "a [identifier] [noun]"。这里的 identifier
+就表示要生成的新主题，noun 表示要生成物体的种类，例如这里就是
+dog。在生成时，a dog 表示各种各样的狗狗，而 a [identifier] dog
+就表示我们希望生成的这种狗狗。也就是说，通过微调，我们将 a [identifier]
+dog 这个文本与我们要生成的主题绑定到了一起。</p>
+<p>对于 [identifier] 用词的选择，作者尝试了几种不同的方案。首先是使用
+"rare"、"special"
+这类词，用这类词的缺点在于模型在微调前就对这类词有一定的先验知识，让模型区分原有知识和我们提供的新形象是比较困难的，因此比较好的选择是使用一个比较稀有或者词表里不存在的词。一种比较直观的构造稀有词的方法是随机生成一串字母和数字的组合，比如
+"xxy5syt00"，然而这类词可能在 tokenize 之后就会变成一些常见的
+token，这些 token 依然有比较强的先验，会导致和上述相同的问题。</p>
+<p>因此作者实际的做法是去词汇表中寻找稀有的 token，然后将这些 token
+转化为 text，得到对应的单词，例如一个常用的 identifier 是
+sks。（不过最近也有人反对使用这个词，因为 SKS
+是一种半自动步枪的型号，可能也会对模型产生误导）</p>
+<h2 id="类别先验保持损失">类别先验保持损失</h2>
+<p>在微调时我们只使用了一种 prompt
+和少量的几张图片，这样会导致模型对普通 dog
+类别的生成能力退化，产生过拟合。具体来说，这种过拟合会导致两种不利结果：</p>
+<ol type="1">
+<li>Language
+Drift：这是在文本模型微调时会出现的一种现象，使用少量文本对模型进行微调时，会导致模型忘记原有的语义信息。在这里也就是模型忘记了如何生成其他狗的图片，只能生成这一种狗。</li>
+<li>输出多样性降低：这个也是过拟合到一种狗狗导致的结果，尽管我们也只是想生成柯基这一种狗狗，但是生成的过程实际上是依赖于原始模型对各种狗的先验的。忘记原有先验会导致生成的柯基的多样性降低。</li>
+</ol>
+<p>为了保持模型原有的类别先验，作者提出了一种新的损失，用模型在微调前自己生成的样本来监督微调过程。这种损失表示为：
+<span class="math display">\[
+\mathbb{E}_{\mathbf{x},\mathbf{c},\epsilon,\epsilon&#39;,t}[w_t||\hat{\mathbf{x}}_\theta(\alpha_t\mathbf{x}+\sigma_t\epsilon,\mathbf{c})-\mathbf{x}||_2^2+\lambda
+w_{t&#39;}||\hat{\mathbf{x}}_\theta(\alpha_{t&#39;}\mathbf{x}_\mathrm{pr}+\sigma_{t&#39;}\epsilon&#39;,\mathbf{c}_\mathrm{pr})-\mathbf{x}_\mathrm{pr}||_2^2]
+\]</span> 第一项就是普通的损失，第二项中的 <span
+class="math inline">\(\mathbf{x}\)</span> 都变成了 <span
+class="math inline">\(\mathbf{x}_\mathrm{pr}\)</span>，表示提前生成的图像。</p>
+<h2 id="训练与采样过程">训练与采样过程</h2>
+<p>具体的训练和采样过程如下所示，给定几张狮子狗的照片进行微调，先用 "a
+dog" 作为 prompt
+生成一部分图像，这部分图像在微调过程中用来计算先验保留损失，然后用 "a
+[V] dog"
+微调生成狮子狗的过程，这部分直接计算重建损失。在采样过程中，直接用 "a
+[V] dog" 表示这只狮子狗即可生成各种场景下的狮子狗。</p>
+<p><img
+src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/01/dreambooth-train-sample.jpg"
+alt="Dreambooth 的训练和采样过程" /></p>
+<h1 id="dreambooth-代码解读">Dreambooth 代码解读</h1>
+<p>这里参考的是 <code>diffusers</code> 提供的 dreambooth
+训练代码，工程上的内容就忽略了，这里只关注主要逻辑。</p>
+<p>首先观察一下基础模型用的是什么：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">tokenizer = AutoTokenizer.from_pretrained(</span><br><span class="line">    args.pretrained_model_name_or_path,</span><br><span class="line">    subfolder=<span class="string">&quot;tokenizer&quot;</span>,</span><br><span class="line">    revision=args.revision,</span><br><span class="line">    use_fast=<span class="literal">False</span>,</span><br><span class="line">)</span><br><span class="line">noise_scheduler = DDPMScheduler.from_pretrained(</span><br><span class="line">    args.pretrained_model_name_or_path, </span><br><span class="line">    subfolder=<span class="string">&quot;scheduler&quot;</span></span><br><span class="line">)</span><br><span class="line">text_encoder = text_encoder_cls.from_pretrained(</span><br><span class="line">    args.pretrained_model_name_or_path,</span><br><span class="line">    subfolder=<span class="string">&quot;text_encoder&quot;</span>,</span><br><span class="line">    revision=args.revision,</span><br><span class="line">    variant=args.variant</span><br><span class="line">)</span><br><span class="line">unet = UNet2DConditionModel.from_pretrained(</span><br><span class="line">    args.pretrained_model_name_or_path, </span><br><span class="line">    subfolder=<span class="string">&quot;unet&quot;</span>, </span><br><span class="line">    revision=args.revision, </span><br><span class="line">    variant=args.variant</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>可以看到这里用的是 <code>DDPMScheduler</code> 和
+<code>UNet2DConditionModel</code>，可以看出用的就是最普通的
+DDPM。实际上在原论文中也提到了，一开始生成的是 64
+分辨率大小的图像，后来再超分辨率到 1024
+大小。（当然这个脚本也选择性地加载了 VAE，所以也可以使用 Stable
+Diffusion）</p>
+<p>然后我们来看数据部分，脚本中定义了一个
+<code>DreamBoothDataset</code>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">DreamBoothDataset</span>(<span class="title class_ inherited__">Dataset</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    A dataset to prepare the instance and class images with the prompts for fine-tuning the model.</span></span><br><span class="line"><span class="string">    It pre-processes the images and the tokenizes prompts.</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        instance_data_root,</span></span><br><span class="line"><span class="params">        instance_prompt,</span></span><br><span class="line"><span class="params">        tokenizer,</span></span><br><span class="line"><span class="params">        class_data_root=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        class_prompt=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        class_num=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        size=<span class="number">512</span>,</span></span><br><span class="line"><span class="params">        center_crop=<span class="literal">False</span>,</span></span><br><span class="line"><span class="params">        encoder_hidden_states=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        class_prompt_encoder_hidden_states=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        tokenizer_max_length=<span class="literal">None</span>,</span></span><br><span class="line"><span class="params">    </span>):</span><br><span class="line">        ...</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__getitem__</span>(<span class="params">self, index</span>):</span><br><span class="line">        example = &#123;&#125;</span><br><span class="line">        instance_image = Image.<span class="built_in">open</span>(self.instance_images_path[index % self.num_instance_images])</span><br><span class="line">        example[<span class="string">&quot;instance_images&quot;</span>] = self.image_transforms(instance_image)</span><br><span class="line"></span><br><span class="line">        text_inputs = tokenize_prompt(</span><br><span class="line">            self.tokenizer, self.instance_prompt, tokenizer_max_length=self.tokenizer_max_length</span><br><span class="line">        )</span><br><span class="line">        example[<span class="string">&quot;instance_prompt_ids&quot;</span>] = text_inputs.input_ids</span><br><span class="line">        example[<span class="string">&quot;instance_attention_mask&quot;</span>] = text_inputs.attention_mask</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> self.class_data_root:</span><br><span class="line">            class_image = Image.<span class="built_in">open</span>(self.class_images_path[index % self.num_class_images])</span><br><span class="line">            example[<span class="string">&quot;class_images&quot;</span>] = self.image_transforms(class_image)</span><br><span class="line"></span><br><span class="line">            class_text_inputs = tokenize_prompt(</span><br><span class="line">                self.tokenizer, self.class_prompt, tokenizer_max_length=self.tokenizer_max_length</span><br><span class="line">            )</span><br><span class="line">            example[<span class="string">&quot;class_prompt_ids&quot;</span>] = class_text_inputs.input_ids</span><br><span class="line">            example[<span class="string">&quot;class_attention_mask&quot;</span>] = class_text_inputs.attention_mask</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> example</span><br></pre></td></tr></table></figure>
+<p>从后边的 <code>__getitem__</code>
+可以看出，这个数据集可以传入两组图片路径和
+prompt，<code>instance_data_root</code>
+就是我们微调用的柯基的图片路径，<code>instance_prompt</code> 就是 "a [V]
+dog"。除此之外还可以传入另一组，<code>class_data_root</code>
+就是原模型预先生成的图像，<code>class_prompt</code> 就是 "a
+dog"。这两组在 <code>__getitem__</code> 中分别被读取并
+embed，对后分别存入 <code>instance_xxx</code> 和 <code>class_xxx</code>
+的两组字段中。</p>
+<p>在 training loop 中，主要关注这几个部分：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">prior_loss = F.mse_loss(model_pred_prior.<span class="built_in">float</span>(), target_prior.<span class="built_in">float</span>(), reduction=<span class="string">&quot;mean&quot;</span>)</span><br><span class="line">loss = F.mse_loss(model_pred.<span class="built_in">float</span>(), target.<span class="built_in">float</span>(), reduction=<span class="string">&quot;none&quot;</span>)</span><br><span class="line">loss = loss.mean(dim=<span class="built_in">list</span>(<span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(loss.shape)))) * mse_loss_weights</span><br><span class="line">loss = loss.mean()</span><br><span class="line">loss = loss + args.prior_loss_weight * prior_loss</span><br></pre></td></tr></table></figure>
+<p>可以看到在训练时分别计算了普通的重建损失，以及先验损失，并在最后进行了加权。</p>
+<h1 id="总结">总结</h1>
+<p>Dreambooth
+作为一种少样本微调的方法还是很有效的，不过这种方法也有一些缺点，例如微调实际上依赖于模型对目标类别的先验，如果基础模型就不了解这种对象，可能就无法生成。例如如果我想生成一个奇怪的物体，基础模型没有在类似的数据上训练过，就无法生成。除此之外在某些特定
+IP 的生成上，dreambooth 也表现得不是特别好。</p>
+<blockquote>
+<p>参考资料：</p>
+<ol type="1">
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/612215100">Dreambooth 详解 --
+Diffusion model 的超级创新，修图师要被取代了！？</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://lichtung612.github.io/posts/13-diffusion-models/">扩散模型（十三）|
+DreamBooth</a></li>
+</ol>
+</blockquote>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/24-dreambooth-subject-driven-generation/">https://littlenyima.github.io/posts/24-dreambooth-subject-driven-generation/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Deep-learning/">Deep learning</a><a class="post-meta__tags" href="/tags/Diffusion-models/">Diffusion models</a><a class="post-meta__tags" href="/tags/Generative-models/">Generative models</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/posts/23-imagen-t2i-with-deep-language-understanding/" title="笔记｜扩散模型（九）：Imagen 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">笔记｜扩散模型（九）：Imagen 理论与实现</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/posts/23-imagen-t2i-with-deep-language-understanding/" title="笔记｜扩散模型（九）：Imagen 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-20</div><div class="title">笔记｜扩散模型（九）：Imagen 理论与实现</div></div></a></div><div><a href="/posts/22-dalle-2-hierarchical-text-to-image-generation/" title="笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-19</div><div class="title">笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现</div></div></a></div><div><a href="/posts/21-latent-diffusion-models/" title="笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-16</div><div class="title">笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现</div></div></a></div><div><a href="/posts/20-dalle-zero-shot-text-to-image-generation/" title="笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-14</div><div class="title">笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图</div></div></a></div><div><a href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-07-10</div><div class="title">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</div></div></a></div><div><a href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-06-24</div><div class="title">笔记｜扩散模型（三）：Improved DDPM 理论与实现</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">26</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#dreambooth"><span class="toc-number">1.</span> <span class="toc-text">Dreambooth</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#prompt-%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.1.</span> <span class="toc-text">Prompt 设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%B1%BB%E5%88%AB%E5%85%88%E9%AA%8C%E4%BF%9D%E6%8C%81%E6%8D%9F%E5%A4%B1"><span class="toc-number">1.2.</span> <span class="toc-text">类别先验保持损失</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E4%B8%8E%E9%87%87%E6%A0%B7%E8%BF%87%E7%A8%8B"><span class="toc-number">1.3.</span> <span class="toc-text">训练与采样过程</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#dreambooth-%E4%BB%A3%E7%A0%81%E8%A7%A3%E8%AF%BB"><span class="toc-number">2.</span> <span class="toc-text">Dreambooth 代码解读</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-post-series"><div class="item-headline"><i class="fa-solid fa-layer-group"></i><span>文章系列</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/24-dreambooth-subject-driven-generation/" title="笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成">笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成</a><time datetime="2024-08-01T06:56:59.000Z" title="發表於 2024-08-01 14:56:59">2024-08-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/23-imagen-t2i-with-deep-language-understanding/" title="笔记｜扩散模型（九）：Imagen 理论与实现">笔记｜扩散模型（九）：Imagen 理论与实现</a><time datetime="2024-07-20T07:08:55.000Z" title="發表於 2024-07-20 15:08:55">2024-07-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/22-dalle-2-hierarchical-text-to-image-generation/" title="笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现">笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现</a><time datetime="2024-07-18T17:30:15.000Z" title="發表於 2024-07-19 01:30:15">2024-07-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/21-latent-diffusion-models/" title="笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现">笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现</a><time datetime="2024-07-16T08:18:25.000Z" title="發表於 2024-07-16 16:18:25">2024-07-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/20-dalle-zero-shot-text-to-image-generation/" title="笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图">笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图</a><time datetime="2024-07-14T08:48:41.000Z" title="發表於 2024-07-14 16:48:41">2024-07-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/19-classifier-free-guidance-for-diffusion-models/" title="笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现">笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</a><time datetime="2024-07-12T08:27:55.000Z" title="發表於 2024-07-12 16:27:55">2024-07-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/18-classifier-guidance-for-diffusion-models/" title="笔记｜扩散模型（四）：Classifier Guidance 理论与实现">笔记｜扩散模型（四）：Classifier Guidance 理论与实现</a><time datetime="2024-07-10T09:40:51.000Z" title="發表於 2024-07-10 17:40:51">2024-07-10</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现">笔记｜扩散模型（三）：Improved DDPM 理论与实现</a><time datetime="2024-06-24T11:09:55.000Z" title="發表於 2024-06-24 19:09:55">2024-06-24</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/14-denoising-diffusion-implicit-models/" title="笔记｜扩散模型（二）：DDIM 理论与实现">笔记｜扩散模型（二）：DDIM 理论与实现</a><time datetime="2024-06-12T08:59:12.000Z" title="發表於 2024-06-12 16:59:12">2024-06-12</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/13-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（一）：DDPM 理论与实现">笔记｜扩散模型（一）：DDPM 理论与实现</a><time datetime="2024-06-08T12:05:39.000Z" title="發表於 2024-06-08 20:05:39">2024-06-08</time></div></div></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/24-dreambooth-subject-driven-generation/" title="笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成">笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成</a><time datetime="2024-08-01T06:56:59.000Z" title="發表於 2024-08-01 14:56:59">2024-08-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/23-imagen-t2i-with-deep-language-understanding/" title="笔记｜扩散模型（九）：Imagen 理论与实现">笔记｜扩散模型（九）：Imagen 理论与实现</a><time datetime="2024-07-20T07:08:55.000Z" title="發表於 2024-07-20 15:08:55">2024-07-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/22-dalle-2-hierarchical-text-to-image-generation/" title="笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现">笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现</a><time datetime="2024-07-18T17:30:15.000Z" title="發表於 2024-07-19 01:30:15">2024-07-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/21-latent-diffusion-models/" title="笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现">笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现</a><time datetime="2024-07-16T08:18:25.000Z" title="發表於 2024-07-16 16:18:25">2024-07-16</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/20-dalle-zero-shot-text-to-image-generation/" title="笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图">笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图</a><time datetime="2024-07-14T08:48:41.000Z" title="發表於 2024-07-14 16:48:41">2024-07-14</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/24-dreambooth-subject-driven-generation/',
+      url: 'https://littlenyima.github.io/posts/24-dreambooth-subject-driven-generation/',
+      title: '笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成',
+      apikey: 'yEvh2ZR9MQAvSxA73VjpJEa32eHr6TrkXS88LLNbhFGfkpRB2vRPuF3Yfn6IhP3o',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=yEvh2ZR9MQAvSxA73VjpJEa32eHr6TrkXS88LLNbhFGfkpRB2vRPuF3Yfn6IhP3o&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
