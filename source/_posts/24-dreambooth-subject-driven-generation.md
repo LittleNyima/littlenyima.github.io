@@ -135,7 +135,7 @@ class DreamBoothDataset(Dataset):
         return example
 ```
 
-从后边的 `__getitem__` 可以看出，这个数据集可以传入两组图片路径和 prompt，`instance_data_root` 就是我们微调用的柯基的图片路径，`instance_prompt` 就是 "a [V] dog"。除此之外还可以传入另一组，`class_data_root` 就是原模型预先生成的图像，`class_prompt` 就是 "a dog"。这两组在 `__getitem__` 中分别被读取并 embed，对后分别存入 `instance_xxx` 和 `class_xxx` 的两组字段中。
+从后边的 `__getitem__` 可以看出，这个数据集可以传入两组图片路径和 prompt，`instance_data_root` 就是我们微调用的柯基的图片路径，`instance_prompt` 就是 "a [V] dog"。除此之外还可以传入另一组，`class_data_root` 就是原模型预先生成的图像，`class_prompt` 就是 "a dog"。这两组在 `__getitem__` 中分别被读取并 embed，最后分别存入 `instance_xxx` 和 `class_xxx` 的两组字段中。
 
 在 training loop 中，主要关注这几个部分：
 

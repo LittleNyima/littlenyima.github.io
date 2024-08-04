@@ -26,11 +26,23 @@ top: 1
 1. [笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现](../22-dalle-2-hierarchical-text-to-image-generation)
 1. [笔记｜扩散模型（九）：Imagen 理论与实现](../23-imagen-t2i-with-deep-language-understanding)
 1. [笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成](../24-dreambooth-subject-driven-generation)
+1. [笔记｜扩散模型（一一）：Stable Diffusion XL 理论与实现](../27-sdxl-stable-diffusion-xl)
 
 ## Score-based Models
 
 1. [笔记｜Score-based Generative Models（一）：基础理论](../16-score-based-generative-models)
 2. [笔记｜Score-based Generative Models（二）：基于 SDE 的模型](../17-score-based-modeling-with-sde)
+
+## 通用技术
+
+1. [笔记｜LoRA 理论与实现｜大模型轻量级微调](../25-lora-low-rank-adaptation)
+
+# 刷题笔记
+
+## LeetCode Hot 100
+
+1. [刷题｜LeetCode Hot 100（一）：哈希](../26-leetcode-hot100-hash)
+2. [刷题｜LeetCode Hot 100（二）：双指针](../28-leetcode-hot100-double-pointer)
 
 # 教程与技术向文章
 
