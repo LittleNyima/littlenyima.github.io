@@ -221,32 +221,9 @@ if args.noise_offset:
 
 根据我的观察，`diffusers` 里没有直接提供多尺度微调相关的代码，应该是默认在训练之前已经自行处理好了各个 bucket 的图像。印象中前段时间某个组织开源了一份分 bucket 的代码，不过因为当时没保存所以现在找不到了，能找到的主要是 **[kohya-ss/sd-scripts](https://github.com/kohya-ss/sd-scripts)** 的一个实现。
 
-首先在 `library.model_util.make_bucket_resolutions` 中创建了一系列分辨率的 bucket：
+大体的原理是先创建一系列桶，然后对于每张图片，选择长宽比最接近的一个桶，然后进行裁剪，裁剪到和这个桶对应的分辨率相同。由于相邻两个桶之间的分辨率之差为 64，所以最多裁剪 32 像素，对训练的影响并不大。在将图片分桶之后，则可以按照每个桶的数据比例作为概率进行采样。如果某些桶中的数据量不足一个 batch，则把这个桶中的数据都放入一个公共桶中，并以标准的 $1024\times1024$ 分辨率进行训练。
 
-```python
-def make_bucket_resolutions(max_reso, min_size=256, max_size=1024, divisible=64):
-    max_width, max_height = max_reso
-    max_area = max_width * max_height
-    resos = set()
-    width = int(math.sqrt(max_area) // divisible) * divisible
-    resos.add((width, width))
-
-    width = min_size
-    while width <= max_size:
-        height = min(max_size, int((max_area // width) // divisible) * divisible)
-        if height >= min_size:
-            resos.add((width, height))
-            resos.add((height, width))
-        width += divisible
-
-    resos = list(resos)
-    resos.sort()
-    return resos
-```
-
-这个方法在 `library.train_util.BucketManager` 中调用，用来创建 bucket。这个 `BucketManager` 提供了一个方法 `select_bucket`，用来为某个特定分辨率的图像选择 bucket。
-
-最后在 `library.train_util.BaseDataset` 中，会对每张图片调用 `select_bucket` 选择 bucket，再将对应的图片加入到选择的 bucket 中。具体的代码就不一一贴在这里了，感兴趣的读者可以去代码仓库里看具体的实现。
+如果读者有兴趣自己阅读代码，可以先看 `library.model_util` 模块中的 `make_bucket_resolutions`，这个方法创建了一系列分辨率的 bucket，并在 `library.train_util.BucketManager` 中调用，用来创建 bucket。这个 `BucketManager` 提供了一个方法 `select_bucket`，用来为某个特定分辨率的图像选择 bucket。最后在 `library.train_util.BaseDataset` 中，会对每张图片调用 `select_bucket` 选择 bucket，再将对应的图片加入到选择的 bucket 中。
 
 # 总结
 
