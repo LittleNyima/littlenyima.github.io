@@ -27,6 +27,7 @@ top: 1
 1. [笔记｜扩散模型（九）：Imagen 理论与实现](../23-imagen-t2i-with-deep-language-understanding)
 1. [笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成](../24-dreambooth-subject-driven-generation)
 1. [笔记｜扩散模型（一一）：Stable Diffusion XL 理论与实现](../27-sdxl-stable-diffusion-xl)
+1. [笔记｜扩散模型（一四）：Textual Inversion 理论与实现](../35-textual-inversion-personalize-generation)
 
 ## Score-based Models
 
@@ -48,6 +49,8 @@ top: 1
 3. [刷题｜LeetCode Hot 100（三）：滑动窗口](../30-leetcode-hot100-sliding-window)
 4. [刷题｜LeetCode Hot 100（四）：子串](../31-leetcode-hot100-substring)
 5. [刷题｜LeetCode Hot 100（五）：普通数组](../33-leetcode-hot100-arrays)
+6. [刷题｜LeetCode Hot 100（六）：矩阵](../34-leetcode-hot100-matrix)
+7. [刷题｜LeetCode Hot 100（七）：链表](../36-leetcode-hot100-linked-list)
 
 # 教程与技术向文章
 
