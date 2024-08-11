@@ -51,7 +51,7 @@
   isHome: true,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2024-08-09 18:40:45'
+  postUpdate: '2024-08-12 00:53:29'
 }</script><noscript><style type="text/css">
   #nav {
     opacity: 1
@@ -157,149 +157,7 @@
       }
       detectApple()
     })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
-</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">18</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">5</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">極東晝寢愛好家</h1><div id="site_social_icons"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/27-sdxl-stable-diffusion-xl/" title="笔记｜扩散模型（一一）：Stable Diffusion XL 理论与实现">笔记｜扩散模型（一一）：Stable Diffusion XL 理论与实现</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-08-02T07:45:21.000Z" title="發表於 2024-08-02 15:45:21">2024-08-02</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">
-论文链接：SDXL:
-Improving Latent Diffusion Models for High-Resolution Image
-Synthesis
-官方实现：Stability-AI/generative-models
-非官方实现：huggingface/diffusers
-
-Stable Diffusion XL (SDXL) 是 Stablility AI 对 Stable Diffusion
-进行改进的工作，主要通过一些工程化的手段提高了 SD 模型的生成能力。相比于
-Stable Diffusion，SDXL
-对模型架构、条件注入、训练策略等都进行了优化，并且还引入了一个额外的
-refiner，用于对生成图像进行超分，得到高分辨率图像。
-Stable Diffusion XL
-模型架构改进
-SDXL 对模型的 VAE、UNet 和 text encoder
-都进行了改进，下面依次介绍一下。
-VAE
-相比于 Stable Diffusion，SDXL 对 VAE
-模型进行了重新训练，训练时使用了更大的 batchsize（256，Stable Diffusion
- ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/26-leetcode-hot100-hash/" title="刷题｜LeetCode Hot 100（一）：哈希">刷题｜LeetCode Hot 100（一）：哈希</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-08-02T06:15:26.000Z" title="發表於 2024-08-02 14:15:26">2024-08-02</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Coding/">Coding</a></span></div><div class="content">开一个新坑，最近准备秋招面试，把力扣热题 100
-刷一下，开一个系列记录自己的题解和代码。
-1. 两数之和
-题目 [链接]
-给定一个整数数组 nums 和一个整数目标值
-target，请你在该数组中找出 和为目标值
-target 的那 两个
-整数，并返回它们的数组下标。
-你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
-你可以按任意顺序返回答案。
-示例 1：
-
-输入：nums = [2,7,11,15], target = 9
-输出：[0,1]
-解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1]
-。
-
-示例 2：
-
-输入：nums = [3,2,4], target = 6
-输出：[1,2]
-
-示例 3：
-
-输入：nums = [3,3], target = 6
-输出：[0,1]
-
-提示：
-
-2 &lt;= nums.length &lt;= 10^4
--10^9 &lt;= nums[i] &lt;= 10^9
--10^9 &lt;= target &lt;= 10^9
-只会存在一个有效答案
-
-题解
-直接用一个 dict
-存 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/25-lora-low-rank-adaptation/" title="笔记｜LoRA 理论与实现｜大模型轻量级微调">笔记｜LoRA 理论与实现｜大模型轻量级微调</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-08-01T09:54:37.000Z" title="發表於 2024-08-01 17:54:37">2024-08-01</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">
-论文链接：LoRA:
-Low-Rank Adaptation of Large Language Models
-官方实现：microsoft/LoRA
-非官方实现：huggingface/peft、huggingface/diffusers
-
-这篇文章要介绍的是一种大模型/扩散模型的微调方法，叫做低秩适应（也就是
-Low-Rank Adaptation，LoRA）。经常使用 stable diffusion webui
-的读者应该对这个名词非常熟悉，通过给扩散模型加载不同的
-lora，可以让扩散模型生成出不同风格的图像。现在也已经有很多平台（例如 civitai、tensorart 等）可以下载现成的
-lora，可以看出 LoRA 的影响力还是比较大的。
-LoRA 作为一种高效的参数微调（Parameter-Efficient
-Fine-Tuning，PEFT）方法，最初是被用来微调 LLM
-的，后来也被用来微调扩散模型。这种方法的主要思想是固定住预训练模型的参数，同时引入额外的可训练低秩分解模块，只训练额外引入的这部分参数，从而大大减小模型的微调成本。
-与其他的 Peft 方法相比 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/24-dreambooth-subject-driven-generation/" title="笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成">笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-08-01T06:56:59.000Z" title="發表於 2024-08-01 14:56:59">2024-08-01</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">
-论文链接：DreamBooth:
-Fine Tuning Text-to-Image Diffusion Models for Subject-Driven
-Generation
-项目主页：https://dreambooth.github.io/
-非官方实现：huggingface/diffusers、XavierXiao/Dreambooth-Stable-Diffusion
-
-时隔快两周继续更新一下 AIGC
-系列的学习笔记，这篇文章算是比较火的一个工作，而且很多 AI
-照相馆应用的背后也是这个算法。这一算法关注的任务是主题驱动生成，也就是给定某个特定物体（或者某个人或动物）的几张图像对模型进行微调，微调后就能生成该主题在各种场景、姿态下的图像。具体效果如下图所示，给出几张柯基的照片对模型进行微调，模型就能生成这只小狗的各种图像。
-
-Dreambooth
-Dreambooth
-这个方法使用的依然是基础的文生图扩散模型，不过对这类模型进行了「个性化」。具体来说就是用给出的几张图像以及设计好的
-prompt 对原始模型进行微调。微调的主要目的是把要生成的目标植入到输出
-domain ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/23-imagen-t2i-with-deep-language-understanding/" title="笔记｜扩散模型（九）：Imagen 理论与实现">笔记｜扩散模型（九）：Imagen 理论与实现</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-07-20T07:08:55.000Z" title="發表於 2024-07-20 15:08:55">2024-07-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">
-论文链接：Photorealistic Text-to-Image
-Diffusion Models with Deep Language Understanding
-非官方实现：lucidrains/imagen-pytorch
-
-Imagen 是 Google Research 的文生图工作，这个工作并没有沿用 Stable
-Diffusion 的架构，而是级联了一系列普通的 DDPM
-模型。其主要的贡献有以下几个方面：
-
-使用比较大的文本模型进行文本嵌入，可以获得比使用 CLIP
-更好的文本理解能力；
-在采样阶段引入了一种动态阈值的方法，可以利用更高的 guidance scale
-来生成更真实、细节更丰富的图像（这里的阈值是控制 \(\mathbf{x}\) 的范围）；
-改良了 UNet，提出 Efficient
-UNet，使模型更简单、收敛更快、内存消耗更少。
-
-该模型的架构如下图所示，可以看到使用了一个条件生成的 diffusion
-模型以及两个超分辨率模型，每个模型都以文本模型的 embedding
-作为条件，先生成一个 64 分辨率的图像，然后逐步超分辨率到 1024 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/22-dalle-2-hierarchical-text-to-image-generation/" title="笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现">笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-07-18T17:30:15.000Z" title="發表於 2024-07-19 01:30:15">2024-07-19</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">
-论文链接：Hierarchical
-Text-Conditional Image Generation with CLIP Latents
-非官方实现：lucidrains/DALLE2-pytorch
-
-DALL-E 2 是一个比较经典的文生图模型，虽然和 Stable Diffusion
-的架构有些区别，但是也利用了 CLIP
-的文本-图像对齐能力实现了用文本作为条件进行图像生成。由于 CLIP
-是输入文本和图像获得相应的特征，而 DALL-E 2
-是将输入的文本转化为特征再转换为图像，相当于把 CLIP
-中的图像编码器反转了过来，所以这个方法也被称为
-unCLIP。这个模型主要由三个部分组成：
-
-CLIP 模型：负责将条件文本转换到文本-图像的统一特征空间中；
-prior 模型：将文本特征转换为图像特征，用于后续的图像生成；
-decoer 模型：将从 prior
-获得的图像特征转换为具体的生成图像，相当于反转了 CLIP 中的图像
-encoder。
-
-模型的架构图如下图所示，虚线的上方是 CLIP 模型，下方是 prior 和
-decoder 模型。
-
-DALL-E 2 的训练 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/21-latent-diffusion-models/" title="笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现">笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-07-16T08:18:25.000Z" title="發表於 2024-07-16 16:18:25">2024-07-16</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">
-论文链接：High-Resolution Image Synthesis
-with Latent Diffusion Models
-官方实现：CompVis/latent-diffusion、CompVis/stable-diffusion
-
-这一篇文章的内容是 Latent Diffusion Models（LDM），也就是大名鼎鼎的
-Stable
-Diffusion。先前的扩散模型一直面临的比较大的问题是采样空间太大，学习的噪声维度和图像的维度是相同的。当进行高分辨率图像生成时，需要的计算资源会急剧增加，虽然
-DDIM 等工作已经对此有所改善，但效果依然有限。Stable Diffusion
-的方法非常巧妙，其把扩散过程转换到了低维度的隐空间中，解决了这个问题。
-方法介绍
-本方法的整体结构如下图所示，主要分为三部分：最左侧的红框对应于感知图像压缩，中间的绿框对应
-Latent Diffusion
-Models，右侧的白框表示生成条件，下面将分别介绍这三个部分。
-
-感知图像压缩
-LDM
-把图像生成过程从原始的图像像素空间转换到了一个隐空间，具体来说，对于一个维度为
-\(\mathb ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/20-dalle-zero-shot-text-to-image-generation/" title="笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图">笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-07-14T08:48:41.000Z" title="發表於 2024-07-14 16:48:41">2024-07-14</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">極東晝寢愛好家</h1><div id="site_social_icons"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/20-dalle-zero-shot-text-to-image-generation/" title="笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图">笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-07-14T08:48:41.000Z" title="發表於 2024-07-14 16:48:41">2024-07-14</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">
 论文链接：Zero-Shot
 Text-to-Image Generation
 官方实现：openai/DALL-E
@@ -348,15 +206,109 @@ OpenAI 在 Improved DDPM
 
 在模型的尺寸基本不变的前提下，提升模型的深度与宽度之比，相当于使用更深的模型；
 增加多头注意力中 head 的数量；
-使用多分辨率 attention，即 32x32、16x16 和 8x8，而不是只在 1 ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#content-inner">3</a><a class="page-number" href="/page/4/#content-inner">4</a><a class="extend next" rel="next" href="/page/3/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">18</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/36-leetcode-hot100-linked-list/" title="刷题｜LeetCode Hot 100（七）：链表">刷题｜LeetCode Hot 100（七）：链表</a><time datetime="2024-08-08T09:31:32.000Z" title="發表於 2024-08-08 17:31:32">2024-08-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/35-textual-inversion-personalize-generation/" title="笔记｜扩散模型（一四）：Textual Inversion 理论与实现">笔记｜扩散模型（一四）：Textual Inversion 理论与实现</a><time datetime="2024-08-07T09:51:27.000Z" title="發表於 2024-08-07 17:51:27">2024-08-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/34-leetcode-hot100-matrix/" title="刷题｜LeetCode Hot 100（六）：矩阵">刷题｜LeetCode Hot 100（六）：矩阵</a><time datetime="2024-08-07T04:40:51.000Z" title="發表於 2024-08-07 12:40:51">2024-08-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/33-leetcode-hot100-arrays/" title="刷题｜LeetCode Hot 100（五）：普通数组">刷题｜LeetCode Hot 100（五）：普通数组</a><time datetime="2024-08-06T11:01:07.000Z" title="發表於 2024-08-06 19:01:07">2024-08-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/32-dit-scalable-diffusion-with-transformers/" title="笔记｜扩散模型（一三）：DiT｜Diffusion with Transformer">笔记｜扩散模型（一三）：DiT｜Diffusion with Transformer</a><time datetime="2024-08-05T10:12:49.000Z" title="發表於 2024-08-05 18:12:49">2024-08-05</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+使用多分辨率 attention，即 32x32、16x16 和 8x8，而不是只在 1 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/17-score-based-modeling-with-sde/" title="笔记｜Score-based Generative Models（二）：基于 SDE 的模型">笔记｜Score-based Generative Models（二）：基于 SDE 的模型</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-07-05T08:37:40.000Z" title="發表於 2024-07-05 16:37:40">2024-07-05</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">上一篇文章中我们介绍了 score-based model
+的基本概念，包括其如何对分布进行建模、如何从建模的分布中进行采样以及通过对分布进行扰动提高其建模精度的方式。在这篇文章中我们将介绍的是如何使用随机微分方程（也就是
+SDE）进行 score-based 建模。
+随机微分方程简介
+首先我们先介绍一些随机微分方程的基本知识以便理解。
+我们首先举一个常微分方程（ODE）的例子，例如下面的一个常微分方程： \[
+\frac{\mathrm{d}\mathbf{x}}{\mathrm{d}t}=\mathbf{f}(\mathbf{x},t)\quad\mathrm{or}\quad\mathrm{d}\mathbf{x}=\mathbf{f}(\mathbf{x},t)\mathrm{d}t
+\] 其中的 \(\mathbf{f}(\mathbf{x},t)\) 是一个关于 \(\mathbf{x}\) 和 \(t\) 的函数，其描述了 \(\mathrm{x}\)
+随时间的变化趋势，如下面图中的左图所示。直观地说，\(\mathbf{f}(\mathbf{x},t)\)
+对应于图中的 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/16-score-based-generative-models/" title="笔记｜Score-based Generative Models（一）：基础理论">笔记｜Score-based Generative Models（一）：基础理论</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-07-02T07:13:14.000Z" title="發表於 2024-07-02 15:13:14">2024-07-02</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">这篇文章应该属于 Diffusion Models
+系列的一个番外篇，虽然基于分数的生成模型包括了一系列比较复杂的研究，不过之所以写这篇博客是为了给
+score-based diffusion models
+的学习做准备，所以应该不会面面俱到，主要还是介绍基础知识。
+正式开始介绍之前首先解答一下这个问题：score-based
+模型是什么东西，微分方程在这个模型里到底有什么用？我们知道生成模型基本都是从某个现有的分布中进行采样得到生成的样本，为此模型需要完成对分布的建模。根据建模方式的不同可以分为隐式建模（例如
+GAN、diffusion models）和显式建模（例如 VAE、normalizing
+flows）。和上述的模型相同，score-based
+模型也是用一定方式对分布进行了建模。具体而言，这类模型建模的对象是概率分布函数
+log 的梯度，也就是 score
+function，而为了对这个建模对象进行学习，需要使用一种叫做
+score matching 的技术，这也是 score-based
+模型名字的来源。至于第二个问题，微分方程的作用本篇文章暂时不介绍，下一篇文章再进行 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/15-improved-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（三）：Improved DDPM 理论与实现">笔记｜扩散模型（三）：Improved DDPM 理论与实现</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-06-24T11:09:55.000Z" title="發表於 2024-06-24 19:09:55">2024-06-24</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">
+论文链接：Improved
+Denoising Diffusion Probabilistic Models
+
+在前边两篇文章中我们学习了 DDPM 和 DDIM，这篇文章介绍的是 Improved
+DDPM，是一个针对 DDPM 生成效果进行改进的工作。
+虽然 DDPM 在生成任务上取得了不错的效果，但如果使用一些 metric 对 DDPM
+进行评价，就会发现其虽然能在 FID 和 Inception Score
+上获得不错的效果，但在负对数似然（Negative
+Log-likelihood，NLL）这个指标上表现不够好。根据 VQ-VAE2 文章中的观点，NLL
+上的表现体现的是模型捕捉数据整体分布的能力。而且有工作表明即使在 NLL
+指标上仅有微小的提升，就会在生成效果和特征表征能力上有很大的提升。
+Improved DDPM 主要是针对 DDPM
+的训练过程进行改进，主要从两个方面进行改进：
+
+不使用 DDPM 原有的固定方差，而是使用可学习的方差；
+改进了加噪过程，使用余弦形式的 Scheduler，而不是线性
+Scheduler。
+
+可学习的方差
+我们知道 DDPM  ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/14-denoising-diffusion-implicit-models/" title="笔记｜扩散模型（二）：DDIM 理论与实现">笔记｜扩散模型（二）：DDIM 理论与实现</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-06-12T08:59:12.000Z" title="發表於 2024-06-12 16:59:12">2024-06-12</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">
+论文链接：Denoising
+Diffusion Implicit Models
+
+在上一篇文章中我们进行了
+DDPM 的理论推导，并且自己编写代码实现了 DDPM
+的训练和采样过程。虽然取得了还不错的效果，但 DDPM
+有一个非常明显的问题：采样过程很慢。因为 DDPM
+的反向过程利用了马尔可夫假设，所以每次都必须在相邻的时间步之间进行去噪，而不能跳过中间步骤。原始论文使用了
+1000 个时间步，所以我们在采样时也需要循环 1000
+次去噪过程，这个过程是非常慢的。
+为了加速 DDPM 的采样过程，DDIM 在不利用马尔可夫假设的情况下推导出了
+diffusion 的反向过程，最终可以实现仅采样 20～100 步的情况下达到和 DDPM
+采样 1000 步相近的生成效果，也就是提速 10～50 倍。这篇文章将对 DDIM
+的理论进行讲解，并实现 DDIM 采样的代码。
+DDPM 的反向过程
+首先我们回顾一下 DDPM 反向过程的推导，为了推导出 \(q(\mathbf{x}_{t-1}|\mathbf{x}_t)\)
+这个条件概率分布，DDPM
+利用贝叶斯公式将其变成了先验分布的组 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/13-denoising-diffusion-probabilistic-models/" title="笔记｜扩散模型（一）：DDPM 理论与实现">笔记｜扩散模型（一）：DDPM 理论与实现</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-06-08T12:05:39.000Z" title="發表於 2024-06-08 20:05:39">2024-06-08</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">感谢 wbs、hsh 等读者对本文提出的宝贵意见（大拍手
+
+
+论文链接：Denoising
+Diffusion Probabilistic Models
+
+端午假期卷一卷，开一个新坑系统性地整理一下扩散模型的相关知识。扩散模型的名字来源于物理中的扩散过程，对于一张图像来说，类比扩散过程，向这张图像逐渐加入高斯噪声，当加入的次数足够多的时候，图像中像素的分布也会逐渐变成一个高斯分布。当然这个过程也可以反过来，如果我们设计一个神经网络，每次能够从图像中去掉一个高斯噪声，那么最后就能从一个高斯噪声得到一张图像。虽然一张有意义的图像不容易获得，但高斯噪声很容易采样，如果能实现这个逆过程，就能实现图像的生成。
+
+这个过程可以形象地用上图表示，扩散模型中有两个过程，分别是前向过程（从图像加噪得到噪音）和反向过程（从噪音去噪得到图像）。在上图中，向图像
+\(\mathbf{x}_0\)
+逐渐添加噪声可以得到一系列的 \(\mathbf{x}_1,\mathbf{x}_2,...,\mathbf{x}_T\)，最后的
+\(\mathbf{x}_T\)
+即接近完全的高斯噪声，这个过程显然是比较容易的。而 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/12-basic-concepts-of-normalizing-flow/" title="笔记｜Normalizing Flow 理论与实现（一）：基础理论">笔记｜Normalizing Flow 理论与实现（一）：基础理论</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-05-11T02:52:41.000Z" title="發表於 2024-05-11 10:52:41">2024-05-11</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Notes/">Notes</a></span></div><div class="content">Normalizing
+flow（标准化流）是一类对概率分布进行建模的工具，它能完成简单的概率分布（例如高斯分布）和任意复杂分布之间的相互转换，经常被用于
+data generation、density estimation、inpainting 等任务中，例如 Stability
+AI 提出的 Stable Diffusion
+3 中用到的 rectified flow 就是 normalizing flow 的变体之一。
+
+为了便于理解，在正式开始介绍之前先简要说明一下 normalizing flow
+的做法。如上图所示，为了将一个高斯分布 \(z_0\) 转换为一个复杂的分布 \(z_K\)，normalizing flow 会对初始的分布
+\(z_0\)
+进行多次可逆的变换，将其逐渐转换为 \(z_K\)。由于每一次变换都是可逆的，从 \(z_K\) 出发也能得到高斯分布 \(z_0\)​。这样，我们就实现了复杂分布与高斯分布之间的互相转换，从而能从简单的高斯分布建立任意复杂分布。
+对 diffusion models 比较熟悉的读者可能已经发现了，这个过程和
+diffusi ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/posts/11-distributed-training-with-pytorch/" title="技术相关｜使用 Pytorch 进行分布式训练">技术相关｜使用 Pytorch 进行分布式训练</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">發表於</span><time datetime="2024-03-15T08:54:21.000Z" title="發表於 2024-03-15 16:54:21">2024-03-15</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/Techniques/">Techniques</a></span></div><div class="content">其实 Pytorch 分布式训练已经不算什么新技术了，之所以专门写一篇 blog
+是因为今天训模型的时候出现了一个没见过的问题，在调试的时候发现自己平时都是用别人写好的分布式代码，没有深入研究过其中的实现细节，因此感觉有必要整理吸收一下。
+最简单的数据并行
+作为最简单的并行计算方式，使用 nn.DataParallel
+只需要添加一行代码即可完成：
+123456module = nn.DataParallel(    module,               # 原始模型    device_ids=None,      # 使用的显卡    output_device=None,   # 输出汇总的显卡    dim=0                 # Batch 所在维度)
+除此之外，其他的部分和单卡训练的内容基本上都相同。在使用
+nn.DataParallel
+进行训练时，在每次前向传播时，nn.DataParallel
+会做以下几件事：
+
+切分数据：对于输入的 Tensor，其会被沿 batch
+维度切分成多份，用于输入不同的显卡；对于元组、列表、字典等类型，其会被浅拷贝 ...</div></div></div><nav id="pagination"><div class="pagination"><a class="extend prev" rel="prev" href="/"><i class="fas fa-chevron-left fa-fw"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#content-inner">3</a><a class="page-number" href="/page/4/#content-inner">4</a><a class="extend next" rel="next" href="/page/3/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">31</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">17</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/35-textual-inversion-personalize-generation/" title="笔记｜扩散模型（一四）：Textual Inversion 理论与实现">笔记｜扩散模型（一四）：Textual Inversion 理论与实现</a><time datetime="2024-08-07T09:51:27.000Z" title="發表於 2024-08-07 17:51:27">2024-08-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/32-dit-scalable-diffusion-with-transformers/" title="笔记｜扩散模型（一三）：DiT｜Diffusion with Transformer">笔记｜扩散模型（一三）：DiT｜Diffusion with Transformer</a><time datetime="2024-08-05T10:12:49.000Z" title="發表於 2024-08-05 18:12:49">2024-08-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/29-uvit-a-vit-backbone-for-diffusion-models/" title="笔记｜扩散模型（一二）：U-ViT｜Diffusion with Transformer">笔记｜扩散模型（一二）：U-ViT｜Diffusion with Transformer</a><time datetime="2024-08-04T13:35:56.000Z" title="發表於 2024-08-04 21:35:56">2024-08-04</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/27-sdxl-stable-diffusion-xl/" title="笔记｜扩散模型（一一）：Stable Diffusion XL 理论与实现">笔记｜扩散模型（一一）：Stable Diffusion XL 理论与实现</a><time datetime="2024-08-02T07:45:21.000Z" title="發表於 2024-08-02 15:45:21">2024-08-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/25-lora-low-rank-adaptation/" title="笔记｜LoRA 理论与实现｜大模型轻量级微调">笔记｜LoRA 理论与实现｜大模型轻量级微调</a><time datetime="2024-08-01T09:54:37.000Z" title="發表於 2024-08-01 17:54:37">2024-08-01</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
             <i class="fas fa-folder-open"></i>
             <span>分類</span>
             
             </div>
             <ul class="card-category-list" id="aside-cat-list">
-            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Coding/"><span class="card-category-list-name">Coding</span><span class="card-category-list-count">7</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Jottings/"><span class="card-category-list-name">Jottings</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Notes/"><span class="card-category-list-name">Notes</span><span class="card-category-list-count">19</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Techniques/"><span class="card-category-list-name">Techniques</span><span class="card-category-list-count">6</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Tutorials/"><span class="card-category-list-name">Tutorials</span><span class="card-category-list-count">2</span></a></li>
-            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>標籤</span></div><div class="card-tag-cloud"><a href="/tags/LeetCode/" style="font-size: 1.26em; color: #999fa8">LeetCode</a> <a href="/tags/Pytorch/" style="font-size: 1.18em; color: #999ca1">Pytorch</a> <a href="/tags/Generative-models/" style="font-size: 1.42em; color: #99a6b7">Generative models</a> <a href="/tags/Linux/" style="font-size: 1.18em; color: #999ca1">Linux</a> <a href="/tags/Genetative-models/" style="font-size: 1.1em; color: #999">Genetative models</a> <a href="/tags/Animation-engine/" style="font-size: 1.1em; color: #999">Animation engine</a> <a href="/tags/Music-theory/" style="font-size: 1.1em; color: #999">Music theory</a> <a href="/tags/Normalizing-flow/" style="font-size: 1.1em; color: #999">Normalizing flow</a> <a href="/tags/Github-Actions/" style="font-size: 1.1em; color: #999">Github Actions</a> <a href="/tags/Diffusion-models/" style="font-size: 1.34em; color: #99a3b0">Diffusion models</a> <a href="/tags/Generavie-models/" style="font-size: 1.1em; color: #999">Generavie models</a> <a href="/tags/Python/" style="font-size: 1.1em; color: #999">Python</a> <a href="/tags/Writing/" style="font-size: 1.1em; color: #999">Writing</a> <a href="/tags/Distributed-Computing/" style="font-size: 1.1em; color: #999">Distributed Computing</a> <a href="/tags/Deep-learning/" style="font-size: 1.5em; color: #99a9bf">Deep learning</a> <a href="/tags/Hexo/" style="font-size: 1.1em; color: #999">Hexo</a> <a href="/tags/Manimgl/" style="font-size: 1.1em; color: #999">Manimgl</a> <a href="/tags/Security/" style="font-size: 1.1em; color: #999">Security</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>歸檔</span><a class="card-more-btn" href="/archives/" title="檢視更多">
-    <i class="fas fa-angle-right"></i></a></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/08/"><span class="card-archive-list-date">八月 2024</span><span class="card-archive-list-count">13</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/07/"><span class="card-archive-list-date">七月 2024</span><span class="card-archive-list-count">9</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/06/"><span class="card-archive-list-date">六月 2024</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/05/"><span class="card-archive-list-date">五月 2024</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/03/"><span class="card-archive-list-date">三月 2024</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/07/"><span class="card-archive-list-date">七月 2023</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/03/"><span class="card-archive-list-date">三月 2023</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/02/"><span class="card-archive-list-date">二月 2023</span><span class="card-archive-list-count">1</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>網站資訊</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章數目 :</div><div class="item-count">38</div></div><div class="webinfo-item"><div class="item-name">本站訪客數 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站總訪問量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最後更新時間 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2024-08-09T10:40:44.985Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Jottings/"><span class="card-category-list-name">Jottings</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Notes/"><span class="card-category-list-name">Notes</span><span class="card-category-list-count">19</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Techniques/"><span class="card-category-list-name">Techniques</span><span class="card-category-list-count">6</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/Tutorials/"><span class="card-category-list-name">Tutorials</span><span class="card-category-list-count">2</span></a></li>
+            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>標籤</span></div><div class="card-tag-cloud"><a href="/tags/Normalizing-flow/" style="font-size: 1.1em; color: #999">Normalizing flow</a> <a href="/tags/Hexo/" style="font-size: 1.1em; color: #999">Hexo</a> <a href="/tags/Diffusion-models/" style="font-size: 1.3em; color: #99a1ac">Diffusion models</a> <a href="/tags/Manimgl/" style="font-size: 1.1em; color: #999">Manimgl</a> <a href="/tags/Security/" style="font-size: 1.1em; color: #999">Security</a> <a href="/tags/Github-Actions/" style="font-size: 1.1em; color: #999">Github Actions</a> <a href="/tags/Genetative-models/" style="font-size: 1.1em; color: #999">Genetative models</a> <a href="/tags/Music-theory/" style="font-size: 1.1em; color: #999">Music theory</a> <a href="/tags/Pytorch/" style="font-size: 1.2em; color: #999da3">Pytorch</a> <a href="/tags/Generative-models/" style="font-size: 1.4em; color: #99a5b6">Generative models</a> <a href="/tags/Python/" style="font-size: 1.1em; color: #999">Python</a> <a href="/tags/Animation-engine/" style="font-size: 1.1em; color: #999">Animation engine</a> <a href="/tags/Generavie-models/" style="font-size: 1.1em; color: #999">Generavie models</a> <a href="/tags/Deep-learning/" style="font-size: 1.5em; color: #99a9bf">Deep learning</a> <a href="/tags/Writing/" style="font-size: 1.1em; color: #999">Writing</a> <a href="/tags/Distributed-Computing/" style="font-size: 1.1em; color: #999">Distributed Computing</a> <a href="/tags/Linux/" style="font-size: 1.2em; color: #999da3">Linux</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>歸檔</span><a class="card-more-btn" href="/archives/" title="檢視更多">
+    <i class="fas fa-angle-right"></i></a></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/08/"><span class="card-archive-list-date">八月 2024</span><span class="card-archive-list-count">6</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/07/"><span class="card-archive-list-date">七月 2024</span><span class="card-archive-list-count">9</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/06/"><span class="card-archive-list-date">六月 2024</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/05/"><span class="card-archive-list-date">五月 2024</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/03/"><span class="card-archive-list-date">三月 2024</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/07/"><span class="card-archive-list-date">七月 2023</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/03/"><span class="card-archive-list-date">三月 2023</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/02/"><span class="card-archive-list-date">二月 2023</span><span class="card-archive-list-count">1</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>網站資訊</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">文章數目 :</div><div class="item-count">31</div></div><div class="webinfo-item"><div class="item-name">本站訪客數 :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">本站總訪問量 :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">最後更新時間 :</div><div class="item-count" id="last-push-date" data-lastPushDate="2024-08-11T16:53:29.442Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
   if (typeof pangu === 'object') pangu.autoSpacingPage()
   else {
     getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
