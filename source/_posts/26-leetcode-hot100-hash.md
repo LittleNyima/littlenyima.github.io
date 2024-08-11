@@ -7,6 +7,7 @@ categories:
 tags:
  - LeetCode
 series: LeetCode
+hidden: true
 ---
 
 开一个新坑，最近准备秋招面试，把力扣热题 100 刷一下，开一个系列记录自己的题解和代码。

@@ -7,6 +7,7 @@ categories:
 tags:
  - LeetCode
 series: LeetCode
+hidden: true
 ---
 
 # 73. 矩阵置零

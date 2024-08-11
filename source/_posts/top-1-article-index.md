@@ -40,18 +40,6 @@ top: 1
 1. [笔记｜扩散模型（一二）：U-ViT｜Diffusion with Transformer](../29-uvit-a-vit-backbone-for-diffusion-models)
 1. [笔记｜扩散模型（一三）：DiT｜Diffusion with Transformer](../32-dit-scalable-diffusion-with-transformers)
 
-# 刷题笔记
-
-## LeetCode Hot 100
-
-1. [刷题｜LeetCode Hot 100（一）：哈希](../26-leetcode-hot100-hash)
-2. [刷题｜LeetCode Hot 100（二）：双指针](../28-leetcode-hot100-double-pointer)
-3. [刷题｜LeetCode Hot 100（三）：滑动窗口](../30-leetcode-hot100-sliding-window)
-4. [刷题｜LeetCode Hot 100（四）：子串](../31-leetcode-hot100-substring)
-5. [刷题｜LeetCode Hot 100（五）：普通数组](../33-leetcode-hot100-arrays)
-6. [刷题｜LeetCode Hot 100（六）：矩阵](../34-leetcode-hot100-matrix)
-7. [刷题｜LeetCode Hot 100（七）：链表](../36-leetcode-hot100-linked-list)
-
 # 教程与技术向文章
 
 1. [教程 | Github Pages + hexo 搭建个人博客](../0-deploy-personal-blog-with-hexo)
