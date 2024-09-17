@@ -6,7 +6,7 @@
   <link href="https://littlenyima.github.io/atom.xml" rel="self"/>
   
   <link href="https://littlenyima.github.io/"/>
-  <updated>2024-08-21T15:02:45.365Z</updated>
+  <updated>2024-09-17T08:52:11.399Z</updated>
   <id>https://littlenyima.github.io/</id>
   
   <author>
@@ -17,11 +17,69 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>笔记｜扩散模型（一六）：CogVideoX 论文解读｜文生视频扩散模型</title>
+    <link href="https://littlenyima.github.io/posts/48-cogvideox-text-to-video-diffusion-models/"/>
+    <id>https://littlenyima.github.io/posts/48-cogvideox-text-to-video-diffusion-models/</id>
+    <published>2024-09-11T02:18:52.000Z</published>
+    <updated>2024-09-17T08:52:11.399Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
+    
+    
+    <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
+    
+    <category term="Diffusion models" scheme="https://littlenyima.github.io/tags/Diffusion-models/"/>
+    
+    <category term="Generative models" scheme="https://littlenyima.github.io/tags/Generative-models/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>笔记｜扩散模型（一五）：CogVideo 论文解读｜文生视频大模型</title>
+    <link href="https://littlenyima.github.io/posts/47-cogvideo-text-to-video-generation/"/>
+    <id>https://littlenyima.github.io/posts/47-cogvideo-text-to-video-generation/</id>
+    <published>2024-09-10T03:02:41.000Z</published>
+    <updated>2024-09-17T08:52:11.399Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
+        
+      
+    
+    
+    
+    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
+    
+    
+    <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
+    
+    <category term="Diffusion models" scheme="https://littlenyima.github.io/tags/Diffusion-models/"/>
+    
+    <category term="Generative models" scheme="https://littlenyima.github.io/tags/Generative-models/"/>
+    
+  </entry>
+  
+  <entry>
     <title>笔记｜扩散模型（一四）：Textual Inversion 理论与实现</title>
     <link href="https://littlenyima.github.io/posts/35-textual-inversion-personalize-generation/"/>
     <id>https://littlenyima.github.io/posts/35-textual-inversion-personalize-generation/</id>
     <published>2024-08-07T09:51:27.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.399Z</updated>
     
     
       
@@ -50,7 +108,7 @@
     <link href="https://littlenyima.github.io/posts/32-dit-scalable-diffusion-with-transformers/"/>
     <id>https://littlenyima.github.io/posts/32-dit-scalable-diffusion-with-transformers/</id>
     <published>2024-08-05T10:12:49.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -73,7 +131,7 @@
     <link href="https://littlenyima.github.io/posts/29-uvit-a-vit-backbone-for-diffusion-models/"/>
     <id>https://littlenyima.github.io/posts/29-uvit-a-vit-backbone-for-diffusion-models/</id>
     <published>2024-08-04T13:35:56.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -102,7 +160,7 @@
     <link href="https://littlenyima.github.io/posts/27-sdxl-stable-diffusion-xl/"/>
     <id>https://littlenyima.github.io/posts/27-sdxl-stable-diffusion-xl/</id>
     <published>2024-08-02T07:45:21.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -131,7 +189,7 @@
     <link href="https://littlenyima.github.io/posts/25-lora-low-rank-adaptation/"/>
     <id>https://littlenyima.github.io/posts/25-lora-low-rank-adaptation/</id>
     <published>2024-08-01T09:54:37.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -158,7 +216,7 @@
     <link href="https://littlenyima.github.io/posts/24-dreambooth-subject-driven-generation/"/>
     <id>https://littlenyima.github.io/posts/24-dreambooth-subject-driven-generation/</id>
     <published>2024-08-01T06:56:59.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -187,7 +245,7 @@
     <link href="https://littlenyima.github.io/posts/23-imagen-t2i-with-deep-language-understanding/"/>
     <id>https://littlenyima.github.io/posts/23-imagen-t2i-with-deep-language-understanding/</id>
     <published>2024-07-20T07:08:55.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -216,7 +274,7 @@
     <link href="https://littlenyima.github.io/posts/22-dalle-2-hierarchical-text-to-image-generation/"/>
     <id>https://littlenyima.github.io/posts/22-dalle-2-hierarchical-text-to-image-generation/</id>
     <published>2024-07-18T17:30:15.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -245,7 +303,7 @@
     <link href="https://littlenyima.github.io/posts/21-latent-diffusion-models/"/>
     <id>https://littlenyima.github.io/posts/21-latent-diffusion-models/</id>
     <published>2024-07-16T08:18:25.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -274,7 +332,7 @@
     <link href="https://littlenyima.github.io/posts/20-dalle-zero-shot-text-to-image-generation/"/>
     <id>https://littlenyima.github.io/posts/20-dalle-zero-shot-text-to-image-generation/</id>
     <published>2024-07-14T08:48:41.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -303,7 +361,7 @@
     <link href="https://littlenyima.github.io/posts/top-1-article-index/"/>
     <id>https://littlenyima.github.io/posts/top-1-article-index/</id>
     <published>2024-07-14T08:08:11.000Z</published>
-    <updated>2024-08-21T15:02:45.369Z</updated>
+    <updated>2024-09-17T08:52:11.399Z</updated>
     
     
       
@@ -324,7 +382,7 @@
     <link href="https://littlenyima.github.io/posts/19-classifier-free-guidance-for-diffusion-models/"/>
     <id>https://littlenyima.github.io/posts/19-classifier-free-guidance-for-diffusion-models/</id>
     <published>2024-07-12T08:27:55.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -353,7 +411,7 @@
     <link href="https://littlenyima.github.io/posts/18-classifier-guidance-for-diffusion-models/"/>
     <id>https://littlenyima.github.io/posts/18-classifier-guidance-for-diffusion-models/</id>
     <published>2024-07-10T09:40:51.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -382,7 +440,7 @@
     <link href="https://littlenyima.github.io/posts/17-score-based-modeling-with-sde/"/>
     <id>https://littlenyima.github.io/posts/17-score-based-modeling-with-sde/</id>
     <published>2024-07-05T08:37:40.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -409,7 +467,7 @@
     <link href="https://littlenyima.github.io/posts/16-score-based-generative-models/"/>
     <id>https://littlenyima.github.io/posts/16-score-based-generative-models/</id>
     <published>2024-07-02T07:13:14.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -436,7 +494,7 @@
     <link href="https://littlenyima.github.io/posts/15-improved-denoising-diffusion-probabilistic-models/"/>
     <id>https://littlenyima.github.io/posts/15-improved-denoising-diffusion-probabilistic-models/</id>
     <published>2024-06-24T11:09:55.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -465,7 +523,7 @@
     <link href="https://littlenyima.github.io/posts/14-denoising-diffusion-implicit-models/"/>
     <id>https://littlenyima.github.io/posts/14-denoising-diffusion-implicit-models/</id>
     <published>2024-06-12T08:59:12.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -494,7 +552,7 @@
     <link href="https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/"/>
     <id>https://littlenyima.github.io/posts/13-denoising-diffusion-probabilistic-models/</id>
     <published>2024-06-08T12:05:39.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
+    <updated>2024-09-17T08:52:11.395Z</updated>
     
     
       
@@ -515,60 +573,6 @@
     <category term="Diffusion models" scheme="https://littlenyima.github.io/tags/Diffusion-models/"/>
     
     <category term="Generative models" scheme="https://littlenyima.github.io/tags/Generative-models/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>笔记｜Normalizing Flow 理论与实现（一）：基础理论</title>
-    <link href="https://littlenyima.github.io/posts/12-basic-concepts-of-normalizing-flow/"/>
-    <id>https://littlenyima.github.io/posts/12-basic-concepts-of-normalizing-flow/</id>
-    <published>2024-05-11T02:52:41.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
-        
-      
-    
-    
-    
-    <category term="Notes" scheme="https://littlenyima.github.io/categories/Notes/"/>
-    
-    
-    <category term="Deep learning" scheme="https://littlenyima.github.io/tags/Deep-learning/"/>
-    
-    <category term="Normalizing flow" scheme="https://littlenyima.github.io/tags/Normalizing-flow/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>技术相关｜使用 Pytorch 进行分布式训练</title>
-    <link href="https://littlenyima.github.io/posts/11-distributed-training-with-pytorch/"/>
-    <id>https://littlenyima.github.io/posts/11-distributed-training-with-pytorch/</id>
-    <published>2024-03-15T08:54:21.000Z</published>
-    <updated>2024-08-21T15:02:45.365Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;link rel=&quot;stylesheet&quot; class=&quot;aplayer-secondary-style-marker&quot; href=&quot;/css/APlayer.min.css&quot;&gt;&lt;script src=&quot;/js/APlayer.min.js&quot; class=&quot;aplayer-se</summary>
-        
-      
-    
-    
-    
-    <category term="Techniques" scheme="https://littlenyima.github.io/categories/Techniques/"/>
-    
-    
-    <category term="Pytorch" scheme="https://littlenyima.github.io/tags/Pytorch/"/>
-    
-    <category term="Distributed Computing" scheme="https://littlenyima.github.io/tags/Distributed-Computing/"/>
     
   </entry>
   
