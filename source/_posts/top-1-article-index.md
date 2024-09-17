@@ -29,6 +29,11 @@ top: 1
 1. [笔记｜扩散模型（一一）：Stable Diffusion XL 理论与实现](../27-sdxl-stable-diffusion-xl)
 1. [笔记｜扩散模型（一四）：Textual Inversion 理论与实现](../35-textual-inversion-personalize-generation)
 
+## Diffusion Models：文生视频
+
+1. [笔记｜扩散模型（一五）：CogVideo 论文解读｜文生视频大模型](../47-cogvideo-text-to-video-generation)
+2. [笔记｜扩散模型（一六）：CogVideoX 论文解读｜文生视频扩散模型](../48-cogvideox-text-to-video-diffusion-models)
+
 ## Score-based Models
 
 1. [笔记｜Score-based Generative Models（一）：基础理论](../16-score-based-generative-models)

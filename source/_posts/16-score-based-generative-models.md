@@ -59,7 +59,7 @@ $$
 $$
 \begin{aligned}
 &\mathbb{E}_{p(x)}[-\nabla_x\log p(x)\nabla_x\log p_\theta(x)]\\
-=&-\int_{-\infty}^{\infty}\nabla_x\log p(x)\nabla_x\log p_\theta(x)p_\theta(x)\mathrm{d}x\\
+=&-\int_{-\infty}^{\infty}\nabla_x\log p(x)\nabla_x\log p_\theta(x)p(x)\mathrm{d}x\\
 =&-\int_{-\infty}^{\infty}\frac{\nabla_x p(x)}{p(x)}\nabla_x\log p_\theta(x)p(x)\mathrm{d}x\\
 =&-\int_{-\infty}^{\infty}\nabla_xp(x)\nabla_x\log p_\theta(x)\mathrm{d}x\\
 =&-p(x)\nabla_x\log p_\theta(x)\bigg|_{-\infty}^\infty+\int_{-\infty}^{\infty}p(x)\nabla_x^2\log p_\theta(x)\mathrm{d}x
