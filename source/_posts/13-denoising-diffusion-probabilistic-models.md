@@ -13,7 +13,7 @@ series: Diffusion Models
 ---
 
 {% note pink 'fas fa-bullhorn' modern %}
-感谢 wbs、hsh 等读者对本文提出的宝贵意见（大拍手
+感谢 qq、wbs、hsh 等读者对本文提出的宝贵意见（大拍手
 {% endnote %}
 
 > 论文链接：*[Denoising Diffusion Probabilistic Models](https://arxiv.org/abs/2006.11239)*
@@ -110,9 +110,9 @@ $$
 $$
 代入上一章最后的 $\mathbf{x}_t=\sqrt{\bar{\alpha}_t}\mathbf{x}_0+\sqrt{1-\bar{\alpha}_t}\epsilon$，得到：
 $$
-\mu=\frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\tilde{\epsilon}_t\right)
+\mu=\frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\tilde{\epsilon}\right)
 $$
-注意在反向过程中我们并不知道在前向过程中加入的噪声 $\epsilon_t$ 是 $\mathcal{N}(0,1)$ 中的具体哪一个噪声，而噪声也没有办法继续转换成其他的形式。因此我们使用神经网络在反向过程中估计的目标就是 $\tilde{\epsilon}_t$。在这个网络中，输入除了 $\mathbf{x}_t$ 之外还需要 $t$，可以简单理解为：加噪过程中 $\mathbf{x}_t$ 的噪声含量是由 $t$ 决定的，因此在预测噪声时也需要知道时间步 $t$​ 作为参考，以降低预测噪声的难度。
+注意在反向过程中我们并不知道在前向过程中加入的噪声 $\epsilon$ 是 $\mathcal{N}(0,1)$ 中的具体哪一个噪声，而噪声也没有办法继续转换成其他的形式。因此我们使用神经网络在反向过程中估计的目标就是 $\tilde{\epsilon}$。在这个网络中，输入除了 $\mathbf{x}_t$ 之外还需要 $t$，可以简单理解为：加噪过程中 $\mathbf{x}_t$ 的噪声含量是由 $t$ 决定的，因此在预测噪声时也需要知道时间步 $t$​ 作为参考，以降低预测噪声的难度。
 
 注：关于反向过程为什么要这样做，Lilian Weng 基于变分推断给出了[一个复杂的证明](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/)，因为过于难以理解，这里暂且把它跳过。（以后有可能会填坑，也有可能不会x）
 
@@ -134,7 +134,7 @@ $$
 
 具体来说，首先从标准正态分布中采样出 $\mathbf{x}_T$ 作为初始的图像，然后重复 $T$ 步去噪过程。在每一步去噪过程中，由于我们已经推导出：
 $$
-q(\mathbf{x}_{t-1}|\mathbf{x}_t)=\mathcal{N}\left(\mathbf{x}_{t-1};\frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\tilde{\epsilon}_t\right),\sigma_t^2\right)
+q(\mathbf{x}_{t-1}|\mathbf{x}_t)=\mathcal{N}\left(\mathbf{x}_{t-1};\frac{1}{\sqrt{\alpha_t}}\left(\mathbf{x}_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\tilde{\epsilon}\right),\sigma_t^2\right)
 $$
 利用一个重参数化技巧：从 $\mathcal{N}(\mu,\sigma^2)$ 采样可以实现为从 $\mathcal{N}(0,1)$ 采样出 $\epsilon$，再计算 $\mu+\epsilon\cdot\sigma$。这样即可实现从上述的高斯分布中采样出 $\mathbf{x}_{t-1}$。如此重复 $T$ 次即可得到最终的结果，注意最后一步的时候没有采样，而是只加上了均值。
 

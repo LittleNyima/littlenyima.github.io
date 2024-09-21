@@ -7,9 +7,10 @@ top: 1
 
 # 生成式人工智能
 
-## Normalizing Flows
+## Flow-based Models
 
 1. [笔记｜Normalizing Flow 理论与实现（一）：基础理论](../12-basic-concepts-of-normalizing-flow)
+1. [笔记｜扩散模型（一八）：Flow Matching 理论详解](../51-flow-matching-for-diffusion-models)
 
 ## Diffusion Models：通用理论
 
@@ -18,6 +19,7 @@ top: 1
 3. [笔记｜扩散模型（三）：Improved DDPM 理论与实现](../15-improved-denoising-diffusion-probabilistic-models)
 4. [笔记｜扩散模型（四）：Classifier Guidance 理论与实现](../18-classifier-guidance-for-diffusion-models)
 5. [笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现](../19-classifier-free-guidance-for-diffusion-models)
+6. [笔记｜扩散模型（一七）：扩散模型中的 Velocity Prediction](../50-velocity-prediction-in-diffusion-models)
 
 ## Diffusion Models：文生图
 
