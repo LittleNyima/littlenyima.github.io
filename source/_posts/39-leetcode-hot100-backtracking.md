@@ -143,7 +143,7 @@ class Solution:
 
 给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
 
-![按键示意图](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/10/leetcode-17-example.jpg)
+![按键示意图](https://files.hoshinorubii.icu/blog/2024/08/10/leetcode-17-example.jpg)
 
 **示例 1：**
 
@@ -323,7 +323,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/10/leetcode-79-example-1.jpg)
+![示例 1](https://files.hoshinorubii.icu/blog/2024/08/10/leetcode-79-example-1.jpg)
 
 ```
 输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
@@ -332,7 +332,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/10/leetcode-79-example-2.jpg)
+![示例 2](https://files.hoshinorubii.icu/blog/2024/08/10/leetcode-79-example-2.jpg)
 
 ```
 输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "SEE"
@@ -341,7 +341,7 @@ class Solution:
 
 **示例 3：**
 
-![示例 3](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/10/leetcode-79-example-3.jpg)
+![示例 3](https://files.hoshinorubii.icu/blog/2024/08/10/leetcode-79-example-3.jpg)
 
 ```
 输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCB"
@@ -449,7 +449,7 @@ class Solution:
 
 **示例 1：**
 
-![示例](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/12/leetcode-51-example.jpg)
+![示例](https://files.hoshinorubii.icu/blog/2024/08/12/leetcode-51-example.jpg)
 
 ```
 输入：n = 4

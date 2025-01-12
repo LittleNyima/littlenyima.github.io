@@ -32,7 +32,7 @@ DALL-E 是 OpenAI 比较早期的文生图模型，和一些早期的多模态�
 
 # DALL-E 的训练和推理
 
-![DALL-E 的整体架构](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/14/dalle-framework.jpg)
+![DALL-E 的整体架构](https://files.hoshinorubii.icu/blog/2024/07/14/dalle-framework.jpg)
 
 DALL-E 的整体结构如上图所示，图中的几个部分都是单独进行训练的。这里分别对 DALL-E 的训练和推理过程进行介绍，首先是训练过程。训练分为两个阶段，第一个阶段训练 VQ-VAE 的 codebook，第二阶段训练 Transformer，分别对应于上图中标注出的 Stage One 和 Stage Two。
 

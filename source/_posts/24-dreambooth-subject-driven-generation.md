@@ -20,7 +20,7 @@ series: Diffusion Models
 
 时隔快两周继续更新一下 AIGC 系列的学习笔记，这篇文章算是比较火的一个工作，而且很多 AI 照相馆应用的背后也是这个算法。这一算法关注的任务是主题驱动生成，也就是给定某个特定物体（或者某个人或动物）的几张图像对模型进行微调，微调后就能生成该主题在各种场景、姿态下的图像。具体效果如下图所示，给出几张柯基的照片对模型进行微调，模型就能生成这只小狗的各种图像。
 
-![Dreambooth 效果示意图](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/01/dreambooth-sample.jpg)
+![Dreambooth 效果示意图](https://files.hoshinorubii.icu/blog/2024/08/01/dreambooth-sample.jpg)
 
 # Dreambooth
 
@@ -51,7 +51,7 @@ $$
 
 具体的训练和采样过程如下所示，给定几张狮子狗的照片进行微调，先用 "a dog" 作为 prompt 生成一部分图像，这部分图像在微调过程中用来计算先验保留损失，然后用 "a [V] dog" 微调生成狮子狗的过程，这部分直接计算重建损失。在采样过程中，直接用 "a [V] dog" 表示这只狮子狗即可生成各种场景下的狮子狗。
 
-![Dreambooth 的训练和采样过程](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/01/dreambooth-train-sample.jpg)
+![Dreambooth 的训练和采样过程](https://files.hoshinorubii.icu/blog/2024/08/01/dreambooth-train-sample.jpg)
 
 # Dreambooth 代码解读
 

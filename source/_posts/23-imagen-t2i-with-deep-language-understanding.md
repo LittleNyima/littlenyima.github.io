@@ -24,7 +24,7 @@ Imagen 是 Google Research 的文生图工作，这个工作并没有沿用 Stab
 
 该模型的架构如下图所示，可以看到使用了一个条件生成的 diffusion 模型以及两个超分辨率模型，每个模型都以文本模型的 embedding 作为条件，先生成一个 64 分辨率的图像，然后逐步超分辨率到 1024 大小。
 
-![Imagen 模型结构](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/20/imagen-framework.jpg)
+![Imagen 模型结构](https://files.hoshinorubii.icu/blog/2024/07/20/imagen-framework.jpg)
 
 # Imagen
 
@@ -42,7 +42,7 @@ Imagen 是 Google Research 的文生图工作，这个工作并没有沿用 Stab
 
 提高 classifier-free guidance 的 guidance scale 可以提升文本-图像的匹配程度，但是会破坏图像的质量。这个现象是因为高 guidance scale 会导致训练阶段和测试阶段出现 mismatch。具体来说，在训练时，所有的 $\mathbf{x}$ 都分布在 $[-1,1]$ 的范围里，然而当使用比较大的 guidance scale 时，得到的 $\mathbf{x}$ 会超出这个范围。这样会导致 $\mathbf{x}$ 落在已经学习过的范围以外，为了解决这个问题，作者研究了静态阈值（static thresholding）和动态阈值（dynamic thresholding）两种方案，具体算法如下图所示：
 
-![静态阈值和动态阈值算法](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/22/imagen-thresholding.jpg)
+![静态阈值和动态阈值算法](https://files.hoshinorubii.icu/blog/2024/07/22/imagen-thresholding.jpg)
 
 ### 静态阈值
 
@@ -99,7 +99,7 @@ mean_and_variance = noise_scheduler.q_posterior(x_start=x_start, x_t=x, t=t, t_n
 
 为了生成高分辨率图像，模型级联了三个扩散模型，一个用来生成低分辨率图像，两个用来将低分辨率图像逐步超分到高分辨率。在训练阶段，作者发现使用带有噪声条件增强的超分模型可以生成更高质量的模型。具体来说，每次生成噪声时，还从 $[0,1]$ 范围内随机采样一个 aug level，然后基于这个 level 进行增强。在预测噪声时，不仅输入带噪声的图像、低分辨率图像、时间步，还输入一个 aug level。在推理阶段，使用一系列 aug level 进行增强，然后分别进行推理，从中选取一个最佳样本，这样可以提升采样效果。具体的算法如下所示：
 
-![超分模型的训练和采样过程](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/22/imagen-conditioning-augmentation.jpg)
+![超分模型的训练和采样过程](https://files.hoshinorubii.icu/blog/2024/07/22/imagen-conditioning-augmentation.jpg)
 
 # 总结
 

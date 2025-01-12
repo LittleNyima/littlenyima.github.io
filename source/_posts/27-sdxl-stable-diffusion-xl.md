@@ -66,7 +66,7 @@ SDXL 还使用了更强的 text encoder，其同时使用了 OpenCLIP ViT-bigG �
 
 除了上述结构变化之外，SDXL 还级联了一个 refine model 用来细化模型的生成结果。这个 refine model 相当于一个 img2img 模型，在模型中的位置如下所示：
 
-![SDXL 整体架构，refine model 级联在基础模型的后方](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/02/sdxl-framework.jpg)
+![SDXL 整体架构，refine model 级联在基础模型的后方](https://files.hoshinorubii.icu/blog/2024/08/02/sdxl-framework.jpg)
 
 这个 refine model 的主要目的是进一步提高图像的生成质量。其是单独训练的，专注于对高质量高分辨率数据的学习，并且只在比较低的 noise level 上（即前 200 个时间步）进行训练。
 
@@ -90,7 +90,7 @@ Stable Diffusion 的训练通常分为多个阶段，先在 256 分辨率的数�
 
 在训练时直接使用原图的宽高作为条件，推理的时候可以自定义宽高，生成不同质量的图像，下面的图是一个例子，可以看到当以较小的尺寸为条件时，生成的图比较模糊，反之则清晰且细节更丰富：
 
-![SDXL 中的 size conditioning](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/02/sdxl-size-conditioning.jpg)
+![SDXL 中的 size conditioning](https://files.hoshinorubii.icu/blog/2024/08/02/sdxl-size-conditioning.jpg)
 
 ### 图像裁剪条件
 
@@ -100,7 +100,7 @@ Stable Diffusion 的训练通常分为多个阶段，先在 256 分辨率的数�
 
 在推理阶段，只需要将这个条件设置为 (0, 0) 即可得到正常图像。如果设置成其他的值则能得到裁剪图像，例如下边图里的效果。（感觉还是很神奇的，竟然这种条件能 work，而且没有和图像尺寸的条件混淆）
 
-![SDXL 中的 crop conditioning](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/02/sdxl-crop-conditioning.jpg)
+![SDXL 中的 crop conditioning](https://files.hoshinorubii.icu/blog/2024/08/02/sdxl-crop-conditioning.jpg)
 
 ## 训练策略的改进
 

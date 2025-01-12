@@ -84,7 +84,7 @@ $$
 
 在实际上进行训练时，神经网络建模的是向量场 $v_t$，通过设定不同的 $\phi_t$ 和 $p_t$ 可以得到不同的 $v_t$。
 
-![ODE 与 SDE 的示意图](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/05/differential-equations.jpg)
+![ODE 与 SDE 的示意图](https://files.hoshinorubii.icu/blog/2024/07/05/differential-equations.jpg)
 
 ## 概述
 

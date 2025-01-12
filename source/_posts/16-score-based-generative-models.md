@@ -17,7 +17,7 @@ series: Score-based Models
 
 回答完这个问题其实就对基于分数的模型有一个大致的认识了，所谓的分数实际上就是一个和概率分布有关的函数，这类模型说到底也是在对概率分布进行建模。同时我们也可以从下面这张图直观地了解一下分数的物理意义：可以看到图中的等高线表示概率分布函数，箭头表示 score function，因为是梯度所以可以用垂直于等高线的矢量来表示。
 
-<img src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/02/score-contour.jpg" alt="混合高斯分布（等高线）及其 score function（箭头）的可视化" style="width:min(100%, 300px);" />
+<img src="https://files.hoshinorubii.icu/blog/2024/07/02/score-contour.jpg" alt="混合高斯分布（等高线）及其 score function（箭头）的可视化" style="width:min(100%, 300px);" />
 
 # Score Function 和 Score-based Models
 
@@ -90,7 +90,7 @@ $$
 $$
 其中 $\mathbf{z}_i\sim\mathcal{N}(0,I)$，当 $\epsilon\rightarrow0$ 且 $K\rightarrow\infty$，上述过程得到的 $\mathbf{x}_K$ 收敛到从 $p(\mathbf{x})$ 直接采样的结果。可以比较直观地理解这个迭代过程的含义：第一项 $\mathbf{x}_i$ 是上一个状态，第二项 $\epsilon\nabla_\mathbf{x}\log p(\mathbf{x})$ 相当于沿着梯度的方向移动了 $\epsilon$ 单位，最后一项 $\sqrt{2\epsilon}\mathbf{z}_i$ 添加了一些随机扰动，应该是为了防止样本落入梯度比较小的位置。可以进一步从下面这个动图理解这一过程：
 
-![Langevin Dynamics 采样过程](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/03/langevin.gif)
+![Langevin Dynamics 采样过程](https://files.hoshinorubii.icu/blog/2024/07/03/langevin.gif)
 
 一般来说只要 $\epsilon$ 的取值足够小，且迭代步骤数量 $K$ 足够多，得到结果的误差就会比较小。同时从上式中可以发现，迭代过程中只使用了 $\nabla_\mathbf{x}\log p(\mathbf{x})$ 也就是 $\mathbf{s}_\theta(\mathbf{x})$ 而没有使用 $p(\mathbf{x})$，所以从学习到的 $\mathbf{s}_\theta(\mathbf{x})$ 即可完成采样。
 
@@ -106,7 +106,7 @@ $$
 $$
 可以看到等式右侧的 L2 损失被 $p(\mathbf{x})$ 进行了加权，那么用这种方式进行优化会导致 $p(\mathbf{x})$ 比较小的区域被忽略掉，从而无法在相应的范围内进行比较准确的建模。这个现象可以从下图得到一个比较直观的理解：对于最左侧的混合高斯分布，只有左下和右上的区域概率比较大，这些区域会在训练的过程中得到比较多的关注，而其他的大部分区域都被忽略，无法进行准确的建模。这限制了 score-based 模型得到比较好的结果。
 
-![低概率密度的区域无法准确建模](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/03/pitfalls-of-score-matching.jpg)
+![低概率密度的区域无法准确建模](https://files.hoshinorubii.icu/blog/2024/07/03/pitfalls-of-score-matching.jpg)
 
 ## Multiple Noise Pertubations
 
@@ -114,7 +114,7 @@ $$
 
 实际上解决这个问题的方案相当简单，为了对分布进行平衡，可以使用各向同性高斯噪声对分布进行扰动（也就是这一节标题中的 pertubation）。一个扰动的示例如下图所示，直观上看其实类似于对概率密度进行了高斯模糊，处理之后概率分布变得比较均匀，从而能进行准确建模。同时，由于不同的分布需要的扰动程度是不同的，因此并不使用单一的高斯分布进行扰动，而是使用一系列扰动，这样就可以规避扰动程度的选择问题。
 
-![对分布进行扰动的示例](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/07/03/pertubation.jpg)
+![对分布进行扰动的示例](https://files.hoshinorubii.icu/blog/2024/07/03/pertubation.jpg)
 
 形式化地说，对于使用高斯噪声进行扰动的情况，可以使用 $L$ 个带有不同方差 $\sigma_1<\sigma_2<\cdots<\sigma_L$ 的高斯分布 $\mathcal{N}(0,\sigma_i^2I),i=1,2,\cdots,L$ 分别对原始分布 $p(\mathbf{x})$ 进行扰动：
 $$

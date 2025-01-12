@@ -94,7 +94,7 @@ class Solution:
 
 **示例 1：**
 
-![示例](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/10/leetcode-994-example.jpg)
+![示例](https://files.hoshinorubii.icu/blog/2024/08/10/leetcode-994-example.jpg)
 
 ```
 输入：grid = [[2,1,1],[1,1,0],[0,1,1]]

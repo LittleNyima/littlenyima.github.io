@@ -25,7 +25,7 @@ CogVideoX 是智谱近期发布的视频生成模型，和上一个工作 CogVid
 
 CogVideoX 的整体架构如下图所示，文本和视频分别经过文本编码器（这里是 T5）和 3D VAE 编码后输入主干网络。文本和视频分别经过一条支路，并在注意力部分进行交互。
 
-<img src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/09/11/cogvideox-framework.jpg" alt="CogVideoX 的架构" style="max-width: min(100%, 350px)" />
+<img src="https://files.hoshinorubii.icu/blog/2024/09/11/cogvideox-framework.jpg" alt="CogVideoX 的架构" style="max-width: min(100%, 350px)" />
 
 ## 3D Causal VAE
 
@@ -35,7 +35,7 @@ CogVideoX 的整体架构如下图所示，文本和视频分别经过文本编�
 
 为了防止未来的时序信息泄漏到当前或更早的时间中，这里采取了一种特殊的 padding 方式，也就是只在前方进行 padding，这样卷积时就不会把后续 token 的信息泄露到当前 token。并且这种卷积还可以在不同 GPU 之间进行并行，只需要在不同的 GPU 之间拷贝少量的数据（图 b 中的鲑鱼粉色 token）即可。
 
-![3D Causal VAE 结构示意图](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/09/11/3d-causal-vae.jpg)
+![3D Causal VAE 结构示意图](https://files.hoshinorubii.icu/blog/2024/09/11/3d-causal-vae.jpg)
 
 ## Expert Transformer
 
@@ -63,13 +63,13 @@ CogVideoX 的分块策略和 DiT 的相同，同时为了使模型能够同时�
 
 CogVideoX 采用了图像与视频混合训练的方式，在进行训练时，将图像视为长度只有一帧的视频。并且 CogVideoX 并没有采用和其他方法相同的定长视频训练，而是采用了一种打包训练的方法，通过把不同长度的视频都打包在一个 batch 中，来确保不同 batch 维度相同。
 
-![打包训练示意图](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/09/11/frame-pack.jpg)
+![打包训练示意图](https://files.hoshinorubii.icu/blog/2024/09/11/frame-pack.jpg)
 
 ### Resolution Progressive Training
 
 CogVideoX 也采取了多分辨率训练的策略，一方面是为了充分利用从互联网得到的带有多种分辨率的数据，另一方面是为了使模型能够渐进式地学习从粗糙到精细的多种信息。
 
-![外推位置编码 VS 插值位置编码](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/09/17/rope-extrapolation-vs-interpolation.jpg)
+![外推位置编码 VS 插值位置编码](https://files.hoshinorubii.icu/blog/2024/09/17/rope-extrapolation-vs-interpolation.jpg)
 
 由于模型最开始的训练阶段是在低分辨率数据上训练的，所以在高分辨数据上训练时，需要将位置编码拓展到高分辨率上。在拓展时，有两种策略，其一是将位置编码进行外推，这样可以比较好地维持不同像素之间的相对位置关系；其二是将位置编码进行插值，这样可以更好地维持像素在整个图像上的全局位置。经过测试可以发现前者可以更好地生成细节，而后者生成的结果比较模糊。最终 CogVideoX 使用的是前者。
 

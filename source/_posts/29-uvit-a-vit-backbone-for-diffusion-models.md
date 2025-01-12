@@ -27,7 +27,7 @@ series: Diffusion Models
 
 虽然理论上来说这两个点都比较简单，但作者进行了一系列实验来选择比较好的设计。
 
-<img src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/04/uvit-framework.jpg" alt="U-ViT 的整体架构" style="max-width: min(100%, 350px)" />
+<img src="https://files.hoshinorubii.icu/blog/2024/08/04/uvit-framework.jpg" alt="U-ViT 的整体架构" style="max-width: min(100%, 350px)" />
 
 ## 长跳跃连接的实现
 
@@ -76,7 +76,7 @@ series: Diffusion Models
 
 经过实验发现前者效果更好，如下图的 (e) 所示。
 
-![消融实验的结果](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/05/uvit-design-ablation.jpg)
+![消融实验的结果](https://files.hoshinorubii.icu/blog/2024/08/05/uvit-design-ablation.jpg)
 
 总而言之作者通过一系列实验确定了一个比较好的 U-ViT 的设计。
 

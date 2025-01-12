@@ -20,7 +20,7 @@ series: Diffusion Models
 
 端午假期卷一卷，开一个新坑系统性地整理一下扩散模型的相关知识。扩散模型的名字来源于物理中的扩散过程，对于一张图像来说，类比扩散过程，向这张图像逐渐加入高斯噪声，当加入的次数足够多的时候，图像中像素的分布也会逐渐变成一个高斯分布。当然这个过程也可以反过来，如果我们设计一个神经网络，每次能够从图像中去掉一个高斯噪声，那么最后就能从一个高斯噪声得到一张图像。虽然一张有意义的图像不容易获得，但高斯噪声很容易采样，如果能实现这个逆过程，就能实现图像的生成。
 
-![DDPM 示意图](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/06/08/illustration-of-ddpm.jpg)
+![DDPM 示意图](https://files.hoshinorubii.icu/blog/2024/06/08/illustration-of-ddpm.jpg)
 
 这个过程可以形象地用上图表示，扩散模型中有两个过程，分别是前向过程（从图像加噪得到噪音）和反向过程（从噪音去噪得到图像）。在上图中，向图像 $\mathbf{x}_0$ 逐渐添加噪声可以得到一系列的 $\mathbf{x}_1,\mathbf{x}_2,...,\mathbf{x}_T$，最后的 $\mathbf{x}_T$ 即接近完全的高斯噪声，这个过程显然是比较容易的。而从 $\mathbf{x}_T$ 逐渐去噪得到 $\mathbf{x}_0$​ 并不容易，扩散模型学习的就是这个去噪的过程。
 
@@ -120,7 +120,7 @@ $$
 
 我们已经知道了去噪网络的参数和预测目标，下一个问题就是如何去训练这个去噪网络。原始论文中给出了如下的训练过程：
 
-<img src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/06/08/ddpm-training.jpg" alt="DDPM 的训练过程" style="width:min(100%, 500px);" />
+<img src="https://files.hoshinorubii.icu/blog/2024/06/08/ddpm-training.jpg" alt="DDPM 的训练过程" style="width:min(100%, 500px);" />
 
 在上面的算法中，首先从数据集 $q(\mathbf{x}_0)$ 中采样出 $\mathbf{x}_0$，从 1 到 T 的均匀分布中采样出 $t$，从标准高斯分布中采样出 $\epsilon$。然后根据 $\mathbf{x}_t=\sqrt{\bar{\alpha}_t}\mathbf{x}_0+\sqrt{1-\bar{\alpha}_t}\epsilon$ 将 $\mathbf{x}_0$ 与 $\epsilon$ 加权求和得到噪声图，最后将噪声图和时间步输入到网络中预测噪声，并用真实的噪声计算出 L2 损失进行优化。
 
@@ -130,7 +130,7 @@ $$
 
 论文中同样也给出了采样过程：
 
-<img src="https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/06/08/ddpm-sampling.jpg" alt="DDPM 的训练过程" style="width:min(100%, 500px);" />
+<img src="https://files.hoshinorubii.icu/blog/2024/06/08/ddpm-sampling.jpg" alt="DDPM 的训练过程" style="width:min(100%, 500px);" />
 
 具体来说，首先从标准正态分布中采样出 $\mathbf{x}_T$ 作为初始的图像，然后重复 $T$ 步去噪过程。在每一步去噪过程中，由于我们已经推导出：
 $$
@@ -142,7 +142,7 @@ $$
 
 现有的主流方法使用 UNet 来实现去噪网络，如下图所示。
 
-![去噪网络的结构](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/06/08/denoising-unet.jpg)
+![去噪网络的结构](https://files.hoshinorubii.icu/blog/2024/06/08/denoising-unet.jpg)
 
 为了降低理解的难度，我们这里不关心这个去噪网络的具体实现，只需要知道这个网络接收一个噪声图 $\mathbf{x}_t$ 和一个时间步 $t$ 作为参数，并输出一个噪声的预测结果 $\epsilon_\theta(\mathbf{x}_t,t)$。在 `diffusers` 库中已经实现了一个 2D UNet 网络，我们直接使用即可。下面我们也主要使用 `diffusers` 实现 DDPM 模型。
 
@@ -417,7 +417,7 @@ for epoch in range(config.num_epochs):
 
 训练在一张 NVIDIA GeForce RTX 4090 GPU 上大概需要运行 3 个多小时，最后的结果大概长这个样子：
 
-![生成结果示例](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/06/11/ddpm-sample-results.png)
+![生成结果示例](https://files.hoshinorubii.icu/blog/2024/06/11/ddpm-sample-results.png)
 
 可以看到虽然里边难免有一些比较奇形怪状的结果，不过总体上来说已经初具雏形了。
 

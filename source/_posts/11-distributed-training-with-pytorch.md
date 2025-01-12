@@ -47,7 +47,7 @@ module = nn.DataParallel(
 
 在正式开始介绍之前有以下几个概念需要简单介绍一下。如下图所示，分布式训练可以分为节点（node）和进程（worker）两个层次，下图中有两个节点，每个节点内又有两个进程，每个进程使用了两张显卡。节点可以简单地理解成一台服务器（无论是一个虚拟机还是一台物理机），每个进程都是使用 pytorch 分布式启动器从 `train.py` 创建出来的。为了标识不同的进程（以便进程内部选择使用哪块显卡、设置种子等操作），每个进程又有一个本地序列号（local rank）和全局序列号（global rank）。
 
-![一些分布式的概念](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/03/18/distributed-concepts.png)
+![一些分布式的概念](https://files.hoshinorubii.icu/blog/2024/03/18/distributed-concepts.png)
 
 Pytorch 的分布式训练是通过一个形如 `torchrun train.py` 的命令启动的，`torchrun` 是 Pytorch 封装的启动工具，它会 spawn 多个进程分别用于运行 `train.py`，且在创建进程时，会将 local rank、world size 等进程所需的值用命令行参数的形式传递给进程。
 

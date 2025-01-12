@@ -351,7 +351,7 @@ class Solution:
 
 **示例 1:**
 
-![示例 1](https://little-nyima-oss.eos-beijing-2.cmecloud.cn/2024/08/19/leetcode-84-example-1.jpg)
+![示例 1](https://files.hoshinorubii.icu/blog/2024/08/19/leetcode-84-example-1.jpg)
 
 ```
 输入：heights = [2,1,5,6,2,3]
