@@ -57,6 +57,7 @@ top: 1
 6. [技术相关｜对 Python built-in pprint 进行拓展](../9-extending-pprint-for-python)
 7. [技术相关｜Linux 虚拟机的安全加固](../10-hardening-virtual-machine-security)
 8. [技术相关｜使用 Pytorch 进行分布式训练](../11-distributed-training-with-pytorch)
+9. [开发记录｜基于 CogVideoX 实现 DDIM Inversion](../52-ddim-inversion-for-cogvideox)
 
 # 日常生活与杂谈向文章
 
