@@ -1,0 +1,278 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>技术相关｜使用 Certbot 为通配符域名签发 SSL 证书 | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="近期在腾讯云给 OSS 配置了自定义域名，并且因为我有两个桶，所以配置了两个不同的子域名。又为了让文件能支持 HTTPS 访问，需要在腾讯云后台给域名配置 SSL 证书。但非常坑的是腾讯云的 SSL 证书不仅需要花钱买而且非常贵，因此为了节能减排最后我选择在 Let&#39;s Encrypt 自己签发一个证书。 Let&#39;s Encrypt 推荐的客户端是 Certbot，而为了让多个子域名都能使用同一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="技术相关｜使用 Certbot 为通配符域名签发 SSL 证书">
+<meta property="og:url" content="https://littlenyima.github.io/posts/53-issue-ssl-certificates-with-certbot/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="近期在腾讯云给 OSS 配置了自定义域名，并且因为我有两个桶，所以配置了两个不同的子域名。又为了让文件能支持 HTTPS 访问，需要在腾讯云后台给域名配置 SSL 证书。但非常坑的是腾讯云的 SSL 证书不仅需要花钱买而且非常贵，因此为了节能减排最后我选择在 Let&#39;s Encrypt 自己签发一个证书。 Let&#39;s Encrypt 推荐的客户端是 Certbot，而为了让多个子域名都能使用同一个">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2025-05-26T09:57:41.000Z">
+<meta property="article:modified_time" content="2025-05-27T06:09:46.657Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="SSL">
+<meta property="article:tag" content="Certbot">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/53-issue-ssl-certificates-with-certbot/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '技术相关｜使用 Certbot 为通配符域名签发 SSL 证书',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2025-05-27 14:09:46'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">37</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">技术相关｜使用 Certbot 为通配符域名签发 SSL 证书</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2025-05-26T09:57:41.000Z" title="發表於 2025-05-26 17:57:41">2025-05-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2025-05-27T06:09:46.657Z" title="更新於 2025-05-27 14:09:46">2025-05-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Techniques/">Techniques</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="技术相关｜使用 Certbot 为通配符域名签发 SSL 证书"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>近期在腾讯云给 OSS
+配置了自定义域名，并且因为我有两个桶，所以配置了两个不同的子域名。又为了让文件能支持
+HTTPS 访问，需要在腾讯云后台给域名配置 SSL 证书。但非常坑的是腾讯云的
+SSL 证书不仅需要花钱买而且非常贵，因此为了节能减排最后我选择在 Let's
+Encrypt 自己签发一个证书。</p>
+<p>Let's Encrypt 推荐的客户端是
+Certbot，而为了让多个子域名都能使用同一个证书，需要为通配符域名（也就是一个类似
+<code>*.my-domain.com</code> 形式的域名）签发证书，这需要使用 DNS-01
+模式进行签发。</p>
+<p>从具体操作来说，首先需要访问 <a
+target="_blank" rel="noopener" href="https://certbot.eff.org/">Certbot
+的官方网站</a>并且选择正确的选项。对于我来说，我并不需要在本地部署证书，因此我选的是
+My HTTP website is running <strong>Other</strong> on <strong>Linux
+(snap)</strong>。选择之后一步步跟着官方的教程安装
+<code>certbot</code>，对于我来说命令是下边这些，其他系统的命令可能有所不同：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get remove certbot</span><br><span class="line">sudo snap install --classic certbot</span><br><span class="line">sudo ln -s /snap/bin/certbot /usr/bin/certbot</span><br></pre></td></tr></table></figure>
+<p>安装成功后运行下边的命令即可开始签发过程：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo certbot certonly --manual --preferred-challenges dns -d &#x27;*.my-domain.com&#x27;</span><br></pre></td></tr></table></figure>
+<p>如果前边的步骤都没有问题的话，运行之后会看到一个类似下面形式的输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Saving debug log to /var/log/letsencrypt/letsencrypt.log</span><br><span class="line">Requesting a certificate for *.my-domain.com</span><br><span class="line"></span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="line">Please deploy a DNS TXT record under the name:</span><br><span class="line"></span><br><span class="line">_acme-challenge.my-domain.com.</span><br><span class="line"></span><br><span class="line">with the following value:</span><br><span class="line"></span><br><span class="line">4uSjh1kbHQFrozxG1F9bK2UF6UxNm893qYE8n7pE6dQ</span><br><span class="line"></span><br><span class="line">Before continuing, verify the TXT record has been deployed. Depending on the DNS</span><br><span class="line">provider, this may take some time, from a few seconds to multiple minutes. You can</span><br><span class="line">check if it has finished deploying with aid of online tools, such as the Google</span><br><span class="line">Admin Toolbox: https://toolbox.googleapps.com/apps/dig/#TXT/_acme-challenge.my-domain.com.</span><br><span class="line">Look for one or more bolded line(s) below the line &#x27;;ANSWER&#x27;. It should show the</span><br><span class="line">value(s) you&#x27;ve just added.</span><br><span class="line"></span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="line">Press Enter to Continue</span><br></pre></td></tr></table></figure>
+<p>根据上面的指示，需要手动添加一条名字为 <code>_acme-challenge</code>
+的 DNS 记录，类型为
+<code>TXT</code>，内容则是上述信息给出的那串超长随机字符串。添加之后去访问
+Google
+管理员工具箱的地址，看到这条记录出现之后就可以回车开始进行下一个步骤。需要注意的是，这个操作需要有域名对应的
+DNS 解析权限，如果没有的话是无法添加这条记录的。</p>
+<p>如果一切操作都正确的话，会看到下面的输出：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Successfully received certificate.</span><br><span class="line">Certificate is saved at: /etc/letsencrypt/live/my-domain.com/fullchain.pem</span><br><span class="line">Key is saved at:         /etc/letsencrypt/live/my-domain.com/privkey.pem</span><br><span class="line">This certificate expires on 2025-08-20.</span><br><span class="line">These files will be updated when the certificate renews.</span><br><span class="line"></span><br><span class="line">NEXT STEPS:</span><br><span class="line">- This certificate will not be renewed automatically. Autorenewal of --manual certificates requires the use of an authentication hook script (--manual-auth-hook) but one was not provided. To renew this certificate, repeat this same certbot command before the certificate&#x27;s expiry date.</span><br><span class="line"></span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br><span class="line">If you like Certbot, please consider supporting our work by:</span><br><span class="line"> * Donating to ISRG / Let&#x27;s Encrypt:   https://letsencrypt.org/donate</span><br><span class="line"> * Donating to EFF:                    https://eff.org/donate-le</span><br><span class="line">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</span><br></pre></td></tr></table></figure>
+<p>到这里，证书就签发完成了，剩下的步骤就是把 <code>fullchain.pem</code>
+和 <code>privkey.pem</code> 这两个文件上传到腾讯云的 SSL
+管理后台（为了访问这两个文件，应该还需要用 <code>sudo</code>
+修改这两个文件所在文件夹的访问权限，建议上传之后把这个文件夹删除，以免出现安全隐患）。</p>
+<p>Let's Encrypt 还是非常方便的，只要有域名就可以得到免费的 SSL
+证书，而不用给云服务商送钱。不过也是有缺点的，就是在证书到期之前需要记得手动续期，否则网站的访问可能会受到一些影响。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/53-issue-ssl-certificates-with-certbot/">https://littlenyima.github.io/posts/53-issue-ssl-certificates-with-certbot/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Linux/">Linux</a><a class="post-meta__tags" href="/tags/SSL/">SSL</a><a class="post-meta__tags" href="/tags/Certbot/">Certbot</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/posts/52-ddim-inversion-for-cogvideox/" title="开发记录｜基于 CogVideoX 实现 DDIM Inversion"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">开发记录｜基于 CogVideoX 实现 DDIM Inversion</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/posts/10-hardening-virtual-machine-security/" title="技术相关｜Linux 虚拟机的安全加固"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-12</div><div class="title">技术相关｜Linux 虚拟机的安全加固</div></div></a></div><div><a href="/posts/6-how-to-develop-on-the-intranet/" title="技术相关｜在内网搭建开发环境"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-09-09</div><div class="title">技术相关｜在内网搭建开发环境</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">37</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fab fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fas fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fas fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/53-issue-ssl-certificates-with-certbot/" title="技术相关｜使用 Certbot 为通配符域名签发 SSL 证书">技术相关｜使用 Certbot 为通配符域名签发 SSL 证书</a><time datetime="2025-05-26T09:57:41.000Z" title="發表於 2025-05-26 17:57:41">2025-05-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/52-ddim-inversion-for-cogvideox/" title="开发记录｜基于 CogVideoX 实现 DDIM Inversion">开发记录｜基于 CogVideoX 实现 DDIM Inversion</a><time datetime="2025-02-20T11:44:30.000Z" title="發表於 2025-02-20 19:44:30">2025-02-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/51-flow-matching-for-diffusion-models/" title="笔记｜扩散模型（一八）：Flow Matching 理论详解">笔记｜扩散模型（一八）：Flow Matching 理论详解</a><time datetime="2024-09-20T03:16:52.000Z" title="發表於 2024-09-20 11:16:52">2024-09-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/50-velocity-prediction-in-diffusion-models/" title="笔记｜扩散模型（一七）：扩散模型中的 Velocity Prediction">笔记｜扩散模型（一七）：扩散模型中的 Velocity Prediction</a><time datetime="2024-09-19T08:19:41.000Z" title="發表於 2024-09-19 16:19:41">2024-09-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/48-cogvideox-text-to-video-diffusion-models/" title="笔记｜扩散模型（一六）：CogVideoX 论文解读｜文生视频扩散模型">笔记｜扩散模型（一六）：CogVideoX 论文解读｜文生视频扩散模型</a><time datetime="2024-09-11T02:18:52.000Z" title="發表於 2024-09-11 10:18:52">2024-09-11</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/53-issue-ssl-certificates-with-certbot/',
+      url: 'https://littlenyima.github.io/posts/53-issue-ssl-certificates-with-certbot/',
+      title: '技术相关｜使用 Certbot 为通配符域名签发 SSL 证书',
+      apikey: 'yEvh2ZR9MQAvSxA73VjpJEa32eHr6TrkXS88LLNbhFGfkpRB2vRPuF3Yfn6IhP3o',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=yEvh2ZR9MQAvSxA73VjpJEa32eHr6TrkXS88LLNbhFGfkpRB2vRPuF3Yfn6IhP3o&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
