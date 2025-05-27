@@ -58,6 +58,7 @@ top: 1
 7. [技术相关｜Linux 虚拟机的安全加固](../10-hardening-virtual-machine-security)
 8. [技术相关｜使用 Pytorch 进行分布式训练](../11-distributed-training-with-pytorch)
 9. [开发记录｜基于 CogVideoX 实现 DDIM Inversion](../52-ddim-inversion-for-cogvideox)
+10. [技术相关｜使用 Certbot 为通配符域名签发 SSL 证书](../53-issue-ssl-certificates-with-certbot)
 
 # 日常生活与杂谈向文章
 
