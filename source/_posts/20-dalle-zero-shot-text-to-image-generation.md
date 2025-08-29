@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图
+title: 笔记｜扩散模型（六）DALL-E 理论与实现｜自回归文生图
 date: 2024-07-14 16:48:41
 cover: false
 mathjax: true

@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现
+title: 笔记｜扩散模型（五）Classifier-Free Guidance 理论与实现
 date: 2024-07-12 16:27:55
 cover: false
 mathjax: true

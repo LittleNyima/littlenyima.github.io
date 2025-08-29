@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（一）：DDPM 理论与实现
+title: 笔记｜扩散模型（一）DDPM 理论与实现
 date: 2024-06-08 20:05:39
 cover: false
 mathjax: true

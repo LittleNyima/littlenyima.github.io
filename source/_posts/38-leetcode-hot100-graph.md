@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（九）：图论
+title: 刷题｜LeetCode Hot 100（九）图论
 date: 2024-08-10 21:55:31
 cover: false
 categories:

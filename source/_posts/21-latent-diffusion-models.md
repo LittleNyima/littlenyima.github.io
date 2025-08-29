@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现
+title: 笔记｜扩散模型（七）Latent Diffusion Models（Stable Diffusion）理论与实现
 date: 2024-07-16 16:18:25
 cover: false
 mathjax: true

@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（一四）：Textual Inversion 理论与实现
+title: 笔记｜扩散模型（一四）Textual Inversion 理论与实现
 date: 2024-08-07 17:51:27
 cover: false
 mathjax: true

@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（二）：双指针
+title: 刷题｜LeetCode Hot 100（二）双指针
 date: 2024-08-04 16:44:31
 cover: false
 categories:

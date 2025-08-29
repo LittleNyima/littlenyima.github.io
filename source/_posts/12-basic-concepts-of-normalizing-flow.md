@@ -1,5 +1,5 @@
 ---
-title: 笔记｜Normalizing Flow 理论与实现（一）：基础理论
+title: 笔记｜Normalizing Flow 理论与实现（一）基础理论
 date: 2024-05-11 10:52:41
 cover: false
 mathjax: true

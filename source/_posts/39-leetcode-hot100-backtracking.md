@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（十）：回溯
+title: 刷题｜LeetCode Hot 100（十）回溯
 date: 2024-08-10 23:27:58
 cover: false
 categories:

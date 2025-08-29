@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（一七）：扩散模型中的 Velocity Prediction
+title: 笔记｜扩散模型（一七）扩散模型中的 Velocity Prediction
 date: 2024-09-19 16:19:41
 cover: false
 mathjax: true

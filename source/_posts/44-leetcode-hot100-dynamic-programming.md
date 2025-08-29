@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（十五）：动态规划
+title: 刷题｜LeetCode Hot 100（十五）动态规划
 date: 2024-08-20 14:11:25
 cover: false
 categories:

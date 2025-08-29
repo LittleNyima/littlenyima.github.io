@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（一八）：Flow Matching 理论详解
+title: 笔记｜扩散模型（一八）Flow Matching 理论详解
 date: 2024-09-20 11:16:52
 cover: false
 mathjax: true

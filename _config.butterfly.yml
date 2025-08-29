@@ -42,9 +42,10 @@ social:
   # fab fa-github: https://github.com/xxxxx || Github || '#24292e'
   # fas fa-envelope: mailto:xxxxxx@gmail.com || Email || '#4a7dbe'
   # fab fa-github: https://github.com/LittleNyima || Github
-  fab fa-zhihu: https://www.zhihu.com/people/littlenyima/ || 知乎
-  fas fa-blog: https://www.cnblogs.com/littlenyima/ || 博客园
-  fas fa-rss: /atom.xml || RSS
+  fa-brands fa-linkedin: https://www.linkedin.com/in/leyan-zhu-323abb26a/ || 领英
+  fa-brands fa-zhihu: https://www.zhihu.com/people/littlenyima/ || 知乎
+  fa-solid fa-blog: https://www.cnblogs.com/littlenyima/ || 博客园
+  fa-solid fa-rss: /atom.xml || RSS
 
 # Image (圖片設置)
 # --------------------------------------

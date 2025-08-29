@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（三）：滑动窗口
+title: 刷题｜LeetCode Hot 100（三）滑动窗口
 date: 2024-08-05 16:30:04
 cover: false
 categories:

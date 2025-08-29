@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（四）：子串
+title: 刷题｜LeetCode Hot 100（四）子串
 date: 2024-08-05 17:09:12
 cover: false
 mathjax: true

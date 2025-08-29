@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（十七）：技巧
+title: 刷题｜LeetCode Hot 100（十七）技巧
 date: 2024-08-21 11:47:10
 cover: false
 categories:

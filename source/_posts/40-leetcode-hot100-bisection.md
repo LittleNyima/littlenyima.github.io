@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（十一）：二分查找
+title: 刷题｜LeetCode Hot 100（十一）二分查找
 date: 2024-08-12 00:54:05
 cover: false
 categories:

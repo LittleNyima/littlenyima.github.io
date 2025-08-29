@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（一五）：CogVideo 论文解读｜文生视频大模型
+title: 笔记｜扩散模型（一五）CogVideo 论文解读｜文生视频大模型
 date: 2024-09-10 11:02:41
 cover: false
 mathjax: true

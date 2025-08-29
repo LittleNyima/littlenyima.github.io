@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（二）：DDIM 理论与实现
+title: 笔记｜扩散模型（二）DDIM 理论与实现
 date: 2024-06-12 16:59:12
 cover: false
 mathjax: true

@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（一二）：U-ViT｜Diffusion with Transformer
+title: 笔记｜扩散模型（一二）U-ViT｜Diffusion with Transformer
 date: 2024-08-04 21:35:56
 cover: false
 mathjax: true

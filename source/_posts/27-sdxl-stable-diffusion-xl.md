@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（一一）：Stable Diffusion XL 理论与实现
+title: 笔记｜扩散模型（一一）Stable Diffusion XL 理论与实现
 date: 2024-08-02 15:45:21
 cover: false
 mathjax: true

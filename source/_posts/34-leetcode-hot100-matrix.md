@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（六）：矩阵
+title: 刷题｜LeetCode Hot 100（六）矩阵
 date: 2024-08-07 12:40:51
 cover: false
 categories:

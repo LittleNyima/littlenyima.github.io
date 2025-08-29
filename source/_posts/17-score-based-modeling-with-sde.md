@@ -1,5 +1,5 @@
 ---
-title: 笔记｜Score-based Generative Models（二）：基于 SDE 的模型
+title: 笔记｜Score-based Generative Models（二）基于 SDE 的模型
 date: 2024-07-05 16:37:40
 cover: false
 mathjax: true

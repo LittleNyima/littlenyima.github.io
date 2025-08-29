@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（七）：链表
+title: 刷题｜LeetCode Hot 100（七）链表
 date: 2024-08-08 17:31:32
 cover: false
 categories:

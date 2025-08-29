@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成
+title: 笔记｜扩散模型（一〇）Dreambooth 理论与实现｜主题驱动生成
 date: 2024-08-01 14:56:59
 cover: false
 mathjax: true

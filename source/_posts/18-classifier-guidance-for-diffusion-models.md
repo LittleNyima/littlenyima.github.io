@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（四）：Classifier Guidance 理论与实现
+title: 笔记｜扩散模型（四）Classifier Guidance 理论与实现
 date: 2024-07-10 17:40:51
 cover: false
 mathjax: true

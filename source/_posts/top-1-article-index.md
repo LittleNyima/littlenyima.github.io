@@ -9,43 +9,43 @@ top: 1
 
 ## Flow-based Models
 
-1. [笔记｜Normalizing Flow 理论与实现（一）：基础理论](../12-basic-concepts-of-normalizing-flow)
-1. [笔记｜扩散模型（一八）：Flow Matching 理论详解](../51-flow-matching-for-diffusion-models)
+1. [笔记｜Normalizing Flow 理论与实现（一）基础理论](../12-basic-concepts-of-normalizing-flow)
+1. [笔记｜扩散模型（一八）Flow Matching 理论详解](../51-flow-matching-for-diffusion-models)
 
 ## Diffusion Models：通用理论
 
-1. [笔记｜扩散模型（一）：DDPM 理论与实现](../13-denoising-diffusion-probabilistic-models)
-2. [笔记｜扩散模型（二）：DDIM 理论与实现](../14-denoising-diffusion-implicit-models)
-3. [笔记｜扩散模型（三）：Improved DDPM 理论与实现](../15-improved-denoising-diffusion-probabilistic-models)
-4. [笔记｜扩散模型（四）：Classifier Guidance 理论与实现](../18-classifier-guidance-for-diffusion-models)
-5. [笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现](../19-classifier-free-guidance-for-diffusion-models)
-6. [笔记｜扩散模型（一七）：扩散模型中的 Velocity Prediction](../50-velocity-prediction-in-diffusion-models)
+1. [笔记｜扩散模型（一）DDPM 理论与实现](../13-denoising-diffusion-probabilistic-models)
+2. [笔记｜扩散模型（二）DDIM 理论与实现](../14-denoising-diffusion-implicit-models)
+3. [笔记｜扩散模型（三）Improved DDPM 理论与实现](../15-improved-denoising-diffusion-probabilistic-models)
+4. [笔记｜扩散模型（四）Classifier Guidance 理论与实现](../18-classifier-guidance-for-diffusion-models)
+5. [笔记｜扩散模型（五）Classifier-Free Guidance 理论与实现](../19-classifier-free-guidance-for-diffusion-models)
+6. [笔记｜扩散模型（一七）扩散模型中的 Velocity Prediction](../50-velocity-prediction-in-diffusion-models)
 
 ## Diffusion Models：文生图
 
-1. [笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图](../20-dalle-zero-shot-text-to-image-generation)
-1. [笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现](../21-latent-diffusion-models)
-1. [笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现](../22-dalle-2-hierarchical-text-to-image-generation)
-1. [笔记｜扩散模型（九）：Imagen 理论与实现](../23-imagen-t2i-with-deep-language-understanding)
-1. [笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成](../24-dreambooth-subject-driven-generation)
-1. [笔记｜扩散模型（一一）：Stable Diffusion XL 理论与实现](../27-sdxl-stable-diffusion-xl)
-1. [笔记｜扩散模型（一四）：Textual Inversion 理论与实现](../35-textual-inversion-personalize-generation)
+1. [笔记｜扩散模型（六）DALL-E 理论与实现｜自回归文生图](../20-dalle-zero-shot-text-to-image-generation)
+1. [笔记｜扩散模型（七）Latent Diffusion Models（Stable Diffusion）理论与实现](../21-latent-diffusion-models)
+1. [笔记｜扩散模型（八）DALL-E 2 (unCLIP) 理论与实现](../22-dalle-2-hierarchical-text-to-image-generation)
+1. [笔记｜扩散模型（九）Imagen 理论与实现](../23-imagen-t2i-with-deep-language-understanding)
+1. [笔记｜扩散模型（一〇）Dreambooth 理论与实现｜主题驱动生成](../24-dreambooth-subject-driven-generation)
+1. [笔记｜扩散模型（一一）Stable Diffusion XL 理论与实现](../27-sdxl-stable-diffusion-xl)
+1. [笔记｜扩散模型（一四）Textual Inversion 理论与实现](../35-textual-inversion-personalize-generation)
 
 ## Diffusion Models：文生视频
 
-1. [笔记｜扩散模型（一五）：CogVideo 论文解读｜文生视频大模型](../47-cogvideo-text-to-video-generation)
-2. [笔记｜扩散模型（一六）：CogVideoX 论文解读｜文生视频扩散模型](../48-cogvideox-text-to-video-diffusion-models)
+1. [笔记｜扩散模型（一五）CogVideo 论文解读｜文生视频大模型](../47-cogvideo-text-to-video-generation)
+2. [笔记｜扩散模型（一六）CogVideoX 论文解读｜文生视频扩散模型](../48-cogvideox-text-to-video-diffusion-models)
 
 ## Score-based Models
 
-1. [笔记｜Score-based Generative Models（一）：基础理论](../16-score-based-generative-models)
-2. [笔记｜Score-based Generative Models（二）：基于 SDE 的模型](../17-score-based-modeling-with-sde)
+1. [笔记｜Score-based Generative Models（一）基础理论](../16-score-based-generative-models)
+2. [笔记｜Score-based Generative Models（二）基于 SDE 的模型](../17-score-based-modeling-with-sde)
 
 ## 通用技术
 
 1. [笔记｜LoRA 理论与实现｜大模型轻量级微调](../25-lora-low-rank-adaptation)
-1. [笔记｜扩散模型（一二）：U-ViT｜Diffusion with Transformer](../29-uvit-a-vit-backbone-for-diffusion-models)
-1. [笔记｜扩散模型（一三）：DiT｜Diffusion with Transformer](../32-dit-scalable-diffusion-with-transformers)
+1. [笔记｜扩散模型（一二）U-ViT｜Diffusion with Transformer](../29-uvit-a-vit-backbone-for-diffusion-models)
+1. [笔记｜扩散模型（一三）DiT｜Diffusion with Transformer](../32-dit-scalable-diffusion-with-transformers)
 
 # 教程与技术向文章
 

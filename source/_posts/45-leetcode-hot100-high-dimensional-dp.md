@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（十六）：多维动态规划
+title: 刷题｜LeetCode Hot 100（十六）多维动态规划
 date: 2024-08-21 00:00:31
 cover: false
 categories:

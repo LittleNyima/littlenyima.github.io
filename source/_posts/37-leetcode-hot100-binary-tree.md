@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（八）：二叉树
+title: 刷题｜LeetCode Hot 100（八）二叉树
 date: 2024-08-09 22:26:48
 cover: false
 categories:

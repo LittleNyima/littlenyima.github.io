@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现
+title: 笔记｜扩散模型（八）DALL-E 2 (unCLIP) 理论与实现
 date: 2024-07-19 01:30:15
 cover: false
 mathjax: true

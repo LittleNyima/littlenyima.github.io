@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（五）：普通数组
+title: 刷题｜LeetCode Hot 100（五）普通数组
 date: 2024-08-06 19:01:07
 cover: false
 categories:

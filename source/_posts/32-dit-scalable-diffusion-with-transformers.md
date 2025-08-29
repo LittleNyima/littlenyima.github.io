@@ -1,5 +1,5 @@
 ---
-title: 笔记｜扩散模型（一三）：DiT｜Diffusion with Transformer
+title: 笔记｜扩散模型（一三）DiT｜Diffusion with Transformer
 date: 2024-08-05 18:12:49
 cover: false
 mathjax: true

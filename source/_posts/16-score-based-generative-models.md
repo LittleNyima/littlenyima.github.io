@@ -1,5 +1,5 @@
 ---
-title: 笔记｜Score-based Generative Models（一）：基础理论
+title: 笔记｜Score-based Generative Models（一）基础理论
 date: 2024-07-02 15:13:14
 cover: false
 mathjax: true

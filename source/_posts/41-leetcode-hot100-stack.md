@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（十二）：栈
+title: 刷题｜LeetCode Hot 100（十二）栈
 date: 2024-08-19 21:26:56
 cover: false
 categories:

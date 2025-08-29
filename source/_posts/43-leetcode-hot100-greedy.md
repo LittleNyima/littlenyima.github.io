@@ -1,5 +1,5 @@
 ---
-title: 刷题｜LeetCode Hot 100（十四）：贪心算法
+title: 刷题｜LeetCode Hot 100（十四）贪心算法
 date: 2024-08-19 23:44:19
 cover: false
 categories:
