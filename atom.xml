@@ -6,7 +6,7 @@
   <link href="https://littlenyima.github.io/atom.xml" rel="self"/>
   
   <link href="https://littlenyima.github.io/"/>
-  <updated>2025-05-27T06:09:46.657Z</updated>
+  <updated>2025-08-29T10:39:50.030Z</updated>
   <id>https://littlenyima.github.io/</id>
   
   <author>
@@ -21,7 +21,7 @@
     <link href="https://littlenyima.github.io/posts/53-issue-ssl-certificates-with-certbot/"/>
     <id>https://littlenyima.github.io/posts/53-issue-ssl-certificates-with-certbot/</id>
     <published>2025-05-26T09:57:41.000Z</published>
-    <updated>2025-05-27T06:09:46.657Z</updated>
+    <updated>2025-08-29T10:39:50.030Z</updated>
     
     
       
@@ -50,7 +50,7 @@
     <link href="https://littlenyima.github.io/posts/52-ddim-inversion-for-cogvideox/"/>
     <id>https://littlenyima.github.io/posts/52-ddim-inversion-for-cogvideox/</id>
     <published>2025-02-20T11:44:30.000Z</published>
-    <updated>2025-05-27T06:09:46.657Z</updated>
+    <updated>2025-08-29T10:39:50.030Z</updated>
     
     
       
@@ -75,11 +75,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（一八）：Flow Matching 理论详解</title>
+    <title>笔记｜扩散模型（一八）Flow Matching 理论详解</title>
     <link href="https://littlenyima.github.io/posts/51-flow-matching-for-diffusion-models/"/>
     <id>https://littlenyima.github.io/posts/51-flow-matching-for-diffusion-models/</id>
     <published>2024-09-20T03:16:52.000Z</published>
-    <updated>2025-05-27T06:09:46.657Z</updated>
+    <updated>2025-08-29T10:39:50.029Z</updated>
     
     
       
@@ -104,11 +104,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（一七）：扩散模型中的 Velocity Prediction</title>
+    <title>笔记｜扩散模型（一七）扩散模型中的 Velocity Prediction</title>
     <link href="https://littlenyima.github.io/posts/50-velocity-prediction-in-diffusion-models/"/>
     <id>https://littlenyima.github.io/posts/50-velocity-prediction-in-diffusion-models/</id>
     <published>2024-09-19T08:19:41.000Z</published>
-    <updated>2025-05-27T06:09:46.657Z</updated>
+    <updated>2025-08-29T10:39:50.029Z</updated>
     
     
       
@@ -133,11 +133,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（一六）：CogVideoX 论文解读｜文生视频扩散模型</title>
+    <title>笔记｜扩散模型（一六）CogVideoX 论文解读｜文生视频扩散模型</title>
     <link href="https://littlenyima.github.io/posts/48-cogvideox-text-to-video-diffusion-models/"/>
     <id>https://littlenyima.github.io/posts/48-cogvideox-text-to-video-diffusion-models/</id>
     <published>2024-09-11T02:18:52.000Z</published>
-    <updated>2025-05-27T06:09:46.657Z</updated>
+    <updated>2025-08-29T10:39:50.029Z</updated>
     
     
       
@@ -162,11 +162,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（一五）：CogVideo 论文解读｜文生视频大模型</title>
+    <title>笔记｜扩散模型（一五）CogVideo 论文解读｜文生视频大模型</title>
     <link href="https://littlenyima.github.io/posts/47-cogvideo-text-to-video-generation/"/>
     <id>https://littlenyima.github.io/posts/47-cogvideo-text-to-video-generation/</id>
     <published>2024-09-10T03:02:41.000Z</published>
-    <updated>2025-05-27T06:09:46.657Z</updated>
+    <updated>2025-08-29T10:39:50.029Z</updated>
     
     
       
@@ -191,11 +191,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（一四）：Textual Inversion 理论与实现</title>
+    <title>笔记｜扩散模型（一四）Textual Inversion 理论与实现</title>
     <link href="https://littlenyima.github.io/posts/35-textual-inversion-personalize-generation/"/>
     <id>https://littlenyima.github.io/posts/35-textual-inversion-personalize-generation/</id>
     <published>2024-08-07T09:51:27.000Z</published>
-    <updated>2025-05-27T06:09:46.656Z</updated>
+    <updated>2025-08-29T10:39:50.028Z</updated>
     
     
       
@@ -220,11 +220,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（一三）：DiT｜Diffusion with Transformer</title>
+    <title>笔记｜扩散模型（一三）DiT｜Diffusion with Transformer</title>
     <link href="https://littlenyima.github.io/posts/32-dit-scalable-diffusion-with-transformers/"/>
     <id>https://littlenyima.github.io/posts/32-dit-scalable-diffusion-with-transformers/</id>
     <published>2024-08-05T10:12:49.000Z</published>
-    <updated>2025-05-27T06:09:46.655Z</updated>
+    <updated>2025-08-29T10:39:50.028Z</updated>
     
     
       
@@ -243,11 +243,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（一二）：U-ViT｜Diffusion with Transformer</title>
+    <title>笔记｜扩散模型（一二）U-ViT｜Diffusion with Transformer</title>
     <link href="https://littlenyima.github.io/posts/29-uvit-a-vit-backbone-for-diffusion-models/"/>
     <id>https://littlenyima.github.io/posts/29-uvit-a-vit-backbone-for-diffusion-models/</id>
     <published>2024-08-04T13:35:56.000Z</published>
-    <updated>2025-05-27T06:09:46.655Z</updated>
+    <updated>2025-08-29T10:39:50.028Z</updated>
     
     
       
@@ -272,11 +272,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（一一）：Stable Diffusion XL 理论与实现</title>
+    <title>笔记｜扩散模型（一一）Stable Diffusion XL 理论与实现</title>
     <link href="https://littlenyima.github.io/posts/27-sdxl-stable-diffusion-xl/"/>
     <id>https://littlenyima.github.io/posts/27-sdxl-stable-diffusion-xl/</id>
     <published>2024-08-02T07:45:21.000Z</published>
-    <updated>2025-05-27T06:09:46.655Z</updated>
+    <updated>2025-08-29T10:39:50.028Z</updated>
     
     
       
@@ -305,7 +305,7 @@
     <link href="https://littlenyima.github.io/posts/25-lora-low-rank-adaptation/"/>
     <id>https://littlenyima.github.io/posts/25-lora-low-rank-adaptation/</id>
     <published>2024-08-01T09:54:37.000Z</published>
-    <updated>2025-05-27T06:09:46.655Z</updated>
+    <updated>2025-08-29T10:39:50.027Z</updated>
     
     
       
@@ -328,11 +328,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（一〇）：Dreambooth 理论与实现｜主题驱动生成</title>
+    <title>笔记｜扩散模型（一〇）Dreambooth 理论与实现｜主题驱动生成</title>
     <link href="https://littlenyima.github.io/posts/24-dreambooth-subject-driven-generation/"/>
     <id>https://littlenyima.github.io/posts/24-dreambooth-subject-driven-generation/</id>
     <published>2024-08-01T06:56:59.000Z</published>
-    <updated>2025-05-27T06:09:46.655Z</updated>
+    <updated>2025-08-29T10:39:50.027Z</updated>
     
     
       
@@ -357,11 +357,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（九）：Imagen 理论与实现</title>
+    <title>笔记｜扩散模型（九）Imagen 理论与实现</title>
     <link href="https://littlenyima.github.io/posts/23-imagen-t2i-with-deep-language-understanding/"/>
     <id>https://littlenyima.github.io/posts/23-imagen-t2i-with-deep-language-understanding/</id>
     <published>2024-07-20T07:08:55.000Z</published>
-    <updated>2025-05-27T06:09:46.655Z</updated>
+    <updated>2025-08-29T10:39:50.027Z</updated>
     
     
       
@@ -386,11 +386,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（八）：DALL-E 2 (unCLIP) 理论与实现</title>
+    <title>笔记｜扩散模型（八）DALL-E 2 (unCLIP) 理论与实现</title>
     <link href="https://littlenyima.github.io/posts/22-dalle-2-hierarchical-text-to-image-generation/"/>
     <id>https://littlenyima.github.io/posts/22-dalle-2-hierarchical-text-to-image-generation/</id>
     <published>2024-07-18T17:30:15.000Z</published>
-    <updated>2025-05-27T06:09:46.655Z</updated>
+    <updated>2025-08-29T10:39:50.027Z</updated>
     
     
       
@@ -415,11 +415,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（七）：Latent Diffusion Models（Stable Diffusion）理论与实现</title>
+    <title>笔记｜扩散模型（七）Latent Diffusion Models（Stable Diffusion）理论与实现</title>
     <link href="https://littlenyima.github.io/posts/21-latent-diffusion-models/"/>
     <id>https://littlenyima.github.io/posts/21-latent-diffusion-models/</id>
     <published>2024-07-16T08:18:25.000Z</published>
-    <updated>2025-05-27T06:09:46.655Z</updated>
+    <updated>2025-08-29T10:39:50.027Z</updated>
     
     
       
@@ -444,11 +444,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（六）：DALL-E 理论与实现｜自回归文生图</title>
+    <title>笔记｜扩散模型（六）DALL-E 理论与实现｜自回归文生图</title>
     <link href="https://littlenyima.github.io/posts/20-dalle-zero-shot-text-to-image-generation/"/>
     <id>https://littlenyima.github.io/posts/20-dalle-zero-shot-text-to-image-generation/</id>
     <published>2024-07-14T08:48:41.000Z</published>
-    <updated>2025-05-27T06:09:46.654Z</updated>
+    <updated>2025-08-29T10:39:50.027Z</updated>
     
     
       
@@ -477,7 +477,7 @@
     <link href="https://littlenyima.github.io/posts/top-1-article-index/"/>
     <id>https://littlenyima.github.io/posts/top-1-article-index/</id>
     <published>2024-07-14T08:08:11.000Z</published>
-    <updated>2025-05-27T06:09:46.658Z</updated>
+    <updated>2025-08-29T10:39:50.030Z</updated>
     
     
       
@@ -494,11 +494,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（五）：Classifier-Free Guidance 理论与实现</title>
+    <title>笔记｜扩散模型（五）Classifier-Free Guidance 理论与实现</title>
     <link href="https://littlenyima.github.io/posts/19-classifier-free-guidance-for-diffusion-models/"/>
     <id>https://littlenyima.github.io/posts/19-classifier-free-guidance-for-diffusion-models/</id>
     <published>2024-07-12T08:27:55.000Z</published>
-    <updated>2025-05-27T06:09:46.654Z</updated>
+    <updated>2025-08-29T10:39:50.027Z</updated>
     
     
       
@@ -523,11 +523,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜扩散模型（四）：Classifier Guidance 理论与实现</title>
+    <title>笔记｜扩散模型（四）Classifier Guidance 理论与实现</title>
     <link href="https://littlenyima.github.io/posts/18-classifier-guidance-for-diffusion-models/"/>
     <id>https://littlenyima.github.io/posts/18-classifier-guidance-for-diffusion-models/</id>
     <published>2024-07-10T09:40:51.000Z</published>
-    <updated>2025-05-27T06:09:46.654Z</updated>
+    <updated>2025-08-29T10:39:50.027Z</updated>
     
     
       
@@ -552,11 +552,11 @@
   </entry>
   
   <entry>
-    <title>笔记｜Score-based Generative Models（二）：基于 SDE 的模型</title>
+    <title>笔记｜Score-based Generative Models（二）基于 SDE 的模型</title>
     <link href="https://littlenyima.github.io/posts/17-score-based-modeling-with-sde/"/>
     <id>https://littlenyima.github.io/posts/17-score-based-modeling-with-sde/</id>
     <published>2024-07-05T08:37:40.000Z</published>
-    <updated>2025-05-27T06:09:46.654Z</updated>
+    <updated>2025-08-29T10:39:50.027Z</updated>
     
     
       
