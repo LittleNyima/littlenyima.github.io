@@ -24,7 +24,7 @@ Textual Inversion 也是对 diffusion model 进行微调的主要范式之一，
 
 现有的工作已经证明了 diffusion model 的 text embedding 空间对图像的语义信息有一定的理解能力，然而这些 embedding 都是用对比学习（CLIP）或者文本补全（BERT）的方法来训练的，这两者都对图像的理解能力没有比较高的要求。这样做的结果就是模型无法精确地理解想要生成的目标，例如有的时候会出现图像的语义错乱的问题。因此，作者把对 text embedding 的学习当成一个图像领域的任务。
 
-![Textual Inversion 的方法架构图](https://files.hoshinorubii.icu/blog/2024/08/08/textual-inversion-framework.jpg)
+![Textual Inversion 的方法架构图](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/textual-inversion-framework.jpg)
 
 现有的 text embedding 通常是先将文本转换为 token，这些 token 再用文本模型转换为对应的 embedding。在 Textual Inversion 中，将 inversion 的目标定为 embedding 空间。作者用一个占位符 $S_*$ 表示要学习的主体，然后把这个占位符相关的 embedding 全都替换为某个可学习的 embedding，用这种方式把要生成的主体嵌入到词表中。从上图中的 embedding lookup 可以发现，其他的 token 都是通过一个文本模型实现的 embedding，而这个占位符是一个独立于文本模型的单独可学习 embedding。
 

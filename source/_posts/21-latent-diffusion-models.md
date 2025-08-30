@@ -22,7 +22,7 @@ series: Diffusion Models
 
 本方法的整体结构如下图所示，主要分为三部分：最左侧的红框对应于感知图像压缩，中间的绿框对应 Latent Diffusion Models，右侧的白框表示生成条件，下面将分别介绍这三个部分。
 
-![Latent Diffusion Models 结构图](https://files.hoshinorubii.icu/blog/2024/07/16/latent-diffusion-models.jpg)
+![Latent Diffusion Models 结构图](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/07/16/latent-diffusion-models.jpg)
 
 ## 感知图像压缩
 

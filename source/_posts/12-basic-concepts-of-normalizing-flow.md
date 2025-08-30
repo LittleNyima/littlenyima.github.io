@@ -13,7 +13,7 @@ series: Normalizing Flows
 
 Normalizing flow（标准化流）是一类对概率分布进行建模的工具，它能完成简单的概率分布（例如高斯分布）和任意复杂分布之间的相互转换，经常被用于 data generation、density estimation、inpainting 等任务中，例如 Stability AI 提出的 [Stable Diffusion 3](https://arxiv.org/abs/2403.03206) 中用到的 rectified flow 就是 normalizing flow 的变体之一。
 
-![Normalizing flow 示意图（图源 Lil'Log）](https://files.hoshinorubii.icu/blog/2024/03/26/normalizing-flow.png)
+![Normalizing flow 示意图（图源 Lil'Log）](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/03/26/normalizing-flow.png)
 
 为了便于理解，在正式开始介绍之前先简要说明一下 normalizing flow 的做法。如上图所示，为了将一个高斯分布 $z_0$ 转换为一个复杂的分布 $z_K$，normalizing flow 会对初始的分布 $z_0$ 进行多次可逆的变换，将其逐渐转换为 $z_K$。由于每一次变换都是可逆的，从 $z_K$ 出发也能得到高斯分布 $z_0$​。这样，我们就实现了复杂分布与高斯分布之间的互相转换，从而能从简单的高斯分布建立任意复杂分布。
 
@@ -47,13 +47,13 @@ $$
 
 可以发现，对于已知的概率分布与双射，我们可以用一个带有 Jacobian 矩阵的式子来表示映射后的概率分布。我们可以从下面这个直观的例子来理解 Jacobian 矩阵在这里表示的含义：$X_0$ 和 $X_1$ 是两个随机变量，且满足 $X_1=2X_0+2$，由于 $X_0$ 的概率密度在 $(0,1)$ 间均匀分布，根据概率密度的性质，可知其概率密度处处为 1。对于 $X_1$ 来说，其定义域是将 $X_0$ 的定义域均匀扩大 2 倍得到的，那么其概率密度也应当减半。
 
-![一个线性映射的例子](https://files.hoshinorubii.icu/blog/2024/05/11/linear-mapping.png)
+![一个线性映射的例子](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/05/11/linear-mapping.png)
 
 通过这个例子，可以对简单地理解 $p(x)=\pi(f^{-1}(x))\left|(f^{-1})'(x)\right|$ 这一公式中 $\left|(f^{-1})'(x)\right|$ 一项的含义：对于一个概率分布，其「单位体积」内所包含的概率是一定的，如果映射后「单位体积」的大小发生了变化，那么其概率密度也要相应地作出变化，来保证所含的概率不变。而且值得注意的是，在这个过程中我们只关心变化率的大小，而不关心变化率的方向（也就是导数的正负），因此这一项需要取绝对值。
 
 再举一个稍微复杂一点的例子：下图中蓝色的是在二维空间中均匀分布的二维随机变量 $(X_1, Y_1)$，可逆映射 $f$ 将其映射到 $(X_2, Y_2)$。我们不难得知代表 $f$ 的变换矩阵就是 $T=[[a,b];[c,d]]$，通过左乘 $T$ 可以将任意 $(X_1,Y_1)$ 转换为对应的 $(X_2,Y_2)$。与上一个例子同理，$(X_1,Y_1)$ 的概率密度处处为 1，而 $(X_2,Y_2)$ 的概率密度则需要用 1 除以绿色平行四边形的面积，即 $ad-bc$。这个值同时也是变换矩阵 $T$ 的行列式的值，由此我们可以发现，Jacobian 矩阵的行列式的绝对值就是概率密度的变化率。
 
-![一个二维随机变量的例子](https://files.hoshinorubii.icu/blog/2024/05/11/linear-mapping-2d.png)
+![一个二维随机变量的例子](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/05/11/linear-mapping-2d.png)
 
 # 回到 Normalizing Flow
 

@@ -39,7 +39,7 @@ $$
 $$
 而且由于采样过程中存在高斯噪声，进行多次采样会得到不同的轨迹，如下边右图中的一系列绿色折线所示。
 
-![常微分方程与随机微分方程](https://files.hoshinorubii.icu/blog/2024/07/05/differential-equations.jpg)
+![常微分方程与随机微分方程](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/07/05/differential-equations.jpg)
 
 # 基于 SDE 的 Score-based Models
 
@@ -49,7 +49,7 @@ $$
 
 当噪声的尺度数量接近无穷大的时候，扰动的过程类似于一个连续时间内的随机过程，如下图所示，可以看出这和扩散模型的加噪过程有一些类似之处。
 
-![连续的加噪过程](https://files.hoshinorubii.icu/blog/2024/07/05/continuous-perturbation.gif)
+![连续的加噪过程](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/07/05/continuous-perturbation.gif)
 
 为了表示上述随机过程，可以用随机微分方程进行描述，和上面描述过的类似：
 $$
@@ -77,7 +77,7 @@ t&\leftarrow t+\Delta t
 $$
 其中 $\mathbf{z}\sim\mathcal{N}(0,I)$，可以通过直接对高斯噪声采样得到。上式中的 $f(\mathbf{x},t)$ 和 $g(t)$ 都是有解析形式的，$\Delta t$ 可以选取一个比较小的值，只有 $\mathbf{s}_\theta(\mathbf{x},t)$ 是参数模型。可以从下边的动图直观感受一下采样过程：
 
-![通过反向扰动过程进行采样](https://files.hoshinorubii.icu/blog/2024/07/05/continuous-denoising.gif)
+![通过反向扰动过程进行采样](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/07/05/continuous-denoising.gif)
 
 ## 使用 score matching 进行训练
 
@@ -131,7 +131,7 @@ $$
 $$
 这两者的关系如下图所示，可以看出 ODE 概率流比 SDE 更加平滑，且最终得到的分布是和 SDE 相同的。因为 ODE 是确定性的，所以前向和反向过程都是可逆的，因此 ODE 概率流和 normalizing flow 有一些相似之处。关于 normalizing flow 的介绍可以看[我之前的文章](https://littlenyima.github.io/posts/12-basic-concepts-of-normalizing-flow/)，有比较详细的介绍。
 
-![SDE 和 ODE 比较](https://files.hoshinorubii.icu/blog/2024/07/05/sde-vs-ode.jpg)
+![SDE 和 ODE 比较](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/07/05/sde-vs-ode.jpg)
 
 ## 条件生成
 

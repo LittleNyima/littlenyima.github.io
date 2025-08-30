@@ -24,7 +24,7 @@ DALL-E 2 是一个比较经典的文生图模型，虽然和 Stable Diffusion �
 
 模型的架构图如下图所示，虚线的上方是 CLIP 模型，下方是 prior 和 decoder 模型。
 
-![DALL-E 2 模型架构](https://files.hoshinorubii.icu/blog/2024/07/19/dalle-2-framework.jpg)
+![DALL-E 2 模型架构](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/07/19/dalle-2-framework.jpg)
 
 # DALL-E 2 的训练与采样
 
@@ -43,7 +43,7 @@ DALL-E 2 是一个比较经典的文生图模型，虽然和 Stable Diffusion �
 
 由于 prior 模型是要将文本特征转换为图像特征，训练目标也是将输出与 CLIP 原本的图像特征对齐，如图所示：
 
-![DALL-E 2 prior 模型的训练](https://files.hoshinorubii.icu/blog/2024/07/19/dalle-2-prior-training.jpg)
+![DALL-E 2 prior 模型的训练](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/07/19/dalle-2-prior-training.jpg)
 
 最后一步是**训练 decoder 模型**，这个模型需要以图像为条件，生成最终的目标图像。decoder 模型使用的是一个改进的 GLIDE（也是 diffusion model），训练流程和 GLIDE 是一致的。
 

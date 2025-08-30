@@ -80,7 +80,7 @@ class Solution:
 
 在「杨辉三角」中，每个数是它左上方和右上方的数的和。
 
-![示例](https://files.hoshinorubii.icu/blog/2024/08/20/leetcode-118-example.gif) 
+![示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/20/leetcode-118-example.gif) 
 
 **示例 1:**
 

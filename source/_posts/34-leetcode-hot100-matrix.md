@@ -18,7 +18,7 @@ hidden: true
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/07/leetcode-73-example1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/07/leetcode-73-example1.jpg)
 
 > **输入：**matrix = [[1,1,1],[1,0,1],[1,1,1]]
 >
@@ -26,7 +26,7 @@ hidden: true
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/07/leetcode-73-example2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/07/leetcode-73-example2.jpg)
 
 > **输入：**matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]
 >
@@ -78,14 +78,14 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/07/leetcode-54-example1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/07/leetcode-54-example1.jpg)
 
 > **输入：**matrix = [[1,2,3],[4,5,6],[7,8,9]]
 > **输出：**[1,2,3,6,9,8,7,4,5]
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/07/leetcode-54-example2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/07/leetcode-54-example2.jpg)
 
 > **输入：**matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
 >
@@ -134,7 +134,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/07/leetcode-48-example1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/07/leetcode-48-example1.jpg)
 
 > **输入：**matrix = [[1,2,3],[4,5,6],[7,8,9]]
 >
@@ -142,7 +142,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/07/leetcode-48-example2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/07/leetcode-48-example2.jpg)
 
 > **输入：**matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
 >
@@ -158,7 +158,7 @@ class Solution:
 
 每个位置的数字旋转 90 度后会覆盖另一个位置的数字，因为每次旋转 90 度，所以覆盖的循环中包含 4 个不同的数，所以只需要每次按 4 个数为单位进行交换即可。在实现的时候可以进行分块，如图所示：
 
-![分块方法示意图](https://files.hoshinorubii.icu/blog/2024/08/07/leetcode-48-solution.jpg)
+![分块方法示意图](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/07/leetcode-48-solution.jpg)
 
 时间复杂度 `O(n^2)`，空间复杂度 `O(1)`。
 
@@ -197,7 +197,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/07/leetcode-240-example1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/07/leetcode-240-example1.jpg)
 
 > **输入：**matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 5
 >
@@ -205,7 +205,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/07/leetcode-240-example2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/07/leetcode-240-example2.jpg)
 
 > **输入：**matrix = [[1,4,7,11,15],[2,5,8,12,19],[3,6,9,16,22],[10,13,14,17,24],[18,21,23,26,30]], target = 20
 >
@@ -227,7 +227,7 @@ class Solution:
 
 也可以 Z 字形搜索，如下图所示，从右上角开始搜索，如果目标更大就向右搜索，如果目标更小就向左搜索。时间复杂度 `O(n + m)`，空间复杂度 `O(1)`。
 
-![Z 字形搜索](https://files.hoshinorubii.icu/blog/2024/08/07/leetcode-240-solution.jpg)
+![Z 字形搜索](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/07/leetcode-240-solution.jpg)
 
 ## 代码
 

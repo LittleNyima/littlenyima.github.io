@@ -18,7 +18,7 @@ hidden: true
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-94-example.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-94-example.jpg)
 
 > **输入：**root = [1,null,2,3]
 >
@@ -102,7 +102,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-104-example.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-104-example.jpg)
 
  
 
@@ -180,7 +180,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-226-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-226-example-1.jpg)
 
 > **输入：**root = [4,2,7,1,3,6,9]
 >
@@ -188,7 +188,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-226-example-2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-226-example-2.jpg)
 
 > **输入：**root = [2,1,3]
 >
@@ -235,7 +235,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-101-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-101-example-1.jpg)
 
 > **输入：**root = [1,2,2,3,4,4,3]
 >
@@ -243,7 +243,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-101-example-2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-101-example-2.jpg)
 
 > **输入：**root = [1,2,2,null,3,null,3]
 >
@@ -293,7 +293,7 @@ class Solution:
 
 **示例 1：**
 
-![示例](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-543-example.jpg)
+![示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-543-example.jpg)
 
 > **输入：**root = [1,2,3,4,5]
 >
@@ -346,7 +346,7 @@ class Solution:
 
 **示例 1：**
 
-![示例](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-102-example.jpg)
+![示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-102-example.jpg)
 
 > **输入：**root = [3,9,20,null,null,15,7]
 >
@@ -405,7 +405,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-108-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-108-example-1.jpg)
 
 > **输入：**nums = [-10,-3,0,5,9]
 >
@@ -415,7 +415,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-108-example-2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-108-example-2.jpg)
 
 > **输入：**nums = [1,3]
 >
@@ -466,7 +466,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-98-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-98-example-1.jpg)
 
 > **输入：**root = [2,1,3]
 >
@@ -474,7 +474,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-98-example-2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-98-example-2.jpg)
 
 > **输入：**root = [5,1,4,null,null,3,6]
 >
@@ -524,7 +524,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-230-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-230-example-1.jpg)
 
 > **输入：**root = [3,1,4,null,2], k = 1
 >
@@ -532,7 +532,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-230-example-1.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-230-example-1.jpg)
 
 > **输入：**root = [5,3,6,2,4,null,null,1], k = 3
 >
@@ -581,7 +581,7 @@ class Solution:
 
 **示例 1:**
 
-![示例](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-199-example.jpg)
+![示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-199-example.jpg)
 
 > **输入:** [1,2,3,null,5,null,4]
 >
@@ -643,7 +643,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-114-example.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-114-example.jpg)
 
 > **输入：**root = [1,2,5,3,4,null,6]
 >
@@ -710,7 +710,7 @@ class Solution:
 
 **示例 1:**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-105-example.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-105-example.jpg)
 
 > **输入:** preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
 >
@@ -738,7 +738,7 @@ class Solution:
 
 因此可以从前序遍历确定根节点的位置，再根据中序遍历确定左右子树，如此递归即可完成树的建立。在递归的时候只要维护前序的内容和中序的内容即可，如果不希望发生数组的拷贝，就可以用四个数字标记其边界分别的位置。具体的如图所示：
 
-![题解](https://files.hoshinorubii.icu/blog/2024/08/10/leetcode-105-solution.jpg)
+![题解](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/10/leetcode-105-solution.jpg)
 
 > 图片来源：[链接](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-inorder-traversal/solutions/2361558/105-cong-qian-xu-yu-zhong-xu-bian-li-xu-4lvkz/)
 
@@ -783,7 +783,7 @@ class Solution:
 
 **示例 1：**
 
-![示例](https://files.hoshinorubii.icu/blog/2024/08/10/leetcode-437-example.jpg)
+![示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/10/leetcode-437-example.jpg)
 
 > **输入：**root = [10,5,-3,3,2,null,11,3,-2,null,1], targetSum = 8
 >
@@ -842,7 +842,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/10/leetcode-236-example.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/10/leetcode-236-example.jpg)
 
 > **输入：**root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
 >
@@ -852,7 +852,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/10/leetcode-236-example.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/10/leetcode-236-example.jpg)
 
 > **输入：**root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
 >
@@ -919,7 +919,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/10/leetcode-124-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/10/leetcode-124-example-1.jpg)
 
 > **输入：**root = [1,2,3]
 >
@@ -929,7 +929,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/10/leetcode-124-example-2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/10/leetcode-124-example-2.jpg)
 
 > **输入：**root = [-10,9,20,null,null,15,7]
 >

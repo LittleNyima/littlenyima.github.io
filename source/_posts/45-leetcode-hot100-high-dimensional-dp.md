@@ -22,7 +22,7 @@ hidden: true
 
 **示例 1：**
 
-![示例](https://files.hoshinorubii.icu/blog/2024/08/21/leetcode-62-example.jpg)
+![示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/21/leetcode-62-example.jpg)
 
 ```
 输入：m = 3, n = 7
@@ -86,7 +86,7 @@ class Solution:
 
 **示例 1：**
 
-![示例](https://files.hoshinorubii.icu/blog/2024/08/21/leetcode-64-example.jpg)
+![示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/21/leetcode-64-example.jpg)
 
 ```
 输入：grid = [[1,3,1],[1,5,1],[4,2,1]]

@@ -28,7 +28,7 @@ CogVideo 是基于大规模预训练 Transformer 进行视频生成的工作，�
 
 CogVideo 的整体架构如下图所示，可以看到从上到下分别包括几个部分。最上方是 text condition 以及输入视频帧；中间是一个只有 5 帧作为输入的 transformer，并且输入的序列包括一个帧率 token、一些文本 token 和一些图像 token；最下方是一个用来做递归插值的 transformer 模型。
 
-![CogVideo 的整体框架](https://files.hoshinorubii.icu/blog/2024/09/10/cogvideo-framework.jpg)
+![CogVideo 的整体框架](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/09/10/cogvideo-framework.jpg)
 
 ## 多帧率层次化训练
 
@@ -55,7 +55,7 @@ CogVideo 也采用了比较常见的方式，用 VQVAE 将视频序列转换为�
 
 对于 Attention-plus 的选择，原文使用了两种选择，即 3D local attention 和 3D Swin attention。两个通道的 attention 加权求和后作为双通道注意力的整体输出。
 
-<img src="https://files.hoshinorubii.icu/blog/2024/09/10/dual-channel-attention.jpg" alt="双通道注意力" style="max-width: min(100%, 400px)" />
+<img src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/09/10/dual-channel-attention.jpg" alt="双通道注意力" style="max-width: min(100%, 400px)" />
 
 ## 生成阶段的滑窗注意力
 
@@ -63,7 +63,7 @@ CogVideo 也采用了比较常见的方式，用 VQVAE 将视频序列转换为�
 
 具体的做法如下图所示，这里展示的是窗口大小为 2 的情况。图中的 `t=i`、`t=i+1`、`t=i+2` 表示相邻的三帧，后边的帧可以看到的前帧的范围就只有不是灰色的部分，因为窗口有一定的大小，所以可以看到的前帧中 token 的范围比当前已经生成的更多。这样就相当于第 `i` 帧的深绿色部分生成完的时候，第 `i+1` 帧就可以生成浅绿色的部分，第 `i+2` 帧就可以生成红框圈住的 token，从而实现并行。（虽然感觉这种并行在实现上也还是有点复杂）
 
-<img src="https://files.hoshinorubii.icu/blog/2024/09/10/shifted-window-attention.jpg" alt="滑窗注意力示意图" style="max-width: min(100%, 400px)" />
+<img src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/09/10/shifted-window-attention.jpg" alt="滑窗注意力示意图" style="max-width: min(100%, 400px)" />
 
 # 总结
 

@@ -30,7 +30,7 @@ LoRA 作为一种高效的参数微调（Parameter-Efficient Fine-Tuning，PEFT�
 
 论文的作者提出本方法主要是基于一个观察：模型通常都是过参数化的，在模型的优化过程中，更新的参数集中在低维度的子空间中。同时，模型在下游任务微调后，权重的内在秩（intrinsic rank，或者叫本征秩）是比较低的，因此可以认为更新的权重也是低秩的。所谓的更新的权重，可以表示成：$W=W_0+\Delta W$，其中 $W_0$ 就是原始的权重、$\Delta W$ 则是权重的变化量，也就是更新的权重。
 
-![LoRA 方法示意图](https://files.hoshinorubii.icu/blog/2024/08/01/lora-illustation.jpg)
+![LoRA 方法示意图](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/01/lora-illustation.jpg)
 
 LoRA 具体的做法如上图所示，在预训练权重的旁边加入了一个新的支路，表示 $\Delta W$。由于上文中说的 $\Delta W$ 具有较低的秩，因此可以对其进行低秩分解：$\Delta W=BA$，如果原始权重 $W$ 的维度为 $d\times d$，低秩分解的秩为 $r$，那么有 $B\in\mathbb{R}^{d\times r}$、$A\in\mathbb{R}^{r\times d}$，并且 $r\ll d$。由于 $r$ 很小，所以这部分的参数量也很小，在微调时只有这部分权重需要更新，所以训练的资源消耗并不大。
 

@@ -20,7 +20,7 @@ hidden: true
 
 图示两个链表在节点 `c1` 开始相交**：**
 
-![题目示例](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-160-description.jpg)
+![题目示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-160-description.jpg)
 
 题目数据 **保证** 整个链式结构中不存在环。
 
@@ -40,7 +40,7 @@ hidden: true
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-160-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-160-example-1.jpg)
 
 > 输入：intersectVal = 8, listA = [4,1,8,4,5], listB = [5,6,1,8,4,5], skipA = 2, skipB = 3
 >
@@ -56,7 +56,7 @@ hidden: true
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-160-example-2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-160-example-2.jpg)
 
 > 输入：intersectVal = 2, listA = [1,9,1,2,4], listB = [3,2,4], skipA = 3, skipB = 1
 >
@@ -70,7 +70,7 @@ hidden: true
 
 **示例 3：**
 
-![示例 3](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-160-example-1.jpg)
+![示例 3](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-160-example-1.jpg)
 
 > **输入：**intersectVal = 0, listA = [2,6,4], listB = [1,5], skipA = 3, skipB = 2
 >
@@ -125,7 +125,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-206-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-206-example-1.jpg)
 
 > **输入：**head = [1,2,3,4,5]
 >
@@ -133,7 +133,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-206-example-2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-206-example-2.jpg)
 
 > **输入：**head = [1,2]
 >
@@ -182,7 +182,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-234-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-234-example-1.jpg)
 
 > **输入：**head = [1,2,2,1]
 >
@@ -190,7 +190,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-234-example-1.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-234-example-1.jpg)
 
 > **输入：**head = [1,2]
 >
@@ -280,7 +280,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-141-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-141-example-1.jpg)
 
 > 输入：head = [3,2,0,-4], pos = 1
 >
@@ -290,7 +290,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-141-example-2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-141-example-2.jpg)
 
 > 输入：head = [1,2], pos = 0
 >
@@ -300,7 +300,7 @@ class Solution:
 
 **示例 3：**
 
-![示例 3](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-141-example-3.jpg)
+![示例 3](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-141-example-3.jpg)
 
 > 输入：head = [1], pos = -1
 >
@@ -353,7 +353,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-142-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-142-example-1.jpg)
 
 > 输入：head = [3,2,0,-4], pos = 1
 >
@@ -363,7 +363,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-142-example-2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-142-example-2.jpg)
 
 > 输入：head = [1,2], pos = 0
 >
@@ -373,7 +373,7 @@ class Solution:
 
 **示例 3：**
 
-![示例 3](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-142-example-3.jpg)
+![示例 3](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-142-example-3.jpg)
 
 > 输入：head = [1], pos = -1
 >
@@ -430,7 +430,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/08/leetcode-21-example.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/08/leetcode-21-example.jpg)
 
 > **输入：**l1 = [1,2,4], l2 = [1,3,4]
 >
@@ -494,7 +494,7 @@ class Solution:
 
 **示例 1：**
 
-![示例](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-2-example.jpg)
+![示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-2-example.jpg)
 
 > **输入：**l1 = [2,4,3], l2 = [5,6,4]
 >
@@ -558,7 +558,7 @@ class Solution:
 
 **示例 1：**
 
-![示例](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-19-example.jpg)
+![示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-19-example.jpg)
 
 > **输入：**head = [1,2,3,4,5], n = 2
 >
@@ -618,7 +618,7 @@ class Solution:
 
 **示例 1：**
 
-![示例](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-24-example.jpg)
+![示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-24-example.jpg)
 
 > **输入：**head = [1,2,3,4]
 >
@@ -699,7 +699,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-25-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-25-example-1.jpg)
 
 > **输入：**head = [1,2,3,4,5], k = 2
 >
@@ -707,7 +707,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-25-example-2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-25-example-2.jpg)
 
 > **输入：**head = [1,2,3,4,5], k = 3
 >
@@ -803,7 +803,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-138-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-138-example-1.jpg)
 
 > **输入：**head = [[7,null],[13,0],[11,4],[10,2],[1,0]]
 >
@@ -811,7 +811,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-138-example-2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-138-example-2.jpg)
 
 > **输入：**head = [[1,1],[2,1]]
 >
@@ -819,7 +819,7 @@ class Solution:
 
 **示例 3：**
 
-![示例 3](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-138-example-3.jpg)
+![示例 3](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-138-example-3.jpg)
 
 > **输入：**head = [[3,null],[3,0],[3,null]]
 >
@@ -841,7 +841,7 @@ class Solution:
 
 这样说比较抽象，可以直接看图：
 
-![题解](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-138-solution.jpg)
+![题解](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-138-solution.jpg)
 
 ## 代码
 
@@ -912,7 +912,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-148-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-148-example-1.jpg)
 
 > **输入：**head = [4,2,1,3]
 >
@@ -920,7 +920,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/09/leetcode-148-example-2.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/09/leetcode-148-example-2.jpg)
 
 > **输入：**head = [-1,5,3,4,0]
 >

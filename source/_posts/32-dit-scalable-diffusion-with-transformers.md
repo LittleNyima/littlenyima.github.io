@@ -22,7 +22,7 @@ Transformer 在许多领域都有很不错的表现，尤其是近期大语言�
 
 在正式开始介绍 DiT 之前，需要先了解一下 DiT 使用的扩散模型架构。DiT 使用的是 latent diffusion，VAE 采用和 Stable Diffusion 相同的 KL-f8，并且使用了 Improved DDPM（详细介绍见[这个链接](https://littlenyima.github.io/posts/15-improved-denoising-diffusion-probabilistic-models/)），同时预测噪声的均值和方差。
 
-![DiT 的架构](https://files.hoshinorubii.icu/blog/2024/08/06/dit-framework.jpg)
+![DiT 的架构](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/06/dit-framework.jpg)
 
 ## Patchify
 

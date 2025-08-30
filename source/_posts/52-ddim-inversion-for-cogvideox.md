@@ -40,7 +40,7 @@ recon_video = decode_latents(pipeline.vae, recon_latents)
 
 搜索了一下社区发现也有人遇到了类似的问题，因此大致可以排除是实现本身的问题。因此最终实现的时候参考一些最近的方法换了一种思路：既然直接用 inversion 得到的噪声无法沿原始的轨迹移动，那么如果在重建采样的过程中使用这条路径上的条件进行一些引导，应该能够迫使重建采样过程回到「正轨」。具体来说，大致的框架如下所示，在 inversion 的过程中缓存所有 attention 中的 key 和 value，然后在重建时和对应的 key、value 拼接，从而实现引导。
 
-<img src="https://files.hoshinorubii.icu/blog/2025/02/20/cogvideox-ddim-inversion.jpg" alt="DDIM Inversion 的简单框架" style="width: max(450px, 60%)" />
+<img src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/02/20/cogvideox-ddim-inversion.jpg" alt="DDIM Inversion 的简单框架" style="width: max(450px, 60%)" />
 
 思路听起来比较简单，不过主要有几处细节需要考虑：
 
@@ -128,6 +128,6 @@ if image_rotary_emb is not None:
 
 大体上通过这种方式就实现了 DDIM Inversion，最终的结果基本上达成了编辑的目标（不过还是出现了一些偏色以及模糊的问题）：
 
-![DDIM Inversion 结果对比](https://files.hoshinorubii.icu/blog/2025/02/20/ddim-inversion-results.jpg)
+![DDIM Inversion 结果对比](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/02/20/ddim-inversion-results.jpg)
 
 总之这次的探索还是比较曲折的，而且为什么不能直接把 inverse latents 重建回去也依然是一个未解之谜，如果之后还有时间精力的话希望能把这个问题搞明白。

@@ -240,7 +240,7 @@ image_grid.save('ddim-sample-results.png')
 
 采样速度的确是变快了很多，得到的结果如下图所示：
 
-![采样结果示例](https://files.hoshinorubii.icu/blog/2024/06/13/ddim-sample-results.png)
+![采样结果示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/06/13/ddim-sample-results.png)
 
 感觉总体上采样效果比 DDPM 稍微有所下降，不过也还在可以接受的范围内，算是一种速度-质量的 tradeoff。
 
@@ -303,7 +303,7 @@ images = interpolation_grid(rows, cols, in_channels, sample_size).to(unet.device
 
 看一下结果如何：
 
-![语义插值效应](https://files.hoshinorubii.icu/blog/2024/06/13/ddim-interpolation-results.png)
+![语义插值效应](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/06/13/ddim-interpolation-results.png)
 
 感觉还不错，那么 DDIM 的学习到这里就告一段落了。
 

@@ -55,7 +55,7 @@ $$
 
 要理解上述结论，需要参考一下原论文中的这张图：
 
-![Velocity Prediction 的示意图](https://files.hoshinorubii.icu/blog/2024/09/19/velocity-prediction-visualization.jpg)
+![Velocity Prediction 的示意图](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/09/19/velocity-prediction-visualization.jpg)
 
 在 DDPM 中，加噪过程的公式为：
 

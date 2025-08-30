@@ -132,7 +132,7 @@ class Solution:
 
 **示例 1：**
 
-![示例 1](https://files.hoshinorubii.icu/blog/2024/08/12/leetcode-74-example-1.jpg)
+![示例 1](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/12/leetcode-74-example-1.jpg)
 
 ```
 输入：matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3
@@ -141,7 +141,7 @@ class Solution:
 
 **示例 2：**
 
-![示例 2](https://files.hoshinorubii.icu/blog/2024/08/12/leetcode-74-example-1.jpg)
+![示例 2](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/12/leetcode-74-example-1.jpg)
 
 ```
 输入：matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 13

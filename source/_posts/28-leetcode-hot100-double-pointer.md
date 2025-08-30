@@ -90,7 +90,7 @@ class Solution:
 
 **示例 1：**
 
-![题目示例](https://files.hoshinorubii.icu/blog/2024/08/04/leetcode-11-example.jpg)
+![题目示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/04/leetcode-11-example.jpg)
 
 > **输入：**[1,8,6,2,5,4,8,3,7]
 >
@@ -218,7 +218,7 @@ class Solution:
 
 **示例 1：**
 
-![题目示例](https://files.hoshinorubii.icu/blog/2024/08/04/leetcode-42-example.jpg)
+![题目示例](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/04/leetcode-42-example.jpg)
 
 > **输入：**height = [0,1,0,2,1,0,1,3,2,1,2,1]
 >
@@ -244,7 +244,7 @@ class Solution:
 
 为了解决左侧右侧最高的问题，可以用一个单调递减的单调栈保存所有的高度，单调栈底部的元素即为左侧最高的。每次入栈的时候，如果入栈元素大于栈顶的元素，栈顶的元素就要出栈，同时需要加上对应的水的体积。我们可以用上边这个图演示一下：
 
-![出栈时的操作示意图](https://files.hoshinorubii.icu/blog/2024/08/04/leetcode-42-solution.jpg)
+![出栈时的操作示意图](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/08/04/leetcode-42-solution.jpg)
 
 可以看到我们加的不是一竖条水，而是一横条水，这个是因为如果我们加竖条水，如果右侧出现了更高的柱子，就有可能导致一部分水被错误地忽略掉。某个数出栈了，如果这个数不是栈底，那么就说明其左侧右侧都出现了比它更高的数，这部分的水就可以被接住。计算方式为`(min(栈顶元素,入栈元素)-出栈元素)*(入栈元素与栈顶元素的距离)`。具体的细节可以看下边的代码，时间/空间复杂度为 `O(n)`。
 

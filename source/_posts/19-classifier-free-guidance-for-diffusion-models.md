@@ -52,11 +52,11 @@ $$
 
 为了联合训练有条件和无条件的情况，在训练时需要以一定的概率 $p_\mathrm{uncond}$ 将条件输入替换为 $\varnothing$。其他的部分和一般的 diffusion model 的训练过程区别不大，论文中也给出了训练的算法，可以看到除了多了条件作为输入以及采样无条件生成的输入之外，没有其他的变化：
 
-![Classifier-Free Guidance 的训练流程](https://files.hoshinorubii.icu/blog/2024/07/12/classifier-free-guidance-training.png)
+![Classifier-Free Guidance 的训练流程](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/07/12/classifier-free-guidance-training.png)
 
 文中也给出了采样算法的流程，可以看到预测噪声由无条件和有条件两部分加权得到：
 
-![Classifier-Free Guidance 的采样流程](https://files.hoshinorubii.icu/blog/2024/07/12/classifier-free-guidance-sampling.png)
+![Classifier-Free Guidance 的采样流程](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/07/12/classifier-free-guidance-sampling.png)
 
 # 条件注入的方式
 
@@ -66,7 +66,7 @@ $$
 
 交叉注意力是比较常用的一种条件注入方式，例如很多文生图模型的文本就是用这种方式注入的。在注入时是以 $\mathbf{x}$ 为 query、以 $\mathbf{c}$ 为 key 和 value。可以以下面这张图中的结构做为参考看一下 `diffusers` 的代码。
 
-![Scaled Dot-Product Attention](https://files.hoshinorubii.icu/blog/2024/07/12/scaled-dot-product-attention.png)
+![Scaled Dot-Product Attention](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/07/12/scaled-dot-product-attention.png)
 
 `diffusers` 对 UNet 中使用的 attention 进行了多层封装，具体的层次结构如下所示：
 

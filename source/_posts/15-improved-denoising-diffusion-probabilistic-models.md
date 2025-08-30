@@ -29,7 +29,7 @@ Improved DDPM 主要是针对 DDPM 的训练过程进行改进，主要从两个
 
 虽然上边这个发现从一定程度上可以说明方差的选取并不重要。但再来看一下下面的右图，可以发现在扩散的过程中，最初的几步扩散对 VLB 的影响是最大的，在这几个步骤里 $\sigma_t$ 依然是有一定的作用的，因此作者认为可以通过选取比较好的方差来获得更好的 log-likelihood。从这个角度出发，作者引入了一个可学习的方差。
 
-![DDPM 中的方差和损失函数](https://files.hoshinorubii.icu/blog/2024/06/24/iddpm-variances-loss.png)
+![DDPM 中的方差和损失函数](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/06/24/iddpm-variances-loss.png)
 
 既然要选择一个可学习的方差，那么现在的问题就变成了应该如何选取一个合适的方差。这个工作的作者认为因为方差的变化范围比较小，不太容易用神经网络进行学习，所以实际上使用的方差是对 $\beta_t$ 和 $\tilde{\beta}_t$ 进行插值的结果：
 $$
@@ -47,7 +47,7 @@ $$
 $$
 这个 schedule 和线性 schedule 的比较如下图所示：
 
-<img src="https://files.hoshinorubii.icu/blog/2024/06/24/ddim-alpha_bar-eps.png" alt="Linear schedule 和 cosine schedule 的比较" style="width:min(100%, 400px);" />
+<img src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2024/06/24/ddim-alpha_bar-eps.png" alt="Linear schedule 和 cosine schedule 的比较" style="width:min(100%, 400px);" />
 
 这个 schedule 在 $t=0$ 和 $t=T$ 附近都变化比较小，而在中间有一个接近于线性的下降过程，同时可以发现 cosine schedule 比 linear schedule 对信息的破坏更慢。这也印证了我们在前边提到的理论：在扩散开始的时候更加缓慢地加噪，可以得到更好的训练效果。除此之外设计这个 schedule 的时候作者也有一些比较细节的考虑，比如选取一个比较小的偏移量 $s=8\times10^{-3}$，防止 $\beta_t$ 在 $t=0$ 附近过小，并且将 $\beta_t$ 裁剪到 $0.999$ 来防止 $t=T$ 附近出现奇异点。
 
