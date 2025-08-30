@@ -1,0 +1,509 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>笔记｜大模型训练（一）单卡训练的分析与优化策略 | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本学习笔记是对 nanotron&#x2F;ultrascale-playbook 的学习记录，该书涵盖分布式训练、并行技术以及一些优化策略。本文章是该系列笔记的第一篇，对应原书 First Steps: Training on One GPU 一章。  在开始学习分布式训练前，不妨先快速回顾一下模型训练的基础知识。在单 GPU 上训练模型时，训练通常包含三个步骤：  前向传播：将输入传递至模型并产生输出">
+<meta property="og:type" content="article">
+<meta property="og:title" content="笔记｜大模型训练（一）单卡训练的分析与优化策略">
+<meta property="og:url" content="https://littlenyima.github.io/posts/54-training-llms-on-one-gpu/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="本学习笔记是对 nanotron&#x2F;ultrascale-playbook 的学习记录，该书涵盖分布式训练、并行技术以及一些优化策略。本文章是该系列笔记的第一篇，对应原书 First Steps: Training on One GPU 一章。  在开始学习分布式训练前，不妨先快速回顾一下模型训练的基础知识。在单 GPU 上训练模型时，训练通常包含三个步骤：  前向传播：将输入传递至模型并产生输出">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2025-08-29T15:55:32.000Z">
+<meta property="article:modified_time" content="2025-08-30T17:28:42.977Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Deep learning">
+<meta property="article:tag" content="Generative models">
+<meta property="article:tag" content="Large language models">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/54-training-llms-on-one-gpu/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '笔记｜大模型训练（一）单卡训练的分析与优化策略',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-08-31 01:28:42'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">笔记｜大模型训练（一）单卡训练的分析与优化策略</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2025-08-29T15:55:32.000Z" title="發表於 2025-08-29 23:55:32">2025-08-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2025-08-30T17:28:42.977Z" title="更新於 2025-08-31 01:28:42">2025-08-31</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Notes/">Notes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="笔记｜大模型训练（一）单卡训练的分析与优化策略"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>本学习笔记是对 <a
+target="_blank" rel="noopener" href="https://huggingface.co/spaces/nanotron/ultrascale-playbook">nanotron/ultrascale-playbook</a>
+的学习记录，该书涵盖分布式训练、并行技术以及一些优化策略。本文章是该系列笔记的第一篇，对应原书
+<em>First Steps: Training on One GPU</em> 一章。</p>
+</blockquote>
+<p>在开始学习分布式训练前，不妨先快速回顾一下模型训练的基础知识。在单
+GPU 上训练模型时，训练通常包含三个步骤：</p>
+<ol type="1">
+<li>前向传播：将输入传递至模型并产生输出；</li>
+<li>反向传播：进行梯度计算；</li>
+<li>优化步骤：根据计算出的梯度对模型的参数进行更新。</li>
+</ol>
+<p>总体上来说可以用下图表示。图中第一行和最后一行的紫色框可以看作模型的不同层，黑色箭头表示了这些层的连接关系。在训练时，首先对输入进行前向传播（青色箭头），随后反向传播计算梯度（橙色箭头）。使用得到的梯度对模型的参数进行更新，可以得到优化过的模型。</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/08/31/process-of-model-training.jpg"
+alt="模型的训练过程示意图" /></p>
+<p>在模型训练过程中，<strong>batch size</strong>
+是最重要的超参数之一，其影响模型训练的收敛速度以及吞吐量。具体来说，在训练初期，较小的
+batch size
+可以帮助模型快速地到达最佳的学习位置，然而随着训练的进行，小的 batch
+size
+会<strong>导致梯度含有比较多的噪声</strong>，最终模型可能无法收敛到最佳性能的位置。另一个极端是，大的
+batch size
+虽然可以在训练过程中提供稳定的梯度，但其会<strong>降低每个训练样本的利用效率</strong>，从而<strong>减慢收敛速度</strong>，并且可能浪费计算资源。同时，batch
+size 也会影响训练时间，因为在对相同样本数量进行训练的前提下，小的 batch
+size 需要更多的优化器 step。由于优化器 step 非常耗时，所以相比大的 batch
+size，总体的训练时间会变长。</p>
+<blockquote>
+<p>举例来说，在 DeepSeek-V3/R1 在训练前 469B tokens 时，batch size
+逐渐从 3072 提高到 15360，随后一直保持在 15360 这个大小</p>
+</blockquote>
+<p>在预训练 LLM 的社区中，batch size 通常不以样本数为单位，而是以 token
+数为单位（即 <strong>bst</strong> = batch size tokens）。训练大模型的
+batch size 和语料库大小近些年逐年上升，例如 LLaMA 1 使用了 1.4T token
+以大约 4M 的 batch size 训练，而 DeepSeek 则使用了 14T token 以及大约
+60M 的 batch size。</p>
+<p>随着训练的 batch size 增大，我们遇到的第一个挑战就是
+<strong>out-of-memory (OOM)</strong> 问题。当我们的显存无法容纳一整个
+batch 的数据时，我们应该怎么办？为了解决这个问题，我们首先需要了解 OOM
+出现的原因。</p>
+<h1 id="transformer-的内存使用情况">Transformer 的内存使用情况</h1>
+<p>在训练一个深度神经网络时，模型使用的内存主要由以下几部分组成：</p>
+<ul>
+<li>模型权重（weights）</li>
+<li>模型梯度（gradients）</li>
+<li>优化器状态（optimizer states）</li>
+<li>计算梯度所需要的激活值（activations）</li>
+</ul>
+<blockquote>
+<p>在现实场景中，使用的显存通常难以精确计算，这是因为 CUDA
+内核本身需要占用一些显存，这可以通过运行
+<code>import torch; torch.ones((1, 1)).to("cuda")</code>
+快速地验证。除此之外，一些缓存和中间结果也会占用显存，显存碎片化也会导致部分显存不可用（不过这个因素的影响较小，可以忽略）</p>
+</blockquote>
+<p>上述的部分在 GPU
+中以张量的形式存储，其有两个主要的属性，也就是<strong>形状</strong>和<strong>精度</strong>。张量的形状和模型本身以及输入有关；精度则有很多种不同的类型，例如
+fp32、bf16、fp8 等，不同精度的数值占用的内存也不同。</p>
+<h2 id="测算显存使用情况">测算显存使用情况</h2>
+<p>一般来说，要确定模型的显存占用，需要经验性地估计以及直接使用工具测量。下面就是
+LLaMA 1B 在前四个训练 step
+时的显存变化情况，可以看出显存占用并不是固定的，而是会动态变化：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/08/31/memory-profile-of-llama-1b.jpg"
+alt="LLaMA 1B 在训练前四次迭代时的内存占用状态" /></p>
+<p>首先总览一下训练过程，首先在第一次前向传播的时候激活部分快速增加，之后随着反向传播的过程，梯度逐渐被计算出来，同时存储的激活值逐渐被释放。最后优化器执行优化，在优化时需要全部的梯度均被计算出来，随后优化器的状态被更新，并开始下一次迭代。</p>
+<p>如上图所示，第一个迭代步骤是明显有别于其他迭代步骤的，其激活值快速增加并在峰值停留了一段时间。这是因为
+Pytorch
+的内存管理器在进行准备工作，为内存分配作准备，从而加速后续的内存访问。在第一次迭代结束后优化器的状态出现（有时这会导致训练的第一个
+iteration 成功，而随后发生 OOM 导致失败）</p>
+<p>通过上述分析可以发现，扩大训练规模需要<strong>最大化计算效率</strong>，同时<strong>将这些内存需求保持在
+GPU 的内存限制范围内</strong>。</p>
+<h2
+id="权重梯度优化器状态的内存占用">权重/梯度/优化器状态的内存占用</h2>
+<p>权重、梯度以及优化器状态使用的内存可以比较短平快地计算出来。对于一个简单的
+Transformer 架构的 LLM，其参数量可以用如下的公式计算（具体计算过程见<a
+target="_blank" rel="noopener" href="https://michaelwornow.net/2024/01/18/counting-params-in-transformer">这篇文章</a>）：
+<span class="math display">\[
+N=h\times v+L\times(12\times h^2+13\times h)+2\times h
+\]</span> 其中 <span class="math inline">\(h\)</span>
+是隐藏层维度，<span class="math inline">\(v\)</span> 是词表大小，<span
+class="math inline">\(L\)</span> 是模型的层数。可以发现主要的影响因素是
+<span class="math inline">\(h^2\)</span>
+这一项。模型参数和梯度需要的内存大小可以直接通过<strong>参数量乘以精度对应的字节数量</strong>得到。对于全精度（即
+fp32）训练，参数和梯度均占用 4 个字节，如果使用 Adam
+优化器，则动量和方差均需要存储，即每个参数需要 8 字节的空间，因此有：
+<span class="math display">\[
+\begin{aligned}
+m_{params}&amp;=4\times N\\
+m_{grad}&amp;=4\times N \\
+m_{opt}&amp;=(4+4)\times N
+\end{aligned}
+\]</span> 对于<strong>混合精度训练</strong>的情况，例如以 bf16
+的精度进行训练，则需要<strong>以 bf16
+的精度存储模型参数和梯度</strong>，并<strong>以 fp32
+的精度储存另一份模型参数和优化器状态</strong>。在这种情况下，内存的消耗情况为：
+<span class="math display">\[
+\begin{aligned}
+m_{params}&amp;=2\times N\\
+m_{grad}&amp;=2\times N \\
+m_{params\_fp32}&amp;=4\times N\\
+m_{opt}&amp;=(4+4)\times N
+\end{aligned}
+\]</span>
+值得注意的是，混合精度训练<strong>本身并不节约内存</strong>（甚至可能增加内存消耗），其只是改变了不同组件之间的内存分配方式。不过其仍具有优势，因为以半精度计算前向和反向传播过程，可以：</p>
+<ol type="1">
+<li>在 GPU 上使用低精度运算，这些运算的速度更快；</li>
+<li>减少前向传播过程中的内存占用（根据上图，峰值内存通常出现在前向过程中，因此可以降低峰值内存）</li>
+</ol>
+<p>大体上来说，不同参数量对应的模型显存占用（仅包含上述的三个部分，不包含激活部分）如下表所示。可以发现当模型参数量达到
+7B 时，其需要的显存大小就已经超过了现有 GPU 的内存大小（80 GiB）：</p>
+<table>
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 48%" />
+<col style="width: 37%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>模型参数量</th>
+<th>FP32 或 BF16 训练（保存半精度梯度）</th>
+<th>BF16 训练（保存全精度梯度）</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1B</td>
+<td>16 GiB</td>
+<td>20 GiB</td>
+</tr>
+<tr class="even">
+<td>7B</td>
+<td>112 GiB</td>
+<td>140 GiB</td>
+</tr>
+<tr class="odd">
+<td>70B</td>
+<td>1120 GiB</td>
+<td>1400 GiB</td>
+</tr>
+<tr class="even">
+<td>405B</td>
+<td>6480 GiB</td>
+<td>8100 GiB</td>
+</tr>
+</tbody>
+</table>
+<p>不过目前我们仅关注能够进行单卡训练的模型，并继续讨论显存占用的大头，也就是激活部分。</p>
+<h2 id="激活部分的内存占用">激活部分的内存占用</h2>
+<p>相比于上边的三个部分，激活部分的内存占用计算方式稍微复杂一些，因为这部分和模型的输入有关。经过推导（过程见<a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2205.05198">这篇论文</a>）可以得知混合精度训练时这部分的内存占用可以用下面的公式计算：
+<span class="math display">\[
+m_{act}=L\times seq\times bs\times h\times(34+\frac{5\times
+n_{heads}\times seq}h)
+\]</span> 其中 <span class="math inline">\(L\)</span>
+是模型的层数，<span class="math inline">\(seq\)</span>
+是序列的长度，<span class="math inline">\(bs\)</span> 是每个 batch 的
+sample 数量，<span class="math inline">\(h\)</span>
+是模型的隐藏层为度，<span class="math inline">\(n_{heads}\)</span>
+是模型的 head 的数量。</p>
+<p>可以发现，对于给定的模型，其激活部分的内存使用量和 batch size
+呈现线性关系，和序列的长度呈现二次关系。举例来说，对于 batch size 为 1
+情况下的 LLaMA
+系列模型，情况如下图所示。从图中可以发现，对于短的序列或小的
+batch，激活部分的内存占用几乎可以忽略不计，单从大约 2-4k token
+开始，其开始占用大量内存，而模型参数、梯度、优化器状态的内存占用和批次大小基本无关。</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/08/31/memory-profile-of-llama-series-models.jpg"
+alt="LLaMA 系列模型的内存占用随 token 数量的变化" /></p>
+<p>随着输入 token
+数量的增长，激活部分所需的显存也会爆炸式增加。为了解决这个问题，我们需要引入一种新的技术，叫做
+<strong>gradient checkpointing</strong>。</p>
+<h1 id="gradient-checkpointing">Gradient Checkpointing</h1>
+<p>在原文中，这种技术的名字也叫做 <strong>activation
+recomputation</strong> 或 <strong>rematerialization</strong>，不过
+<strong>gradient checkpointing</strong>
+应该更被人熟知，所以本小节的标题改为了后者。这种技术的核心思想是<strong>用计算换空间</strong>，具体来说，在计算前向过程时，部分中间变量会被直接释放，等到反向过程时再进行重新计算。</p>
+<p>举例来说，如果不进行 gradient
+checkpointing，每两个可学习操作之间的中间变量都需要被保存下来，用于计算梯度。当使用
+gradient checkpointing
+时，只有一些关键的中间变量被保存下来，其余的被丢弃。当进行反向传播时，所使用的中间变量需要从最近的
+checkpoint 处重新执行一遍前向过程来计算得到。</p>
+<p>如下图所示，在进行前向传播时，只有刻度所在的几个位置的中间变量被保存下来，当某个位置需要计算梯度时，需要重新从刻度的位置执行前向过程，计算出对应的中间变量值：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/08/31/gradient-checkpointing.jpg"
+alt="Gradient Checkpointing 示意图" /></p>
+<p>在选择 checkpoint 的位置时，主要有以下两种策略：</p>
+<ul>
+<li><strong>完全策略（Full）</strong>：在每两个 Transformer 层之间都进行
+checkpoint，这种方式在反向传播时需要对每一层都重新进行一次前向传播，相当于每轮需要进行两次前向传播。这种策略最节省显存，但计算成本也非常高，基本会使计算成本增加
+30-40%。</li>
+<li><strong>选择性策略（Selective）</strong>：根据<a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2205.05198">本论文</a>的分析，比较好的
+checkpoint
+位置是在激活值增加最多、且计算开销最小的位置。根据这个标准，attention
+的计算属于这一类，因此通常可以把 attention
+的结果舍弃，而把开销大的结果保留。对于 GPT-3 175B
+模型，这种策略可以在仅增加 2.7% 计算开销的前提下，节约 70%
+的激活内存。</li>
+</ul>
+<p>下面这张图展示了 gradient checkpointing
+的使用对激活部分内存大小的影响。</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/08/31/how-gradient-checkpointing-saves-memory.jpg"
+alt="使用 Gradient Checkpointing 对显存的影响" /></p>
+<p>通过 gradient
+checkpointing，可以节约大量的内存。由于访问内存通常比计算操作更慢，因此使用
+gradient checkpointing 会使训练速度总体上加快。尽管如此，当 batch size
+增加时，激活部分的内存仍然会线性地增加。为了解决这个问题，需要使用的技术是
+<strong>gradient acumulation</strong>。</p>
+<h1 id="gradient-accumulation">Gradient Accumulation</h1>
+<p>Gradient accumulation 也就是梯度累积，这种方法的思想很简单。对于一个
+batch，这种方法将其拆分成多个小的 batch，然后再每个小 batch
+上分别进行前向和反向传播，计算出梯度。最后，在进行优化操作之前，将所有的梯度计算均值。其中每次传播使用的
+batch size 称为 micro-batch size，每次优化使用的所有 batch
+的大小之和称为 global batch
+size。梯度累积的具体过程如下所示，可以发现每个 batch
+需要进行多次前向和反向传播：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/08/31/gradient-accumulation.jpg"
+alt="使用梯度累积时的训练过程" /></p>
+<p>如果进一步思考，可以发现每个 micro-batch
+的前向和反向过程都是相互独立的，因此可以拓展到多个 GPU。</p>
+<p>梯度累积可以有效地增加 batch
+size（甚至可以增加到无穷大），同时保持显存占用不变。同时梯度累积也和
+gradient checkpointing
+可以同时使用，来进一步减少显存占用。当然梯度累积也有缺点，首先就是同一个
+batch
+需要拆分成多次进行计算；其次是由于需要将梯度累积起来，在第二次以及之后的每次前向传播时，所有的梯度均不能被释放，这会导致峰值内存升高。</p>
+<p>这一部分的内容到这里就结束了，后续会继续学习一些并行化策略，敬请期待下一期学习笔记。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/54-training-llms-on-one-gpu/">https://littlenyima.github.io/posts/54-training-llms-on-one-gpu/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Deep-learning/">Deep learning</a><a class="post-meta__tags" href="/tags/Generative-models/">Generative models</a><a class="post-meta__tags" href="/tags/Large-language-models/">Large language models</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/posts/53-issue-ssl-certificates-with-certbot/" title="技术相关｜使用 Certbot 为通配符域名签发 SSL 证书"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">技术相关｜使用 Certbot 为通配符域名签发 SSL 证书</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/posts/52-ddim-inversion-for-cogvideox/" title="开发记录｜基于 CogVideoX 实现 DDIM Inversion"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-20</div><div class="title">开发记录｜基于 CogVideoX 实现 DDIM Inversion</div></div></a></div><div><a href="/posts/51-flow-matching-for-diffusion-models/" title="笔记｜扩散模型（一八）Flow Matching 理论详解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-20</div><div class="title">笔记｜扩散模型（一八）Flow Matching 理论详解</div></div></a></div><div><a href="/posts/50-velocity-prediction-in-diffusion-models/" title="笔记｜扩散模型（一七）扩散模型中的 Velocity Prediction"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-19</div><div class="title">笔记｜扩散模型（一七）扩散模型中的 Velocity Prediction</div></div></a></div><div><a href="/posts/48-cogvideox-text-to-video-diffusion-models/" title="笔记｜扩散模型（一六）CogVideoX 论文解读｜文生视频扩散模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-11</div><div class="title">笔记｜扩散模型（一六）CogVideoX 论文解读｜文生视频扩散模型</div></div></a></div><div><a href="/posts/47-cogvideo-text-to-video-generation/" title="笔记｜扩散模型（一五）CogVideo 论文解读｜文生视频大模型"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-10</div><div class="title">笔记｜扩散模型（一五）CogVideo 论文解读｜文生视频大模型</div></div></a></div><div><a href="/posts/35-textual-inversion-personalize-generation/" title="笔记｜扩散模型（一四）Textual Inversion 理论与实现"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-08-07</div><div class="title">笔记｜扩散模型（一四）Textual Inversion 理论与实现</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">38</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.linkedin.com/in/leyan-zhu-323abb26a/" target="_blank" title="领英"><i class="fa-brands fa-linkedin"></i></a><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fa-brands fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fa-solid fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa-solid fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#transformer-%E7%9A%84%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5"><span class="toc-number">1.</span> <span class="toc-text">Transformer 的内存使用情况</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E7%AE%97%E6%98%BE%E5%AD%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5"><span class="toc-number">1.1.</span> <span class="toc-text">测算显存使用情况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9D%83%E9%87%8D%E6%A2%AF%E5%BA%A6%E4%BC%98%E5%8C%96%E5%99%A8%E7%8A%B6%E6%80%81%E7%9A%84%E5%86%85%E5%AD%98%E5%8D%A0%E7%94%A8"><span class="toc-number">1.2.</span> <span class="toc-text">权重&#x2F;梯度&#x2F;优化器状态的内存占用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BF%80%E6%B4%BB%E9%83%A8%E5%88%86%E7%9A%84%E5%86%85%E5%AD%98%E5%8D%A0%E7%94%A8"><span class="toc-number">1.3.</span> <span class="toc-text">激活部分的内存占用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#gradient-checkpointing"><span class="toc-number">2.</span> <span class="toc-text">Gradient Checkpointing</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#gradient-accumulation"><span class="toc-number">3.</span> <span class="toc-text">Gradient Accumulation</span></a></li></ol></div></div><div class="card-widget card-post-series"><div class="item-headline"><i class="fa-solid fa-layer-group"></i><span>文章系列</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/54-training-llms-on-one-gpu/" title="笔记｜大模型训练（一）单卡训练的分析与优化策略">笔记｜大模型训练（一）单卡训练的分析与优化策略</a><time datetime="2025-08-29T15:55:32.000Z" title="發表於 2025-08-29 23:55:32">2025-08-29</time></div></div></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/54-training-llms-on-one-gpu/" title="笔记｜大模型训练（一）单卡训练的分析与优化策略">笔记｜大模型训练（一）单卡训练的分析与优化策略</a><time datetime="2025-08-29T15:55:32.000Z" title="發表於 2025-08-29 23:55:32">2025-08-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/53-issue-ssl-certificates-with-certbot/" title="技术相关｜使用 Certbot 为通配符域名签发 SSL 证书">技术相关｜使用 Certbot 为通配符域名签发 SSL 证书</a><time datetime="2025-05-26T09:57:41.000Z" title="發表於 2025-05-26 17:57:41">2025-05-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/52-ddim-inversion-for-cogvideox/" title="开发记录｜基于 CogVideoX 实现 DDIM Inversion">开发记录｜基于 CogVideoX 实现 DDIM Inversion</a><time datetime="2025-02-20T11:44:30.000Z" title="發表於 2025-02-20 19:44:30">2025-02-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/51-flow-matching-for-diffusion-models/" title="笔记｜扩散模型（一八）Flow Matching 理论详解">笔记｜扩散模型（一八）Flow Matching 理论详解</a><time datetime="2024-09-20T03:16:52.000Z" title="發表於 2024-09-20 11:16:52">2024-09-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/50-velocity-prediction-in-diffusion-models/" title="笔记｜扩散模型（一七）扩散模型中的 Velocity Prediction">笔记｜扩散模型（一七）扩散模型中的 Velocity Prediction</a><time datetime="2024-09-19T08:19:41.000Z" title="發表於 2024-09-19 16:19:41">2024-09-19</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/54-training-llms-on-one-gpu/',
+      url: 'https://littlenyima.github.io/posts/54-training-llms-on-one-gpu/',
+      title: '笔记｜大模型训练（一）单卡训练的分析与优化策略',
+      apikey: 'yEvh2ZR9MQAvSxA73VjpJEa32eHr6TrkXS88LLNbhFGfkpRB2vRPuF3Yfn6IhP3o',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=yEvh2ZR9MQAvSxA73VjpJEa32eHr6TrkXS88LLNbhFGfkpRB2vRPuF3Yfn6IhP3o&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
