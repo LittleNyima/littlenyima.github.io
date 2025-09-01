@@ -41,6 +41,11 @@ top: 1
 1. [笔记｜Score-based Generative Models（一）基础理论](../16-score-based-generative-models)
 2. [笔记｜Score-based Generative Models（二）基于 SDE 的模型](../17-score-based-modeling-with-sde)
 
+## Ultrascale Playbook 学习笔记
+
+1. [笔记｜大模型训练（一）单卡训练的分析与优化策略](../54-ultrascale-playbook-training-llms-on-one-gpu)
+1. [笔记｜大模型训练（二）并行编程快速入门](../55-ultrascale-playbook-parallel-programming)
+
 ## 通用技术
 
 1. [笔记｜LoRA 理论与实现｜大模型轻量级微调](../25-lora-low-rank-adaptation)
