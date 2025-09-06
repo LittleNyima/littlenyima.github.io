@@ -1,0 +1,451 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO) | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本学习笔记是对 nanotron&#x2F;ultrascale-playbook 的学习记录，该书涵盖分布式训练、并行技术以及一些优化策略。本文章是该系列笔记的第四篇，对应原书 Data Parallelism 一章的后半部分。  在前一篇文章中我们介绍了一系列与数据并行共同使用的训练优化策略，本篇我们将介绍 DeepSpeed ZeRO，这是一种旨在减少大语言模型训练中内存冗余的优化技术。 尽管数据并">
+<meta property="og:type" content="article">
+<meta property="og:title" content="笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)">
+<meta property="og:url" content="https://littlenyima.github.io/posts/57-zero-redundancy-optimizer/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="本学习笔记是对 nanotron&#x2F;ultrascale-playbook 的学习记录，该书涵盖分布式训练、并行技术以及一些优化策略。本文章是该系列笔记的第四篇，对应原书 Data Parallelism 一章的后半部分。  在前一篇文章中我们介绍了一系列与数据并行共同使用的训练优化策略，本篇我们将介绍 DeepSpeed ZeRO，这是一种旨在减少大语言模型训练中内存冗余的优化技术。 尽管数据并">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2025-09-05T09:01:12.000Z">
+<meta property="article:modified_time" content="2025-09-06T06:04:55.013Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Deep learning">
+<meta property="article:tag" content="Generative models">
+<meta property="article:tag" content="Large language models">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/57-zero-redundancy-optimizer/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-09-06 14:04:55'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2025-09-05T09:01:12.000Z" title="發表於 2025-09-05 17:01:12">2025-09-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2025-09-06T06:04:55.013Z" title="更新於 2025-09-06 14:04:55">2025-09-06</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Notes/">Notes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>本学习笔记是对 <a
+target="_blank" rel="noopener" href="https://huggingface.co/spaces/nanotron/ultrascale-playbook">nanotron/ultrascale-playbook</a>
+的学习记录，该书涵盖分布式训练、并行技术以及一些优化策略。本文章是该系列笔记的第四篇，对应原书
+<em>Data Parallelism</em> 一章的后半部分。</p>
+</blockquote>
+<p>在前一篇文章中我们介绍了一系列与数据并行共同使用的训练优化策略，本篇我们将介绍
+DeepSpeed ZeRO，这是一种旨在减少大语言模型训练中内存冗余的优化技术。</p>
+<p>尽管数据并行可以有效扩展训练的规模，但是在每个 DP
+进程上简单地复制优化器的状态、梯度以及参数会带来严重的内存冗余。ZeRO
+通过在<strong>数据并行维度</strong>上对优化器的状态、梯度以及参数进行分片，来消除这种冗余，同时仍然允许计算使用完整的参数。</p>
+<p>这种方法可以分为三种优化级别：</p>
+<ul>
+<li><strong>ZeRO-1</strong>：对优化器状态进行分片</li>
+<li><strong>ZeRO-2</strong>：对优化器状态以及梯度进行分片</li>
+<li><strong>ZeRO-3</strong>：对优化器状态、梯度以及模型参数进行分片</li>
+</ul>
+<p>注意，上述的「分片」指的是沿 DP 的维度进行分片，因为 ZeRO
+是一种数据并行方法。除了沿 DP
+的维度进行分片外，在后续的文章中也会介绍一些沿其他维度进行分片的方法。</p>
+<p>另外值得注意的是，<strong>激活值</strong>并不进行分片，因为每个 DP
+进程接收到的数据都各不相同，因此每个进程中的激活值也不同。所以这些激活值无法被复制，也就不能被分片。</p>
+<p>下面我们来分析一下不同的优化级别分别可以节约多少内存。</p>
+<h1 id="回顾内存使用情况">回顾内存使用情况</h1>
+<p>在<a
+href="https://littlenyima.github.io/posts/54-ultrascale-playbook-training-llms-on-one-gpu/">前面的文章</a>中，我们已经讨论了标准的训练中优化器状态、梯度以及模型参数的内存使用情况。若使用
+<span class="math inline">\(\Psi\)</span> 来表示模型的参数量，在使用
+Adam 优化器进行混合精度训练时，需要存储的每个部分的内存使用量为：</p>
+<ul>
+<li><strong>模型的参数</strong>（半精度）：<span
+class="math inline">\(2\Psi\)</span></li>
+<li><strong>模型的梯度</strong>（半精度）：<span
+class="math inline">\(2\Psi\)</span></li>
+<li><strong>模型参数和优化器状态</strong>（全精度）：<span
+class="math inline">\(4\Psi+(4\Psi+4\Psi)=12\Psi\)</span></li>
+<li><strong>模型梯度</strong>（全精度，非必须）：<span
+class="math inline">\(4\Psi\)</span></li>
+</ul>
+<p>如果不使用全精度来累积梯度，那么总内存消耗量为 <span
+class="math inline">\(2\Psi+2\Psi+12\Psi\)</span>，如果使用则为 <span
+class="math inline">\(2\Psi+6\Psi+12\Psi\)</span>。为了简单起见，这里我们只考虑前一种情况，不考虑全精度梯度累积的情况。</p>
+<p>ZeRO 的思想是将上述的对象在 DP
+进程之间进行分片，每个节点只存储这些对象的一部分，然后在需要的时候使用分片对这些对象进行重构，从而降低内存使用量，如下图所示。在这里，<span
+class="math inline">\(\Psi\)</span> 表示模型的参数量，<span
+class="math inline">\(k\)</span>
+表示优化器状态的内存使用量系数（如上述的讨论，对于 Adam 来说 <span
+class="math inline">\(k=12\)</span>），<span
+class="math inline">\(N_d\)</span> 表示 DP 的并行进程数量：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/09/05/zero-memory.jpg"
+alt="ZeRO 的内存使用情况" /></p>
+<h1 id="zero-1-优化器状态分片">ZeRO-1: 优化器状态分片</h1>
+<p>在原生 DP
+中，所有的进程在反向传播之后都需要收集全部梯度，并且同时执行相同的优化器步骤。也就是说，所有的进程都以相同的方式使用优化器对参数进行了全量更新，这显然是冗余的操作。</p>
+<p>在 ZeRO-1 中，优化器的状态被分为了 <span
+class="math inline">\(N_d\)</span> 个相同的部分，其中 <span
+class="math inline">\(N_d\)</span> 是 DP 的并行度。也就是说，在 DP
+的每个进程中，只维护了 <span class="math inline">\(1/N_d\)</span>
+的优化器状态，并且在优化过程中只更新 <span
+class="math inline">\(1/N_d\)</span> 的 fp32 权重。</p>
+<p>然而，模型参数需要完整更新才能进行下一轮前向传播。因此，在每个优化器步骤之后，需要增加一个额外的
+all-gather 操作，使每个进程都拥有完整的更新后模型权重。这便是上图中的
+<span class="math inline">\(2\Psi+2\Psi+k\Psi/N_d\)</span>
+这一公式的由来。</p>
+<p>总结来说，ZeRO-1 每一轮训练的操作为：</p>
+<ol type="1">
+<li>在每个进程上使用<strong>相同且完整的 BF16
+参数</strong>，但使用不同的 micro-batch 进行前向传播；</li>
+<li>在每个进程上使用<strong>相同且完整的梯度</strong>，但使用不同的
+micro-batch 进行反向传播；</li>
+<li>对梯度进行 reduce-scatter 操作；</li>
+<li>对每个进程本地的优化器状态（也就是完整优化器状态的 <span
+class="math inline">\(1/N_d\)</span>）进行优化，得到完整的全精度参数，然后将其转为半精度参数；</li>
+<li>对半精度参数进行
+all-gather，使每个进程都得到完整的更新后模型参数。</li>
+</ol>
+<p>整个过程如下所示：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/09/05/dp-zero1.gif"
+alt="ZeRO-1 过程示意图" /></p>
+<p>从通信的角度来说，ZeRO-1 相比普通的 DP，将 all-reduce 改成了
+reduce-scatter 操作，并且在优化器步骤之后增加了一步 all-reduce
+的操作，如下图所示：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/09/05/dp-zero1-overlap.jpg"
+alt="ZeRO-1 的流程与通信情况" /></p>
+<p>和前一篇文章中对 DP
+的讨论类似，这里的进程间通信过程也可以和其他的步骤重叠，来提高效率。其中
+reduce-scatter 可以和反向传播过程重叠，这是比较显然的。而 all-gather
+操作则主要有两种策略：</p>
+<ol type="1">
+<li><strong>和优化器步骤重叠</strong>：在优化器更新第一部分参数后立即启动
+all-gather；</li>
+<li><strong>和下一轮前向传播重叠</strong>：将每一层参数的 all-gather
+和前向传播重叠</li>
+</ol>
+<blockquote>
+<p>上述的技术在实现方面比较复杂，需要使用复杂的钩子函数和分桶机制。在实际使用时，可以直接使用
+Pytorch 的原生 ZeRO-3 或者 FSDP 实现，并将 FSDPUnit 设置为整个模型。</p>
+</blockquote>
+<h1 id="zero-2-加入梯度分片">ZeRO-2: 加入梯度分片</h1>
+<p>与 ZeRO-1
+同理，我们可以模仿对优化器状态分片的方式，同样对梯度也进行分片。然后在反向传播期间，不再对梯度执行
+all-reduce，而是只执行 reduce-scatter
+操作。这样，我们在内存中只需要存储所需梯度的 <span
+class="math inline">\(1/N_d\)</span>，从而在 ZeRO-1
+的基础上节约更多内存。ZeRO-2 的流程如下图所示：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/09/05/dp-zero2.gif"
+alt="ZeRO-2 的执行过程" /></p>
+<p>在通信方面，ZeRO-2 的进程间通信过程也与 ZeRO-1 相同，只不过是需要在
+reduce-scatter 之后把多余的梯度内存释放掉。比较 ZeRO-2 和
+ZeRO-1，可以发现 ZeRO-2 相比 ZeRO-1
+并没有引入额外的开销，但前者的内存占用量更小，因此通常相比 ZeRO-1
+来说，ZeRO-2 是更好的选择。</p>
+<h1 id="zero-3-加入模型参数分片-fsdp">ZeRO-3: 加入模型参数分片
+(FSDP)</h1>
+<p>在上述 ZeRO-2 的基础上再加入模型参数分片，就得到了 ZeRO-3。在 Pytorch
+中，ZeRO-3 的原生实现被称为 FSDP，也就是 Fully Sharded Data
+Parallelism，完全分片数据并行。</p>
+<p>现在模型参数也变成了分布式的，那么在实际的前向传播和反向传播过程中，模型的参数需要在使用时进行收集，在前向传播中的情况如下图所示。在每一层进行前向传播前，需要先使用
+all-gather
+将所有的参数收集起来，然后在前向传播结束之后将参数的内存释放：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/09/05/dp-zero3-forward.jpg"
+alt="ZeRO-3 中的前向传播" /></p>
+<p>对于反向传播也是一样，只不过是方向相反：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/09/05/dp-zero3-backward.jpg"
+alt="ZeRO-3 中的反向传播过程" /></p>
+<p>因为需要在前向传播和反向传播的过程中进行参数同步，因此在一个训练步骤中比
+ZeRO-2 多了 <span
+class="math inline">\(2\cdot\text{num\_layers}-1\)</span> 次额外的
+all-gather 操作，每次操作都会引入一个小的基础延迟开销：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/09/05/dp-zero3-comm.jpg"
+alt="ZeRO-3 的进程间通信情况" /></p>
+<p>在 ZeRO-3 中，前向传播和反向传播时需要分别进行一次 all-gather
+操作，通信开销是 <span
+class="math inline">\(\Psi+\Psi\)</span>。在最后还需要进行一次和 ZeRO-2
+相同的 reduce-scatter 来处理梯度，共产生 <span
+class="math inline">\(3\Psi\)</span> 的通信开销，与此相比，ZeRO-2
+的通信开销是 <span class="math inline">\(2\Psi\)</span>。</p>
+<p>为了尽可能提高训练效率，在实际场景中我们可以通过 prefetching
+的方式将下一层的参数同步与本层的前向传播同时进行；同样在反向传播时，提前同步前一层的参数。不过需要注意的是，随着
+DP 并行度的提高，所需的通信带宽会逐渐升高，因此随着 DP
+规模的增大，这种策略也会逐渐生效。（从经验上来说，DP 的并行度不应该超过
+512）</p>
+<p>从内存的角度来说，我们最终的内存占用为 <span
+class="math inline">\((2\Psi+2\Psi+k\Psi)/N_d\)</span>，也就是说从理论上来说，如果我们一直增加
+DP
+的并行度，就可以无限地降低内存占用（至少对于除了激活值外的部分来说是这样）。</p>
+<p>总结来说，通过
+DP，可以同时使用多个模型的副本进行训练，从而显著提高训练的吞吐量。而通过
+ZeRO，可以将参数、梯度和优化器状态在进程间进行分片，从而训练无法放入单个
+GPU 的模型。</p>
+<blockquote>
+<p>关于 FSDP1、FSDP2 以及一些实现相关的复杂情况，可以参考<a
+target="_blank" rel="noopener" href="https://christianjmills.com/posts/mastering-llms-course-notes/conference-talk-012/">这篇文章</a>中的讨论。</p>
+</blockquote>
+<p>尽管 ZeRO 看上去已经有了很高的并行度，但依然存在一些限制：ZeRO
+无法对激活内存进行分片。由于激活内存会随着序列的长度和 batch
+的大小而增加，所以有时我们只能用很短的序列进行训练。如下图所示是使用不同级别的
+ZeRO 进行训练时的显存占用，可以发现即使使用 ZeRO-3，当序列长度达到 16k
+的时候，占用显存也已经达到了 80 GiB：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/09/05/memory-usage-with-zero.jpg"
+alt="使用 ZeRO 时的显存占用情况" /></p>
+<p>为了解决这个问题，需要引入一种新的并行维度——<strong>张量并行</strong>，也就是
+Tensor Parallelism
+(TP)。这种并行维度除了能在设备间分片参数、梯度、优化器状态，也能分片<strong>激活值</strong>，我们将在下一篇文章中进行学习。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/57-zero-redundancy-optimizer/">https://littlenyima.github.io/posts/57-zero-redundancy-optimizer/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Deep-learning/">Deep learning</a><a class="post-meta__tags" href="/tags/Generative-models/">Generative models</a><a class="post-meta__tags" href="/tags/Large-language-models/">Large language models</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/posts/56-ultrascale-playbook-data-parallelism/" title="笔记｜大模型训练（三）数据并行与相关优化策略"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">笔记｜大模型训练（三）数据并行与相关优化策略</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/posts/56-ultrascale-playbook-data-parallelism/" title="笔记｜大模型训练（三）数据并行与相关优化策略"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-02</div><div class="title">笔记｜大模型训练（三）数据并行与相关优化策略</div></div></a></div><div><a href="/posts/55-ultrascale-playbook-parallel-programming/" title="笔记｜大模型训练（二）并行编程快速入门"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-01</div><div class="title">笔记｜大模型训练（二）并行编程快速入门</div></div></a></div><div><a href="/posts/54-ultrascale-playbook-training-llms-on-one-gpu/" title="笔记｜大模型训练（一）单卡训练的分析与优化策略"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-08-29</div><div class="title">笔记｜大模型训练（一）单卡训练的分析与优化策略</div></div></a></div><div><a href="/posts/52-ddim-inversion-for-cogvideox/" title="开发记录｜基于 CogVideoX 实现 DDIM Inversion"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-20</div><div class="title">开发记录｜基于 CogVideoX 实现 DDIM Inversion</div></div></a></div><div><a href="/posts/51-flow-matching-for-diffusion-models/" title="笔记｜扩散模型（一八）Flow Matching 理论详解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-20</div><div class="title">笔记｜扩散模型（一八）Flow Matching 理论详解</div></div></a></div><div><a href="/posts/50-velocity-prediction-in-diffusion-models/" title="笔记｜扩散模型（一七）扩散模型中的 Velocity Prediction"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-19</div><div class="title">笔记｜扩散模型（一七）扩散模型中的 Velocity Prediction</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">41</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.linkedin.com/in/leyan-zhu-323abb26a/" target="_blank" title="领英"><i class="fa-brands fa-linkedin"></i></a><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fa-brands fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fa-solid fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa-solid fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9E%E9%A1%BE%E5%86%85%E5%AD%98%E4%BD%BF%E7%94%A8%E6%83%85%E5%86%B5"><span class="toc-number">1.</span> <span class="toc-text">回顾内存使用情况</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#zero-1-%E4%BC%98%E5%8C%96%E5%99%A8%E7%8A%B6%E6%80%81%E5%88%86%E7%89%87"><span class="toc-number">2.</span> <span class="toc-text">ZeRO-1: 优化器状态分片</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#zero-2-%E5%8A%A0%E5%85%A5%E6%A2%AF%E5%BA%A6%E5%88%86%E7%89%87"><span class="toc-number">3.</span> <span class="toc-text">ZeRO-2: 加入梯度分片</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#zero-3-%E5%8A%A0%E5%85%A5%E6%A8%A1%E5%9E%8B%E5%8F%82%E6%95%B0%E5%88%86%E7%89%87-fsdp"><span class="toc-number">4.</span> <span class="toc-text">ZeRO-3: 加入模型参数分片
+(FSDP)</span></a></li></ol></div></div><div class="card-widget card-post-series"><div class="item-headline"><i class="fa-solid fa-layer-group"></i><span>文章系列</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/57-zero-redundancy-optimizer/" title="笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)">笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)</a><time datetime="2025-09-05T09:01:12.000Z" title="發表於 2025-09-05 17:01:12">2025-09-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/56-ultrascale-playbook-data-parallelism/" title="笔记｜大模型训练（三）数据并行与相关优化策略">笔记｜大模型训练（三）数据并行与相关优化策略</a><time datetime="2025-09-02T06:37:45.000Z" title="發表於 2025-09-02 14:37:45">2025-09-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/55-ultrascale-playbook-parallel-programming/" title="笔记｜大模型训练（二）并行编程快速入门">笔记｜大模型训练（二）并行编程快速入门</a><time datetime="2025-08-31T16:00:57.000Z" title="發表於 2025-09-01 00:00:57">2025-09-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/54-ultrascale-playbook-training-llms-on-one-gpu/" title="笔记｜大模型训练（一）单卡训练的分析与优化策略">笔记｜大模型训练（一）单卡训练的分析与优化策略</a><time datetime="2025-08-29T15:55:32.000Z" title="發表於 2025-08-29 23:55:32">2025-08-29</time></div></div></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/57-zero-redundancy-optimizer/" title="笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)">笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)</a><time datetime="2025-09-05T09:01:12.000Z" title="發表於 2025-09-05 17:01:12">2025-09-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/56-ultrascale-playbook-data-parallelism/" title="笔记｜大模型训练（三）数据并行与相关优化策略">笔记｜大模型训练（三）数据并行与相关优化策略</a><time datetime="2025-09-02T06:37:45.000Z" title="發表於 2025-09-02 14:37:45">2025-09-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/55-ultrascale-playbook-parallel-programming/" title="笔记｜大模型训练（二）并行编程快速入门">笔记｜大模型训练（二）并行编程快速入门</a><time datetime="2025-08-31T16:00:57.000Z" title="發表於 2025-09-01 00:00:57">2025-09-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/54-ultrascale-playbook-training-llms-on-one-gpu/" title="笔记｜大模型训练（一）单卡训练的分析与优化策略">笔记｜大模型训练（一）单卡训练的分析与优化策略</a><time datetime="2025-08-29T15:55:32.000Z" title="發表於 2025-08-29 23:55:32">2025-08-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/53-issue-ssl-certificates-with-certbot/" title="技术相关｜使用 Certbot 为通配符域名签发 SSL 证书">技术相关｜使用 Certbot 为通配符域名签发 SSL 证书</a><time datetime="2025-05-26T09:57:41.000Z" title="發表於 2025-05-26 17:57:41">2025-05-26</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/57-zero-redundancy-optimizer/',
+      url: 'https://littlenyima.github.io/posts/57-zero-redundancy-optimizer/',
+      title: '笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)',
+      apikey: 'yEvh2ZR9MQAvSxA73VjpJEa32eHr6TrkXS88LLNbhFGfkpRB2vRPuF3Yfn6IhP3o',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=yEvh2ZR9MQAvSxA73VjpJEa32eHr6TrkXS88LLNbhFGfkpRB2vRPuF3Yfn6IhP3o&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
