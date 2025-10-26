@@ -22,7 +22,7 @@ series: Ultrascale Playbook
 
 # Broadcast/广播
 
-首先是最简单的广播操作。想像这样一个场景：你在节点 1 上初始化了一些数据，现在你希望将这些数据发送给所有的其他节点，以便这些节点基于这些数据进行计算。广播操作就是为此而生：
+首先是最简单的广播操作。想象这样一个场景：你在节点 1 上初始化了一些数据，现在你希望将这些数据发送给所有的其他节点，以便这些节点基于这些数据进行计算。广播操作就是为此而生：
 
 ![广播操作](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/09/01/broadcast.png)
 
@@ -67,7 +67,7 @@ After broadcast on rank 2: tensor([1., 2., 3., 4., 5.], device='cuda:2')
 
 # Reduce/规约 & AllReduce/全规约
 
-Reduce 是分布式计算中最常用的操作之一。想像这样一个场景：你在不同的节点上完成了一些计算，现在你希望计算出这些结果的和或者平均值。Reduce 操作就是为了汇集不同节点上的数据，如果使用 Reduce，结果只会发送给跟节点；如果使用 All Reduce，结果会广播给所有节点。
+Reduce 是分布式计算中最常用的操作之一。想象这样一个场景：你在不同的节点上完成了一些计算，现在你希望计算出这些结果的和或者平均值。Reduce 操作就是为了汇集不同节点上的数据，如果使用 Reduce，结果只会发送给根节点；如果使用 All Reduce，结果会广播给所有节点。
 
 ![Reduce 与 All Reduce](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/09/01/reduce-allreduce.png)
 
@@ -201,7 +201,7 @@ After all_gather on rank 2: [tensor([1., 1., 1., 1., 1.], device='cuda:2'),
 
 顾名思义，Scatter/散发就是将一个节点上的数据散发到所有节点上。注意这里的散发不同于广播，广播会将完整的数据传输到其他节点上，而散发则是将数据先进行切片，再把每个切片分别传输到每个节点。也就是说，Scatter 是 Gather 的逆操作。
 
-ReduceScatter 的操作则稍微复杂一点，这个操作相当于先进行 Reduce 再进行 Scatter，最终的结果相当于把每个结点上的数据进行某种映射。用语言描述这个过程或许比较复杂，不过直接看图就很直观：
+ReduceScatter 的操作则稍微复杂一点，这个操作相当于先进行 Reduce 再进行 Scatter，最终的结果相当于把每个节点上的数据进行某种映射。用语言描述这个过程或许比较复杂，不过直接看图就很直观：
 
 ![Scatter 和 ReduceScatter](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/09/01/scatter-reducescatter.png)
 
@@ -311,7 +311,7 @@ After ReduceScatter on rank 2: tensor([36., 288.], device='cuda:2')
 
 # Barrier/屏障
 
-Barrier 是一个简单的同步所有节点的操作。想像一个这样的场景，你有一批数据需要分布在不同的 GPU 上进行推理，并在所有数据都推理完成后计算准确率，但不同 GPU 需要的运行时间不同，所以需要在计算准确率之前等待所有 GPU 上的推理都运行完成，这就需要用到 Barrier。在一个 Barrier 处，直到所有节点都到达它，它才会被解除。只有这样，节点才被允许继续进行后续的计算：
+Barrier 是一个简单的同步所有节点的操作。想象一个这样的场景，你有一批数据需要分布在不同的 GPU 上进行推理，并在所有数据都推理完成后计算准确率，但不同 GPU 需要的运行时间不同，所以需要在计算准确率之前等待所有 GPU 上的推理都运行完成，这就需要用到 Barrier。在一个 Barrier 处，直到所有节点都到达它，它才会被解除。只有这样，节点才被允许继续进行后续的计算：
 
 ![Barrier 示意图](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/09/01/barrier.png)
 
