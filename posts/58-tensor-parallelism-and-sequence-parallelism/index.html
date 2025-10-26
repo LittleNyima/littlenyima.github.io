@@ -1,0 +1,603 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>笔记｜大模型训练（五）张量并行与序列并行 | 極東晝寢愛好家</title><meta name="author" content="LittleNyima"><meta name="copyright" content="LittleNyima"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="本学习笔记是对 nanotron&#x2F;ultrascale-playbook 的学习记录，该书涵盖分布式训练、并行技术以及一些优化策略。本文章是该系列笔记的第五篇，对应原书 Tensor Parallelism 一章。  在上一篇文章中我们已经使用 ZeRO 对模型的参数、梯度以及优化器的状态进行了分片，然而一旦激活内存超出了我们可以接受的大小，训练又会到达一个新的瓶颈。因此我们需要张量并行，这种并">
+<meta property="og:type" content="article">
+<meta property="og:title" content="笔记｜大模型训练（五）张量并行与序列并行">
+<meta property="og:url" content="https://littlenyima.github.io/posts/58-tensor-parallelism-and-sequence-parallelism/index.html">
+<meta property="og:site_name" content="極東晝寢愛好家">
+<meta property="og:description" content="本学习笔记是对 nanotron&#x2F;ultrascale-playbook 的学习记录，该书涵盖分布式训练、并行技术以及一些优化策略。本文章是该系列笔记的第五篇，对应原书 Tensor Parallelism 一章。  在上一篇文章中我们已经使用 ZeRO 对模型的参数、梯度以及优化器的状态进行了分片，然而一旦激活内存超出了我们可以接受的大小，训练又会到达一个新的瓶颈。因此我们需要张量并行，这种并">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://littlenyima.github.io/img/avatar.jpg">
+<meta property="article:published_time" content="2025-10-26T10:02:22.000Z">
+<meta property="article:modified_time" content="2025-10-26T15:28:35.354Z">
+<meta property="article:author" content="LittleNyima">
+<meta property="article:tag" content="Deep learning">
+<meta property="article:tag" content="Generative models">
+<meta property="article:tag" content="Large language models">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://littlenyima.github.io/img/avatar.jpg"><link rel="shortcut icon" href="/img/favicon64x64.png"><link rel="canonical" href="https://littlenyima.github.io/posts/58-tensor-parallelism-and-sequence-parallelism/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":200},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: '載入更多'
+  },
+  isPhotoFigcaption: true,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '笔记｜大模型训练（五）张量并行与序列并行',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-10-26 23:28:35'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="極東晝寢愛好家" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">42</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/top_img.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="極東晝寢愛好家"><span class="site-name">極東晝寢愛好家</span></a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首頁</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 歸檔</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 標籤</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分類</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友鏈</span></a></div><div class="menus_item"><a class="site-page" target="_blank" rel="noopener" href="https://www.travellings.cn/go.html"><i class="fa-fw fas fa-train-subway"></i><span> 開往</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">笔记｜大模型训练（五）张量并行与序列并行</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2025-10-26T10:02:22.000Z" title="發表於 2025-10-26 18:02:22">2025-10-26</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2025-10-26T15:28:35.354Z" title="更新於 2025-10-26 23:28:35">2025-10-26</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Notes/">Notes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="笔记｜大模型训练（五）张量并行与序列并行"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><blockquote>
+<p>本学习笔记是对 <a
+target="_blank" rel="noopener" href="https://huggingface.co/spaces/nanotron/ultrascale-playbook">nanotron/ultrascale-playbook</a>
+的学习记录，该书涵盖分布式训练、并行技术以及一些优化策略。本文章是该系列笔记的第五篇，对应原书
+<em>Tensor Parallelism</em> 一章。</p>
+</blockquote>
+<p>在上一篇文章中我们已经使用 ZeRO
+对模型的参数、梯度以及优化器的状态进行了分片，然而一旦激活内存超出了我们可以接受的大小，训练又会到达一个新的瓶颈。因此我们需要张量并行，这种并行方式除了能够对上述的状态进行分片之外，还可以对激活值进行分片，并且无需在计算之前将其聚合。</p>
+<p>张量并行利用了矩阵乘法 <span class="math inline">\(A\times B\)</span>
+的数学特性。为了理解其工作原理，我们首先需要给出以下两个基本方程： <span
+class="math display">\[
+\begin{aligned}
+1.~&amp;A\cdot
+B=A\cdot\begin{bmatrix}B_1&amp;B_2&amp;\cdots\end{bmatrix}=\begin{bmatrix}AB_1&amp;AB_2&amp;\cdots\end{bmatrix}\\
+2.~&amp;A\cdot
+B=\begin{bmatrix}A_1&amp;A_2&amp;\cdots\end{bmatrix}\begin{bmatrix}B_1\\B_2\\\vdots\end{bmatrix}=\sum_{i=1}^{n}A_iB_i
+\end{aligned}
+\]</span> 也就是说，我们可以逐列地将 <span
+class="math inline">\(B\)</span> 的每一列单独与 <span
+class="math inline">\(A\)</span>
+相乘来计算乘积。在神经网络中，矩阵乘法常表示为 <span
+class="math inline">\(X\times W\)</span> 的形式，其中 <span
+class="math inline">\(X\)</span> 表示输入值或激活值，<span
+class="math inline">\(W\)</span>
+表示线性层的权重。下面是一个简单的示例：</p>
+<p><img src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/example-of-matrix-multiplation.jpg" alt="矩阵乘法的示例" style="max-height: 300px" /></p>
+<p>为了并行化这个操作，在张量并行时，首先将张量沿特定的维度分成 <span
+class="math inline">\(N\)</span> 个分片，并且分布到 <span
+class="math inline">\(N\)</span> 个 GPU
+上。矩阵可以按列或者按行分割，从而产生行并行或者列并行。在实际实现时，行并行和列并行需要的通信方式是不同的。</p>
+<p>第一种方式是按列进行分片，也就是列线性分片。首先将完整的矩阵<strong>广播</strong>到每个
+worker
+上，然后按列对权重矩阵进行分割。输入矩阵随后分别与每个部分的矩阵相乘，最后使用
+<strong>all-gather</strong> 操作组合最后的结果，如下图所示：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/column-wise-tensor-parallelism.jpg"
+alt="按列分片的张量并行" /></p>
+<p>第二种方式是按行进行分片，在这种分片方式中，为了保证每个子运算的两个输入形状正确，需要同时对输入也进行
+scatter 操作。这样我们可以在每个 worker 上得到形状正确的结果，最后使用
+all-reduce 将所有的结果求和：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/row-wise-tensor-parallelism.jpg"
+alt="按行分片的张量并行" /></p>
+<p>以上便是张量并行的基本实现方式，下面我们来看看如何在一个 transformer
+内部使用这种并行方式。</p>
+<h1 id="张量并行在-transformer-中的应用">张量并行在 Transformer
+中的应用</h1>
+<p>在 Transformer 中主要有两种操作，分别是 MLP
+以及多头注意力，这两种操作都可以使用张量并行。</p>
+<p>在上述的操作中，MLP
+就是简单的矩阵乘法，因此可以用上述两种中的任意一种来实现。不过考虑到通信延迟，可以对此进行进一步的优化。具体来说，在训练期间，由于我们可以保证输入已经在不同的
+TP rank
+之间同步，因此可以省略最初的广播操作，并且用一次列线性并行和一次行线性并行，来将最后的
+all-gather 操作变成一次 all-reduce 操作，从而节约带宽，如下图所示：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tensor-parallelism-for-mlp.jpg"
+alt="MLP 中的张量并行优化" /></p>
+<p>在多头注意力操作中，可以使用类似的方法对 query、key 以及 value
+对投影矩阵进行并行化。对于多头注意力来说，列并行有一个非常自然的解释：每个
+worker
+计算的是单个或部分注意力头所对应的注意力。同样的方法也适用于多查询注意力以及分组查询注意力。</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tensor-parallelism-for-mha.jpg"
+alt="多头注意力中的张量并行方式" /></p>
+<p>我们之所以可以如此自然地把张量并行应用于 MLP 和
+Attention，是因为其维度天然是独立的。MLP 可以沿着
+<code>hidden_dim</code> 的维度进行并行化，attention 可以沿着
+<code>num_attention_heads</code>
+的维度并行化，其内部的操作都是彼此独立的，因此并行化并不会对结果产生影响。</p>
+<p>然而，值得注意的是，张量并行的并行化程度不应该超过注意力头的数量。因为我们是沿着
+<code>num_attention_heads</code> 的维度的维度进行分片，当使用 GQA
+时，我们有 <code>num_attention_heads</code> 个查询头，但只有
+<code>num_kv_heads</code>（其小于
+<code>num_attention_heads</code>）个键值头。在这种情况下，尽管我们可以设置更大的张量并行维度，但我们需要确保各个
+QKV 在不同 worker 之间正确同步。例如，LLaMA-8B 有 32 个查询头，但是只有
+8 个键值头，虽然说张量并行维度理论上来说最大可以达到
+32，但是需要仔细检查 KV 头的并行实现。</p>
+<p>另外需要注意的是，虽然张量并行可以应用的范围非常广泛，但其并不是万能方法。为了实现张量并行，需要在模型的计算过程中引入多个额外的分布式通信操作，这些通信操作很难像
+ZeRO
+那样完全与计算过程重合，因此最终的性能将是计算/内存增益以及额外通信开销之间权衡的结果。具体的计算和通信过程如下图所示：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tensor-parallelism-overlap.jpg"
+alt="可以发现张量并行中的通信难以与计算重合" /></p>
+<p>尽管这个 all-reduce 操作也可以通过异步的方法来和 FC2
+的计算过程部分重合（例如，Megatron-LM和Nanotron实现了 all-gather
+与全连接计算的部分重叠，其中一部分矩阵乘法结果在剩余部分仍在计算时发送到其他
+worker），但由于 LayerNorm 要求完整的数据才能得到正确结果，因此这个
+all-reduce 的通信过程注定会引入一部分开销。</p>
+<p>因为上述的原因，虽然张量并行确实有助于减少矩阵乘法的激活内存，但对于
+LayerNorm
+等操作仍然需要完整的数据才能进行，所以张量并行并不能在全流程都减少内存的占用。同时，张量并行也引入了显著的通信需求，这严重依赖于设备的通信带宽。这种通信无法和计算过程并行，因此会导致前向传播所需的时间增加。</p>
+<p>这种 trade-off 可以从下图直观地展示。虽然增加张量并行度会导致每 GPU
+吞吐量降低（左图），但它能够处理更大的批次大小（右图），说明了分布式训练中计算效率与内存可用性之间的权衡：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tradeoff-of-tensor-parallelism.jpg"
+alt="张量并行中单卡吞吐量和 batch size 的变化" /></p>
+<p>如左上图所示，当扩展到 8 个 GPU
+以上时，张量并行的通信开销变得尤为明显。虽然但节点内的张量并行可以利用快速的
+NVLink 进行互联，但跨节点则需要较慢的网络连接。因此可以观察到从 TP=8 到
+TP=16 有显著的下降，从 TP=16 到 TP=32 的下降更为剧烈。</p>
+<p>虽然说张量并行的通信开销影响比较大，但是它能为内存使用提供好处，下面是一个
+70B 模型的情况：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tensor-parallelism-for-70b-model.jpg"
+alt="张量并行对 70B 模型的影响" /></p>
+<p>增加张量并行可以减少每个 GPU
+上的模型参数、梯度、优化器以及激活内存的使用量，因此可以将更大的模型部署到单个八卡节点上。现在只有
+LayerNorm 以及 Dropout
+等操作需要完整的激活，这些操作需要其他的并行化方式来进行优化，也就是我们下面即将要讨论的序列并行。</p>
+<blockquote>
+<p>关于张量并行训练中的层归一化，一个有趣的现象是，由于在 all-gather
+操作之后每个 TP rank
+都看到了相同的激活，因此层归一化权重在反向传播之后实际上不需要
+all-reduce 来同步它们的梯度。它们在各个 rank
+之间自然保持同步。然而，对于 Dropout 操作，我们必须确保在 TP rank
+之间同步随机种子以保持确定性行为。</p>
+</blockquote>
+<h1 id="序列并行">序列并行</h1>
+<p>序列并行是张量并行的一个小而自然的拓展，其涉及沿着输入序列的维度而非隐藏维度，对张量并行无法处理的模型部分（例如
+Dropout 以及 LayerNorm）的激活值和计算进行拆分。</p>
+<blockquote>
+<p>注意，本节讨论的序列并行是与张量并行紧密耦合的，应用于 LayerNorm 和
+Dropout
+的操作。然而，当我们处理更长的序列时，注意力计算将成为瓶颈，这需要 Ring
+Attention
+这样的技术，这些技术有时也被称为序列并行方法，但我们一般将其称为上下文并行，以区分这两种方法。</p>
+</blockquote>
+<p>之所以需要引入序列并行，是因为这些操作需要完整的隐藏层维度数据来进行计算。例如，LayerNorm
+需要完整的隐藏层维度来计算均值和方差： <span class="math display">\[
+\textrm{LayerNorm}(x)=\gamma\cdot\frac{x-\mu}{\sqrt{\sigma^2+\epsilon}}+\beta
+\]</span> 其中 <span class="math inline">\(\mu=\textrm{mean}(x)\)</span>
+以及 <span class="math inline">\(\sigma^2=var(x)\)</span>
+是沿着隐藏层维度进行计算的。</p>
+<p>因此，即使这些操作计算成本低廉，它们仍然需要大量的激活值内存。序列并行允许我们通过沿着序列维度进行拆分来分担
+GPU 之间的内存负担。下图展示了我们如何用不同的集合操作（标记为 <span
+class="math inline">\(f\)</span> 和 <span
+class="math inline">\(g\)</span>）在张量并行以及序列并行之间进行转换：</p>
+<p><img src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tp-with-sequence-parallelism.jpg" alt="张量并行以及序列并行共同使用" style="max-height: 500px" /></p>
+<p>在这个过程中，最主要的问题是如何高效地进行这些变换，同时保持低内存使用以及正确性。对于张量并行来说，在前向过程中：</p>
+<ul>
+<li><span class="math inline">\(f\)</span>
+是<strong>无操作</strong>，也就是 no-op，因为激活值已经在不同的 rank
+之间保持一致；</li>
+<li><span class="math inline">\(f^\star\)</span>
+是<strong>全规约</strong>操作，用于同步激活值来保持计算的正确性。</li>
+</ul>
+<p>在反向过程中：</p>
+<ul>
+<li><span class="math inline">\(f^\star\)</span>
+是<strong>无操作</strong>，因为梯度已经在不同的 rank 之间保持一致；</li>
+<li><span class="math inline">\(f\)</span>
+是<strong>全规约</strong>操作，用于在不同的 rank 之间同步梯度。</li>
+</ul>
+<p>这些 <span class="math inline">\(f\)</span> 和 <span
+class="math inline">\(f^\star\)</span>
+被称为<strong>共轭对</strong>，因为其相互补充——在每个传播过程中，当其中一个是无操作时，另一个是全规约。</p>
+<p>对于序列并行，我们使用不同的操作，标记为 <span
+class="math inline">\(g\)</span> 和 <span
+class="math inline">\(g^\star\)</span>。具体来说，我们避免在序列并行区域中使用全规约，因为那样会收集完整的激活值，并增加峰值内存，这违背了我们使用序列并行的目的。那么这里是如何实现的呢？我们来一步步地观察整体的过程，如下图所示：</p>
+<p><img src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tp-sp-explained.jpg" alt="TP 与 SP 过程的详细解释" style="max-height: 500px" /></p>
+<ol type="1">
+<li><strong>初始的 LayerNorm（SP 区域）</strong>
+<ul>
+<li>输入张量 <span class="math inline">\(X_1^\star\)</span> 以及 <span
+class="math inline">\(X_2^\star\)</span>（形状为 <span
+class="math inline">\((b,s/2,h)\)</span>）进入模型，其已经沿着序列的维度进行拆分；</li>
+<li>每个 GPU 独立地在其序列范围内计算 LayerNorm，得到 <span
+class="math inline">\(Y_1^\star\)</span> 和 <span
+class="math inline">\(Y_2^\star\)</span>。</li>
+</ul></li>
+<li><strong>第一次转换（SP → TP）</strong>
+<ul>
+<li><span class="math inline">\(g\)</span> 操作（也就是 all-gather）将
+<span class="math inline">\(Y_1^\star\)</span> 和 <span
+class="math inline">\(Y_2^\star\)</span> 组合回完整的序列长度；</li>
+<li>恢复形状为 <span class="math inline">\((b,s,h)\)</span> 的 <span
+class="math inline">\(Y\)</span>，因为列线性层需要完整的隐藏维度。</li>
+</ul></li>
+<li><strong>第一个线性层（TP 区域）</strong>
+<ul>
+<li><span class="math inline">\(A1\)</span> 和 <span
+class="math inline">\(A2\)</span> 是列线性层，因此它们沿隐藏维度拆分
+<span class="math inline">\(Y\)</span>；</li>
+<li>每个 GPU 独立进行 GeLU 操作，得到形状为 <span
+class="math inline">\((b,s,h/2)\)</span> 的 <span
+class="math inline">\(Z_1^\star\)</span> 和 <span
+class="math inline">\(Z_2^\star\)</span>。</li>
+</ul></li>
+<li><strong>第二个线性层（TP 区域）</strong>
+<ul>
+<li><span class="math inline">\(B1\)</span> 和 <span
+class="math inline">\(B2\)</span>
+是行线性层，因此其恢复了隐藏维度，得到形状为 <span
+class="math inline">\((b,s,h)\)</span> 的 <span
+class="math inline">\(W_1\)</span> 和 <span
+class="math inline">\(W_2\)</span>；</li>
+<li><span class="math inline">\(W_1\)</span> 和 <span
+class="math inline">\(W_2\)</span> 需要相加来得到完整的计算结果。</li>
+</ul></li>
+<li><strong>最终转换（TP → SP）</strong>
+<ul>
+<li><span class="math inline">\(g^\star\)</span>
+操作（reduce-scatter）执行前一个线性层的规约，同时沿序列维度进行
+scatter；</li>
+<li>得到 <span class="math inline">\((b,s/2,h)\)</span> 的 <span
+class="math inline">\(W_1^\star\)</span> 和 <span
+class="math inline">\(W_2^\star\)</span>。</li>
+</ul></li>
+</ol>
+<p>序列并行的一个主要优点是其减少了我们需要存储的激活值的最大大小。仅使用张量并行时，我们不得不在各个节点上存储形状为
+<span class="math inline">\((b,s,h)\)</span>
+的激活值。然而，通过序列并行，最大激活值减小到了 <span
+class="math inline">\(b\cdot s\cdot h/t_p\)</span>。要清晰地展示 TP 以及
+TP+SP 中的不同分片方式，可以看下面的表格：</p>
+<table style="width:100%;">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 34%" />
+<col style="width: 47%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>区域</th>
+<th>仅使用 TP</th>
+<th>使用 TP+SP</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>进入 TP（列线性）</td>
+<td>h: 沿 <code>weight_out</code> 进行分片<br />s: 完整</td>
+<td>h: 沿 <code>weight_out</code> 分片<br />s:
+<strong>all-gather</strong> 得到完整内容</td>
+</tr>
+<tr class="even">
+<td>TP 区域</td>
+<td>h: 分片<br />s: 完整</td>
+<td>h: 分片<br />s: 完整</td>
+</tr>
+<tr class="odd">
+<td>离开 TP 区域（行线性）</td>
+<td>h: 完整（通过 all-reduce 实现）<br />s: 完整</td>
+<td>h: 完整（通过 <strong>all-reduce</strong> 实现）<br />s: 通过
+<strong>reduce-scatter</strong> 分片</td>
+</tr>
+<tr class="even">
+<td>SP 区域</td>
+<td>h: 完整<br />s: 完整</td>
+<td>h: 完整<br />s: 分片</td>
+</tr>
+</tbody>
+</table>
+<p>对于嵌入层：</p>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 36%" />
+<col style="width: 39%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>区域</th>
+<th>仅使用 TP</th>
+<th>使用 TP+SP</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>嵌入层（行线性，沿 vocab 分片）</td>
+<td>h: 完整（通过 <strong>all-reduce</strong> 实现）<br />s: 完整</td>
+<td>h: 完整（通过 <strong>reduce-scatter</strong> 实现）<br />s:
+分片</td>
+</tr>
+</tbody>
+</table>
+<p>通过使用序列并行，我们可以实现更大的激活值内存节省，从而可以比单独使用张量并行处理更大的批量大小和序列长度。让我们看看这对我们之前的
+70B 模型示例意味着什么：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tradeoff-of-tp-sp.jpg"
+alt="使用序列并行后的内存占用情况" /></p>
+<p>可以发现通过使用序列并行，每个 GPU 的内存占用进一步减小，在使用
+TP+SP=16 时可以对 16k token 的序列进行推理。现在的问题是，使用 TP+SP
+是否会相对普通的 TP
+带来更多的通信开销。这个问题的答案是：是也不是。在前向传播中，普通 TP
+每个 Transformer 模块有两个 all-reduce 操作，而在 SP 中，每个
+Transformer 模块有两个 all-gather 和两个 reduce-scatter 操作。因此，SP
+的通信操作数量是 TP 的两倍。但由于 all-reduce 操作可以分解为 all-gather
+和
+reduce-scatter，所以在通信成本方面它们实际上是等效的。同样的道理也适用于反向传播，因为我们只是使用了每个操作的共轭（no-op
+↔︎ all-reduce，all-gather ↔︎ reduce-scatter）。</p>
+<p>可以发现每一层我们都在讨论四个通信操作（attention 部分两个、MLP
+部分两个），以下是使用 TP+SP 时的操作序列：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tp-sp-overlap.jpg"
+alt="使用 TP+SP 时的计算和通信" /></p>
+<p>就像普通 TP 一样，TP+SP
+不容易与计算重叠，这使得吞吐量严重依赖于通信带宽，因此这类操作通常需要限定在节点的内部进行。这种通信开销可以进行
+benchmark，对于一个 3B 的模型，当序列长度为 4096，随着 TP+SP
+的拓展，吞吐量和内存使用情况如下图所示：</p>
+<p><img
+src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tradeoff-of-tp-sp.jpg"
+alt="使用 TP+SP" /></p>
+<p>同样，计算效率（左）和内存容量（右）之间存在
+tradeoff。虽然更高程度的并行性通过减少激活值内存可以处理显著更大的 batch
+size，但它们也降低了每个 GPU 的吞吐量，尤其是在超过 8 之后（也就是每个
+node 的最多 GPU 数量）。总结来说：</p>
+<ul>
+<li>对于这两种方法，当从 TP=8 变成 TP=16
+时，性能出现比较大的下降，这是因为我们从仅在单个节点内部通信（NVLink）变成了节点间通信（EFA）；</li>
+<li>与仅使用 TP 相比，使用 TP 和 SP 可以节省激活值内存，从而推理更大的
+batch。</li>
+</ul>
+<blockquote>
+<p>注意：由于 SP 区域中的 LayerNorm
+在序列的不同部分上进行操作，其梯度会在不同的 TP
+进程之间有所不同。为了确保权重同步，在反向传播期间需要对其梯度进行
+all-reduce，类似于 DP 中的方式。不过这是一笔很小的通信开销，因为
+LayerNorm 的参数通常较少。</p>
+</blockquote>
+<p>尽管如此，TP+SP 仍然有两个限制：如果序列长度扩展，TP
+区域的激活值内存仍将爆炸式增长；如果模型太大，TP=8
+无法容纳，而使用更大的 TP rank 会导致性能大幅下降。</p>
+<p>这两个问题可以分别用上下文并行和流水线并行来解决，这两者会在后续的文章中进一步探讨。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>文章作者: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io">LittleNyima</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>文章連結: </span><span class="post-copyright-info"><a href="https://littlenyima.github.io/posts/58-tensor-parallelism-and-sequence-parallelism/">https://littlenyima.github.io/posts/58-tensor-parallelism-and-sequence-parallelism/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://littlenyima.github.io" target="_blank">極東晝寢愛好家</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Deep-learning/">Deep learning</a><a class="post-meta__tags" href="/tags/Generative-models/">Generative models</a><a class="post-meta__tags" href="/tags/Large-language-models/">Large language models</a></div><div class="post_share"><div class="social-share" data-image="/img/avatar.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/posts/57-zero-redundancy-optimizer/" title="笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/posts/57-zero-redundancy-optimizer/" title="笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-05</div><div class="title">笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)</div></div></a></div><div><a href="/posts/56-ultrascale-playbook-data-parallelism/" title="笔记｜大模型训练（三）数据并行与相关优化策略"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-02</div><div class="title">笔记｜大模型训练（三）数据并行与相关优化策略</div></div></a></div><div><a href="/posts/55-ultrascale-playbook-parallel-programming/" title="笔记｜大模型训练（二）并行编程快速入门"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-09-01</div><div class="title">笔记｜大模型训练（二）并行编程快速入门</div></div></a></div><div><a href="/posts/54-ultrascale-playbook-training-llms-on-one-gpu/" title="笔记｜大模型训练（一）单卡训练的分析与优化策略"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-08-29</div><div class="title">笔记｜大模型训练（一）单卡训练的分析与优化策略</div></div></a></div><div><a href="/posts/52-ddim-inversion-for-cogvideox/" title="开发记录｜基于 CogVideoX 实现 DDIM Inversion"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-02-20</div><div class="title">开发记录｜基于 CogVideoX 实现 DDIM Inversion</div></div></a></div><div><a href="/posts/51-flow-matching-for-diffusion-models/" title="笔记｜扩散模型（一八）Flow Matching 理论详解"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-09-20</div><div class="title">笔记｜扩散模型（一八）Flow Matching 理论详解</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 評論</span></div></div><div class="comment-wrap"><div><div id="disqusjs-wrap"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">LittleNyima</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">42</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">4</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/LittleNyima"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://www.linkedin.com/in/leyan-zhu-323abb26a/" target="_blank" title="领英"><i class="fa-brands fa-linkedin"></i></a><a class="social-icon" href="https://www.zhihu.com/people/littlenyima/" target="_blank" title="知乎"><i class="fa-brands fa-zhihu"></i></a><a class="social-icon" href="https://www.cnblogs.com/littlenyima/" target="_blank" title="博客园"><i class="fa-solid fa-blog"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title="RSS"><i class="fa-solid fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎来到 LittleNyima 的栖息地~（偶尔出没）</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BC%A0%E9%87%8F%E5%B9%B6%E8%A1%8C%E5%9C%A8-transformer-%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-number">1.</span> <span class="toc-text">张量并行在 Transformer
+中的应用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E5%B9%B6%E8%A1%8C"><span class="toc-number">2.</span> <span class="toc-text">序列并行</span></a></li></ol></div></div><div class="card-widget card-post-series"><div class="item-headline"><i class="fa-solid fa-layer-group"></i><span>文章系列</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/58-tensor-parallelism-and-sequence-parallelism/" title="笔记｜大模型训练（五）张量并行与序列并行">笔记｜大模型训练（五）张量并行与序列并行</a><time datetime="2025-10-26T10:02:22.000Z" title="發表於 2025-10-26 18:02:22">2025-10-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/57-zero-redundancy-optimizer/" title="笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)">笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)</a><time datetime="2025-09-05T09:01:12.000Z" title="發表於 2025-09-05 17:01:12">2025-09-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/56-ultrascale-playbook-data-parallelism/" title="笔记｜大模型训练（三）数据并行与相关优化策略">笔记｜大模型训练（三）数据并行与相关优化策略</a><time datetime="2025-09-02T06:37:45.000Z" title="發表於 2025-09-02 14:37:45">2025-09-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/55-ultrascale-playbook-parallel-programming/" title="笔记｜大模型训练（二）并行编程快速入门">笔记｜大模型训练（二）并行编程快速入门</a><time datetime="2025-08-31T16:00:57.000Z" title="發表於 2025-09-01 00:00:57">2025-09-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/54-ultrascale-playbook-training-llms-on-one-gpu/" title="笔记｜大模型训练（一）单卡训练的分析与优化策略">笔记｜大模型训练（一）单卡训练的分析与优化策略</a><time datetime="2025-08-29T15:55:32.000Z" title="發表於 2025-08-29 23:55:32">2025-08-29</time></div></div></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/58-tensor-parallelism-and-sequence-parallelism/" title="笔记｜大模型训练（五）张量并行与序列并行">笔记｜大模型训练（五）张量并行与序列并行</a><time datetime="2025-10-26T10:02:22.000Z" title="發表於 2025-10-26 18:02:22">2025-10-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/57-zero-redundancy-optimizer/" title="笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)">笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)</a><time datetime="2025-09-05T09:01:12.000Z" title="發表於 2025-09-05 17:01:12">2025-09-05</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/56-ultrascale-playbook-data-parallelism/" title="笔记｜大模型训练（三）数据并行与相关优化策略">笔记｜大模型训练（三）数据并行与相关优化策略</a><time datetime="2025-09-02T06:37:45.000Z" title="發表於 2025-09-02 14:37:45">2025-09-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/55-ultrascale-playbook-parallel-programming/" title="笔记｜大模型训练（二）并行编程快速入门">笔记｜大模型训练（二）并行编程快速入门</a><time datetime="2025-08-31T16:00:57.000Z" title="發表於 2025-09-01 00:00:57">2025-09-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/posts/54-ultrascale-playbook-training-llms-on-one-gpu/" title="笔记｜大模型训练（一）单卡训练的分析与优化策略">笔记｜大模型训练（一）单卡训练的分析与优化策略</a><time datetime="2025-08-29T15:55:32.000Z" title="發表於 2025-08-29 23:55:32">2025-08-29</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('/img/top_img.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By LittleNyima</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">网站封面图作者<a target="_blank" rel="noopener" href="https://www.pixiv.net/artworks/41045442">よこ。</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直達評論"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="返回頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script>function panguFn () {
+  if (typeof pangu === 'object') pangu.autoSpacingPage()
+  else {
+    getScript('https://cdn.jsdelivr.net/npm/pangu/dist/browser/pangu.min.js')
+      .then(() => {
+        pangu.autoSpacingPage()
+      })
+  }
+}
+
+function panguInit () {
+  if (false){
+    GLOBAL_CONFIG_SITE.isPost && panguFn()
+  } else {
+    panguFn()
+  }
+}
+
+document.addEventListener('DOMContentLoaded', panguInit)</script><div class="js-pjax"><script>if (!window.MathJax) {
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      tags: 'ams'
+    },
+    chtml: {
+      scale: 1.1
+    },
+    options: {
+      renderActions: {
+        findScript: [10, doc => {
+          for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+            const display = !!node.type.match(/; *mode=display/)
+            const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display)
+            const text = document.createTextNode('')
+            node.parentNode.replaceChild(text, node)
+            math.start = {node: text, delim: '', n: 0}
+            math.end = {node: text, delim: '', n: 0}
+            doc.math.push(math)
+          }
+        }, '']
+      }
+    }
+  }
+  
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/mathjax/es5/tex-mml-chtml.min.js'
+  script.id = 'MathJax-script'
+  script.async = true
+  document.head.appendChild(script)
+} else {
+  MathJax.startup.document.state(0)
+  MathJax.texReset()
+  MathJax.typesetPromise()
+}</script><script>(() => {
+  const initDisqusjs = () => {
+    window.disqusjs = null
+    disqusjs = new DisqusJS(Object.assign({
+      shortname: 'littlenyima',
+      identifier: '/posts/58-tensor-parallelism-and-sequence-parallelism/',
+      url: 'https://littlenyima.github.io/posts/58-tensor-parallelism-and-sequence-parallelism/',
+      title: '笔记｜大模型训练（五）张量并行与序列并行',
+      apikey: 'yEvh2ZR9MQAvSxA73VjpJEa32eHr6TrkXS88LLNbhFGfkpRB2vRPuF3Yfn6IhP3o',
+    },null))
+
+    disqusjs.render(document.getElementById('disqusjs-wrap'))
+  }
+
+  const themeChange = () => {
+    const ele = document.getElementById('disqus_thread')
+    if(!ele) return
+    disqusjs.destroy()
+    initDisqusjs()
+  }
+
+  btf.addGlobalFn('themeChange', themeChange, 'disqusjs')
+
+  const loadDisqusjs = async() => {
+    if (window.disqusJsLoad) initDisqusjs()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/styles/disqusjs.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/disqusjs/dist/browser/disqusjs.es2015.umd.min.js')
+      initDisqusjs()
+      window.disqusJsLoad = true
+    }
+  }
+
+  const getCount = async() => {
+    try {
+      const eleGroup = document.querySelector('#post-meta .disqusjs-comment-count')
+      if (!eleGroup) return
+      const cleanedLinks = eleGroup.href.replace(/#post-comment$/, '')
+
+      const res = await fetch(`https://disqus.com/api/3.0/threads/set.json?forum=littlenyima&api_key=yEvh2ZR9MQAvSxA73VjpJEa32eHr6TrkXS88LLNbhFGfkpRB2vRPuF3Yfn6IhP3o&thread:link=${cleanedLinks}`,{
+        method: 'GET'
+      })
+      const result = await res.json()
+      const count = result.response.length ? result.response[0].posts : 0
+      eleGroup.textContent = count
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  if ('Disqusjs' === 'Disqusjs' || !true) {
+    if (true) btf.loadComment(document.getElementById('disqusjs-wrap'), loadDisqusjs)
+    else {
+      loadDisqusjs()
+      
+    }
+  } else {
+    window.loadOtherComment = loadDisqusjs
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
