@@ -107,7 +107,9 @@ $$
 
 对于序列并行，我们使用不同的操作，标记为 $g$ 和 $g^\star$。具体来说，我们避免在序列并行区域中使用全规约，因为那样会收集完整的激活值，并增加峰值内存，这违背了我们使用序列并行的目的。那么这里是如何实现的呢？我们来一步步地观察整体的过程，如下图所示：
 
-<img src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tp-sp-explained.jpg" alt="TP 与 SP 过程的详细解释" style="max-height: 500px" />
+<style>
+    @media (min-width: 768px) {.responsive-float-right {float: right; margin-left: 10px;}}
+</style><p class="responsive-float-right"><img src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tp-sp-explained.jpg" alt="TP 与 SP 过程的详细解释" style="max-height: 500px" /></p>
 
 1. **初始的 LayerNorm（SP 区域）**
    - 输入张量 $X_1^\star$ 以及 $X_2^\star$（形状为 $(b,s/2,h)$）进入模型，其已经沿着序列的维度进行拆分；
