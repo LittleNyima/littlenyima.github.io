@@ -31,11 +31,11 @@ $$
 
 第一种方式是按列进行分片，也就是列线性分片。首先将完整的矩阵**广播**到每个 worker 上，然后按列对权重矩阵进行分割。输入矩阵随后分别与每个部分的矩阵相乘，最后使用 **all-gather** 操作组合最后的结果，如下图所示：
 
-![按列分片的张量并行](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/column-wise-tensor-parallelism.jpg)
+<img src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/column-wise-tensor-parallelism.jpg" alt="按列分片的张量并行" style="max-height: 400px" />
 
 第二种方式是按行进行分片，在这种分片方式中，为了保证每个子运算的两个输入形状正确，需要同时对输入也进行 scatter 操作。这样我们可以在每个 worker 上得到形状正确的结果，最后使用 all-reduce 将所有的结果求和：
 
-![按行分片的张量并行](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/row-wise-tensor-parallelism.jpg)
+<img src="https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/row-wise-tensor-parallelism.jpg" alt="按行分片的张量并行" style="max-height: 400px" />
 
 以上便是张量并行的基本实现方式，下面我们来看看如何在一个 transformer 内部使用这种并行方式。
 
@@ -144,7 +144,7 @@ $$
 
 通过使用序列并行，我们可以实现更大的激活值内存节省，从而可以比单独使用张量并行处理更大的批量大小和序列长度。让我们看看这对我们之前的 70B 模型示例意味着什么：
 
-![使用序列并行后的内存占用情况](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tradeoff-of-tp-sp.jpg)
+![使用序列并行后的内存占用情况](https://littlenyima-1319014516.cos.ap-beijing.myqcloud.com/blog/2025/10/26/tp-sp-for-70b-model.jpg)
 
 可以发现通过使用序列并行，每个 GPU 的内存占用进一步减小，在使用 TP+SP=16 时可以对 16k token 的序列进行推理。现在的问题是，使用 TP+SP 是否会相对普通的 TP 带来更多的通信开销。这个问题的答案是：是也不是。在前向传播中，普通 TP 每个 Transformer 模块有两个 all-reduce 操作，而在 SP 中，每个 Transformer 模块有两个 all-gather 和两个 reduce-scatter 操作。因此，SP 的通信操作数量是 TP 的两倍。但由于 all-reduce 操作可以分解为 all-gather 和 reduce-scatter，所以在通信成本方面它们实际上是等效的。同样的道理也适用于反向传播，因为我们只是使用了每个操作的共轭（no-op ↔ all-reduce，all-gather ↔ reduce-scatter）。
 
