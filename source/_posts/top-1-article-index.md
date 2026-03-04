@@ -10,7 +10,7 @@ top: 1
 ## Flow-based Models
 
 1. [笔记｜Normalizing Flow 理论与实现（一）基础理论](../12-basic-concepts-of-normalizing-flow)
-1. [笔记｜扩散模型（一八）Flow Matching 理论详解](../51-flow-matching-for-diffusion-models)
+2. [笔记｜扩散模型（一八）Flow Matching 理论详解](../51-flow-matching-for-diffusion-models)
 
 ## Diffusion Models：通用理论
 
@@ -24,12 +24,12 @@ top: 1
 ## Diffusion Models：文生图
 
 1. [笔记｜扩散模型（六）DALL-E 理论与实现｜自回归文生图](../20-dalle-zero-shot-text-to-image-generation)
-1. [笔记｜扩散模型（七）Latent Diffusion Models（Stable Diffusion）理论与实现](../21-latent-diffusion-models)
-1. [笔记｜扩散模型（八）DALL-E 2 (unCLIP) 理论与实现](../22-dalle-2-hierarchical-text-to-image-generation)
-1. [笔记｜扩散模型（九）Imagen 理论与实现](../23-imagen-t2i-with-deep-language-understanding)
-1. [笔记｜扩散模型（一〇）Dreambooth 理论与实现｜主题驱动生成](../24-dreambooth-subject-driven-generation)
-1. [笔记｜扩散模型（一一）Stable Diffusion XL 理论与实现](../27-sdxl-stable-diffusion-xl)
-1. [笔记｜扩散模型（一四）Textual Inversion 理论与实现](../35-textual-inversion-personalize-generation)
+2. [笔记｜扩散模型（七）Latent Diffusion Models（Stable Diffusion）理论与实现](../21-latent-diffusion-models)
+3. [笔记｜扩散模型（八）DALL-E 2 (unCLIP) 理论与实现](../22-dalle-2-hierarchical-text-to-image-generation)
+4. [笔记｜扩散模型（九）Imagen 理论与实现](../23-imagen-t2i-with-deep-language-understanding)
+5. [笔记｜扩散模型（一〇）Dreambooth 理论与实现｜主题驱动生成](../24-dreambooth-subject-driven-generation)
+6. [笔记｜扩散模型（一一）Stable Diffusion XL 理论与实现](../27-sdxl-stable-diffusion-xl)
+7. [笔记｜扩散模型（一四）Textual Inversion 理论与实现](../35-textual-inversion-personalize-generation)
 
 ## Diffusion Models：文生视频
 
@@ -44,13 +44,17 @@ top: 1
 ## Ultrascale Playbook 学习笔记
 
 1. [笔记｜大模型训练（一）单卡训练的分析与优化策略](../54-ultrascale-playbook-training-llms-on-one-gpu)
-1. [笔记｜大模型训练（二）并行编程快速入门](../55-ultrascale-playbook-parallel-programming)
+2. [笔记｜大模型训练（二）并行编程快速入门](../55-ultrascale-playbook-parallel-programming)
+3. [笔记｜大模型训练（三）数据并行与相关优化策略](../56-ultrascale-playbook-data-parallelism)
+4. [笔记｜大模型训练（四）Zero Redundancy Optimizer (ZeRO)](../57-ultrascale-playbook-zero-redundancy-optimizer)
+5. [笔记｜大模型训练（五）张量并行与序列并行](../58-ultrascale-playbook-tensor-parallelism)
 
 ## 通用技术
 
 1. [笔记｜LoRA 理论与实现｜大模型轻量级微调](../25-lora-low-rank-adaptation)
-1. [笔记｜扩散模型（一二）U-ViT｜Diffusion with Transformer](../29-uvit-a-vit-backbone-for-diffusion-models)
-1. [笔记｜扩散模型（一三）DiT｜Diffusion with Transformer](../32-dit-scalable-diffusion-with-transformers)
+2. [笔记｜扩散模型（一二）U-ViT｜Diffusion with Transformer](../29-uvit-a-vit-backbone-for-diffusion-models)
+3. [笔记｜扩散模型（一三）DiT｜Diffusion with Transformer](../32-dit-scalable-diffusion-with-transformers)
+4. [笔记｜从 Prompt 到智能体：LLM Agent 的演进逻辑与工程实践全解析](../59-comprehensive-guide-to-ai-agents)
 
 # 教程与技术向文章
 
